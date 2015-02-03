@@ -1,35 +1,4 @@
-# INIT
-R.<x> = ZZ[]
-
-"""pol is of degree d
-NN modulus a multiple of b
-lower bound beta, b >= NN^beta
-epsilon <= beta / 7
-"""
-def coppersmith_univariate(pol, NN, bb, beta, epsilon):
-    # init
-    dd = pol.degree()
-    # choose m and t
-    mm = ceil(beta**2 / dd * epsilon)
-    tt = floor(dd * mm * ((1/beta) - 1))
-    # compute polynomials
-    gg = {}
-    for ii in range(mm):
-        gg[ii] = {}
-        for jj in range(dd):
-            g[ii][jj] = x
-    #
-    return mm
-
-# TESTS
-
-m = 010101010101 # we know part of the message
-ct = 01010101010 # we know the ciphertext
-pol = (m - x)**3 - ct
-
-print(coppersmith_univariate(pol, NN, NN, 1, 1))
-
-# TEST 2 of http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf
+# TP available at http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf
 
 def keyGen(n=256):
     "Generates an RSA key"
@@ -42,7 +11,7 @@ def keyGen(n=256):
     print "N=",Nn
     print "Size of N:",Nn.nbits()
     return Nn,p,q,e,d
-
+    
 def CopPolyDeg2(a,b,Nn):
     "Finds a small root of polynomial x^2+ax+b=0 mod N"
     n=Nn.nbits()
@@ -69,6 +38,7 @@ def test():
     f = v[0]*x^2+v[1]*x+v[2]
     print find_root(f, 0,2^(n//3-10))
 
-# test 2
+# exercise 2: modify the previous code to
+
 N = 122840968903324034467344329510307845524745715398875789936591447337206598081
 C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
