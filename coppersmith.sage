@@ -17,14 +17,14 @@ def coppersmith_univariate(pol, bb, beta):
     tt = floor(dd * mm * ((1/beta) - 1)) # t = 0 if beta = 1, rly?
 
     # change ring of pol and x
-    polZ = pol.change_ring(ZZ)
+    polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ?
     x = polZ.parent().gen()
     
     # compute polynomials
     gg = []
     for ii in range(mm):
         for jj in range(dd):
-            gg.append(x**jj * NN**(mm - ii) * polZ**ii)
+            gg.append(x**jj * bb**(mm - ii) * polZ**ii)
     hh = [] # beta=1 => t=0 => no h_i polynomials
     for ii in range(tt):
         hh.append(x**ii * polZ**mm)
@@ -49,14 +49,21 @@ def coppersmith_univariate(pol, bb, beta):
     BB = BB.LLL()
     
     # transform shortest vector in polynomial
+    new_pol = 0
+    for ii in range(nn):
+        new_pol += x**ii * BB[0, ii]
     
     # factor polynomial
-
-    # test roots on original pol
+    roots = new_pol.roots()
     
-    # return root
-    return BB
+    # test roots on original pol
+    for root in roots:
+        if pol(root) == 0:
+            return root
 
+    # throw exception?
+    return 0
+    
 # TESTS
 # (from http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf)
 N = 122840968903324034467344329510307845524745715398875789936591447337206598081
@@ -65,5 +72,5 @@ C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
 K = Zmod(N)
 R.<x> = PolynomialRing(K)
 pol = (2**250 + x)**3 - C
-M = coppersmith_univariate(pol, NN, 1)
+print(coppersmith_univariate(pol, N, 1))
 
