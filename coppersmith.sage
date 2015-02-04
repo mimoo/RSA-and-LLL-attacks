@@ -48,17 +48,26 @@ def coppersmith_univariate(pol, bb, beta):
     # LLL
     BB = BB.LLL()
     
-    # transform shortest vector in polynomial
+    # Find shortest vector in new basis
+    """ ok this step seems unecessary, delete when sure
     """
-    is the first vector the shortest one in sage implementation?
-    """
+    normn = norm(BB[0])
+    norm_index = 0
+
+    for ii in range(1, nn):
+        if norm(BB[ii]) < normn:
+            normn = norm(BB[ii])
+            norm_index = ii
+    print(norm_index)
+
+    # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
-        new_pol += x**ii * BB[0, ii]
+        new_pol += x**ii * BB[norm_index, ii]
     
     # factor polynomial
     roots = new_pol.roots() # doesn't find anything...
-    
+    print("roots found", roots)
     # test roots on original pol
     """
     in thesis it says to check root like this:
@@ -79,5 +88,5 @@ C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
 K = Zmod(N)
 R.<x> = PolynomialRing(K)
 pol = (2**250 + x)**3 - C
-print(coppersmith_univariate(pol, N, 1))
+M = coppersmith_univariate(pol, N, 1)
 
