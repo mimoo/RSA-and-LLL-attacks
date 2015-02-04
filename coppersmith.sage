@@ -5,6 +5,15 @@ def coppersmith_univariate(pol, bb, beta):
     # init
     dd = pol.degree()
     NN = pol.parent().characteristic()
+
+    # checks
+    if not 0 < beta <= 1:
+        raise ValueError("beta should belongs in (0, 1]")
+
+    if not pol.is_monic():
+        raise ArithmeticError("Polynomial must be monic.")
+    """ in reality it doesn't have to be, we could play around this
+    """
     
     # choose epsilon, m and t
     """ epsilon can be anything?
@@ -35,7 +44,9 @@ def coppersmith_univariate(pol, bb, beta):
     # construct lattice B
     nn = dd * mm + tt
     BB = Matrix(ZZ, nn) # why not use gen_lattice?
-
+    """here sage's implementation uses rectangular matrix
+    why???
+    """
     for ii in range(nn):
         for jj in range(ii+1):
             # fill gg
@@ -78,11 +89,12 @@ def coppersmith_univariate(pol, bb, beta):
         if pol(root) == 0:
             return root
 
-    # throw exception?
+    # no roots found
     return 0
     
-# TESTS
+# Test 1
 # (from http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf)
+"""
 N = 2122840968903324034467344329510307845524745715398875789936591447337206598081
 C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
 
@@ -90,9 +102,10 @@ K = Zmod(N)
 R.<x> = PolynomialRing(K)
 pol = (2**500 + x)**3 - C
 M = coppersmith_univariate(pol, N, 1)
+"""
 # pol.small_roots() doesn't compute anything either
 
-# test 2
+# Test 2
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
 
 Nbits, Kbits = 512, 56
@@ -112,6 +125,5 @@ P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
 print("solution a trouver:", K)
-print("implementation sage", f.small_roots()[0])
+#print("implementation sage", f.small_roots()[0])
 print("ma solution", coppersmith_univariate(f, N, 1))
-

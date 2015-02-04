@@ -1,4 +1,4 @@
-def small_roots(self, X=None, beta=1.0, epsilon=None, **kwds):
+def small_roots(pol, X=None, beta=1.0, epsilon=None, **kwds):
     r"""
     Let `N` be the characteristic of the base ring this polynomial
     is defined over: ``N = self.base_ring().characteristic()``.
@@ -146,16 +146,16 @@ def small_roots(self, X=None, beta=1.0, epsilon=None, **kwds):
     from sage.matrix.constructor import Matrix
     from sage.rings.all import RR
 
-    N = self.parent().characteristic()
+    N = pol.parent().characteristic()
 
-    if not self.is_monic():
+    if not pol.is_monic():
         raise ArithmeticError("Polynomial must be monic.")
 
     beta = RR(beta)
     if beta <= 0.0 or beta > 1.0:
         raise ValueError("0.0 < beta <= 1.0 not satisfied.")
 
-    f = self.change_ring(ZZ)
+    f = pol.change_ring(ZZ)
 
     P,(x,) = f.parent().objgens()
 
@@ -190,7 +190,25 @@ def small_roots(self, X=None, beta=1.0, epsilon=None, **kwds):
     f = sum([ZZ(B[0,i]//X**i)*x**i for i in range(B.ncols())])
     R = f.roots()
 
-    ZmodN = self.base_ring()
+    ZmodN = pol.base_ring()
     roots = set([ZmodN(r) for r,m in R if abs(r) <= X])
     Nbeta = N**beta
-    return [root for root in roots if N.gcd(ZZ(self(root))) >= Nbeta]
+    return [root for root in roots if N.gcd(ZZ(pol(root))) >= Nbeta]
+
+# test
+Nbits, Kbits = 512, 56
+e = 3
+p = 2^256 + 2^8 + 2^5 + 2^3 + 1
+q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1
+N = p*q
+ZmodN = Zmod( N )
+K = ZZ.random_element(0, 2^Kbits)
+Kdigits = K.digits(2)
+M = [0]*Kbits + [1]*(Nbits-Kbits)
+for i in range(len(Kdigits)): M[i] = Kdigits[i]
+
+M = ZZ(M, 2)
+C = ZmodN(M)^e
+P.<x> = PolynomialRing(ZmodN, implementation='NTL')
+f = (2^Nbits - 2^Kbits + x)^e - C
+print(K, small_roots(f))
