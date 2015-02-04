@@ -36,9 +36,6 @@ def test():
     v=CopPolyDeg2(a,b,Nn)
     R.<x> = ZZ[]
     f = v[0]*x^2+v[1]*x+v[2]
-    print find_root(f, 0,2^(n//3-10))
+    print f.small_roots()
 
-# exercise 2: modify the previous code to
-
-N = 122840968903324034467344329510307845524745715398875789936591447337206598081
-C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
+test()

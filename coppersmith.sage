@@ -28,7 +28,7 @@ def coppersmith_univariate(pol, bb, beta):
     hh = [] # beta=1 => t=0 => no h_i polynomials
     for ii in range(tt):
         hh.append(x**ii * polZ**mm)
-        
+    
     # compute bound X
     XX = ceil(N**((beta**2/dd) - epsilon))
     
@@ -49,7 +49,7 @@ def coppersmith_univariate(pol, bb, beta):
     BB = BB.LLL()
     
     # Find shortest vector in new basis
-    """ ok this step seems unecessary, delete when sure
+    """ Apparently Sage doesn't sort after LLL
     """
     normn = norm(BB[0])
     norm_index = 0
@@ -68,6 +68,7 @@ def coppersmith_univariate(pol, bb, beta):
     # factor polynomial
     roots = new_pol.roots() # doesn't find anything...
     print("roots found", roots)
+
     # test roots on original pol
     """
     in thesis it says to check root like this:
@@ -82,11 +83,35 @@ def coppersmith_univariate(pol, bb, beta):
     
 # TESTS
 # (from http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf)
-N = 122840968903324034467344329510307845524745715398875789936591447337206598081
+N = 2122840968903324034467344329510307845524745715398875789936591447337206598081
 C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
 
 K = Zmod(N)
 R.<x> = PolynomialRing(K)
-pol = (2**250 + x)**3 - C
+pol = (2**500 + x)**3 - C
 M = coppersmith_univariate(pol, N, 1)
+# pol.small_roots() doesn't compute anything either
+
+# test 2
+# (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
+
+Nbits, Kbits = 512, 56
+e = 3
+p = 2^256 + 2^8 + 2^5 + 2^3 + 1
+q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1
+N = p*q
+ZmodN = Zmod( N )
+K = ZZ.random_element(0, 2^Kbits)
+Kdigits = K.digits(2)
+M = [0]*Kbits + [1]*(Nbits-Kbits)
+for i in range(len(Kdigits)): M[i] = Kdigits[i]
+
+M = ZZ(M, 2)
+C = ZmodN(M)^e
+P.<x> = PolynomialRing(ZmodN, implementation='NTL')
+f = (2^Nbits - 2^Kbits + x)^e - C
+
+print("solution a trouver:", K)
+print("implementation sage", f.small_roots()[0])
+print("ma solution", coppersmith_univariate(f, N, 1))
 
