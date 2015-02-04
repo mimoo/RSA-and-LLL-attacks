@@ -69,28 +69,25 @@ def coppersmith_univariate(pol, bb, beta):
         if norm(BB[ii]) < normn:
             normn = norm(BB[ii])
             norm_index = ii
-    print(norm_index)
 
     # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
-        new_pol += x**ii * BB[norm_index, ii]
+        new_pol += x**ii * BB[norm_index, ii] / XX**ii
     
     # factor polynomial
-    roots = new_pol.roots() # doesn't find anything...
-    print("roots found", roots)
-
+    potential_roots = new_pol.roots() # doesn't find anything...
+    print(potential_roots)
     # test roots on original pol
-    """
-    in thesis it says to check root like this:
-    gcd(NN, pol(root)) >= NN**beta
-    """
-    for root in roots:
-        if pol(root) == 0:
-            return root
+    roots = []
+    for root in potential_roots:
+        result = ZZ(pol(ZZ(root[0])))
+
+        if gcd(NN, result) >= NN**beta:
+            roots.append(root[0])
 
     # no roots found
-    return 0
+    return roots
     
 # Test 1
 # (from http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf)
@@ -125,5 +122,5 @@ P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
 print("solution a trouver:", K)
-#print("implementation sage", f.small_roots()[0])
-print("ma solution", coppersmith_univariate(f, N, 1))
+roots = coppersmith_univariate(f, N, 1)
+print(roots)
