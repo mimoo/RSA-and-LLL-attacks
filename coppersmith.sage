@@ -49,14 +49,21 @@ def coppersmith_univariate(pol, bb, beta):
     BB = BB.LLL()
     
     # transform shortest vector in polynomial
+    """
+    is the first vector the shortest one in sage implementation?
+    """
     new_pol = 0
     for ii in range(nn):
         new_pol += x**ii * BB[0, ii]
     
     # factor polynomial
-    roots = new_pol.roots()
+    roots = new_pol.roots() # doesn't find anything...
     
     # test roots on original pol
+    """
+    in thesis it says to check root like this:
+    gcd(NN, pol(root)) >= NN**beta
+    """
     for root in roots:
         if pol(root) == 0:
             return root
