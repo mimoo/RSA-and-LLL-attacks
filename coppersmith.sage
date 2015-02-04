@@ -34,7 +34,7 @@ def coppersmith_univariate(pol, bb, beta):
     
     # construct lattice B
     nn = dd * mm + tt
-    BB = Matrix(ZZ, nn)
+    BB = Matrix(ZZ, nn) # why not use gen_lattice?
 
     for ii in range(nn):
         for jj in range(ii+1):
