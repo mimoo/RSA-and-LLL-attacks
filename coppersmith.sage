@@ -1,74 +1,55 @@
-# INIT
-R.<x> = ZZ[]
-
-"""pol is of degree d
-NN modulus a multiple of b
-lower bound beta, b >= NN^beta
-epsilon <= beta / 7
-"""
-def coppersmith_univariate(pol, NN, bb, beta, epsilon):
+def coppersmith_univariate(pol, bb, beta):
+    """Howgrave-Graham revisited method
+    using with epsilon
+    """
     # init
     dd = pol.degree()
-    # choose m and t
-    mm = ceil(beta**2 / dd * epsilon)
-    tt = floor(dd * mm * ((1/beta) - 1))
+    NN = pol.parent().characteristic()
+    
+    # choose epsilon, m and t
+    """ epsilon can be anything?
+    if epsilon is <= 1/7 * beta
+    then we can use m = ceil(beta^2/delta epsilon)
+    otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
+    """
+    epsilon = beta / 7
+    mm = ceil(beta**2 / (dd * epsilon))
+    tt = floor(dd * mm * ((1/beta) - 1)) # t = 0 if beta = 1, rly?
+    
     # compute polynomials
-    gg = {}
+    gg = []
     for ii in range(mm):
-        gg[ii] = {}
         for jj in range(dd):
-            g[ii][jj] = x
+            gg.append(x**jj * NN **ii * pol**(mm - ii))
+    hh = [] # beta=1 => t=0 => no h_i polynomials
+    for ii in range(tt):
+        hh.append(x**ii * pol**mm)
+        
+    # compute bound X
+    XX = ceil(N**((beta**2/dd) - epsilon))
+    
+    # construct lattice B
+    nn = dd * mm + tt
+    BB = Matrix(ZZ, nn)
+    
+    for ii in range(nn):
+        for jj in range(ii):
+            # fill gg
+            if ii < mm:
+                BB[ii][jj] = gg[ii+jj][jj] * XX**jj
+            # fill hh
+            else:
+                BB[ii][jj] = hh[ii][jj]
     #
-    return mm
+    return BB
 
 # TESTS
 
-m = 010101010101 # we know part of the message
-ct = 01010101010 # we know the ciphertext
-pol = (m - x)**3 - ct
-
-print(coppersmith_univariate(pol, NN, NN, 1, 1))
-
-# TEST 2 of http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf
-
-def keyGen(n=256):
-    "Generates an RSA key"
-    while True:
-        p=random_prime(2^(n//2));q=random_prime(2^(n//2));e=3
-        if gcd(e,(p-1)*(q-1))==1: break
-    d=inverse_mod(e,(p-1)*(q-1))
-    Nn=p*q
-    print "p=",p,"q=",q
-    print "N=",Nn
-    print "Size of N:",Nn.nbits()
-    return Nn,p,q,e,d
-
-def CopPolyDeg2(a,b,Nn):
-    "Finds a small root of polynomial x^2+ax+b=0 mod N"
-    n=Nn.nbits()
-    X=2^(n//3-5)
-    M=matrix(ZZ,[[X^2,a*X,b],\
-                     [0 ,Nn*X,0],\
-                     [0 ,0 ,Nn]])
-    V=M.LLL()
-    v=V[0]
-
-    return [v[i]/X^(2-i) for i in range(3)]
-
-def test():
-    """Generates a random polynomial with a small root x0 modulo
-    Nn and recovers his root."""
-    Nn,p,q,e,d=keyGen()
-    n=Nn.nbits()
-    x0=ZZ.random_element(2^(n//3-10))
-    a=ZZ.random_element(Nn)
-    b=mod(-x0^2-a*x0,Nn)
-    print "x0=",x0
-    v=CopPolyDeg2(a,b,Nn)
-    R.<x> = ZZ[]
-    f = v[0]*x^2+v[1]*x+v[2]
-    print find_root(f, 0,2^(n//3-10))
-
-# test 2
 N = 122840968903324034467344329510307845524745715398875789936591447337206598081
 C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
+
+K = Zmod(N)
+R.<x> = PolynomialRing(K)
+pol = (2**250 + x)**3 - C
+M = coppersmith_univariate(pol, NN, 1)
+
