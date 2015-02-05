@@ -1,4 +1,4 @@
-def coppersmith_univariate(pol, bb, beta):
+def coppersmith_univariate(pol, beta):
     """Howgrave-Graham revisited method
     using with epsilon
     """
@@ -12,8 +12,6 @@ def coppersmith_univariate(pol, bb, beta):
 
     if not pol.is_monic():
         raise ArithmeticError("Polynomial must be monic.")
-    """ in reality it doesn't have to be, we could play around this
-    """
     
     # choose epsilon, m and t
     """ epsilon can be anything?
@@ -26,14 +24,14 @@ def coppersmith_univariate(pol, bb, beta):
     tt = floor(dd * mm * ((1/beta) - 1)) # t = 0 if beta = 1, rly?
 
     # change ring of pol and x
-    polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ?
+    polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ? => base_ring must be a ring
     x = polZ.parent().gen()
     
     # compute polynomials
     gg = []
     for ii in range(mm):
         for jj in range(dd):
-            gg.append(x**jj * bb**(mm - ii) * polZ**ii)
+            gg.append(x**jj * NN**(mm - ii) * polZ**ii)
     hh = [] # beta=1 => t=0 => no h_i polynomials
     for ii in range(tt):
         hh.append(x**ii * polZ**mm)
@@ -54,7 +52,7 @@ def coppersmith_univariate(pol, bb, beta):
                 BB[ii, jj] = gg[ii][jj] * XX**jj
             # fill hh
             else:
-                BB[ii, jj] = 0#hh[ii][jj]
+                BB[ii, jj] = hh[ii][jj]
 
     # LLL
     BB = BB.LLL()
@@ -77,7 +75,7 @@ def coppersmith_univariate(pol, bb, beta):
     
     # factor polynomial
     potential_roots = new_pol.roots() # doesn't find anything...
-    print(potential_roots)
+
     # test roots on original pol
     roots = []
     for root in potential_roots:
@@ -89,20 +87,7 @@ def coppersmith_univariate(pol, bb, beta):
     # no roots found
     return roots
     
-# Test 1
-# (from http://www.jscoron.fr/cours/mics3crypto/tpcop.pdf)
-"""
-N = 2122840968903324034467344329510307845524745715398875789936591447337206598081
-C = 1792963459690600192400355988468130271248171381827462749870651408943993480816
-
-K = Zmod(N)
-R.<x> = PolynomialRing(K)
-pol = (2**500 + x)**3 - C
-M = coppersmith_univariate(pol, N, 1)
-"""
-# pol.small_roots() doesn't compute anything either
-
-# Test 2
+# Test 
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
 
 Nbits, Kbits = 512, 56
@@ -122,5 +107,5 @@ P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
 print("solution a trouver:", K)
-roots = coppersmith_univariate(f, N, 1)
+roots = coppersmith_univariate(f, 1)
 print(roots)
