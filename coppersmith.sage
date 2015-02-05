@@ -87,7 +87,7 @@ def coppersmith_univariate(pol, beta):
     # no roots found
     return roots
     
-# Test 
+# Test on Stereotyped Messages
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
 
 Nbits, Kbits = 512, 56
@@ -106,6 +106,22 @@ C = ZmodN(M)^e
 P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
-print("solution a trouver:", K)
+print("short root is:", K)
 roots = coppersmith_univariate(f, 1)
-print(roots)
+print("we found:", roots)
+
+# Test on Factoring with High Bits Known
+length = 512
+hidden = 110
+p = next_prime(2^int(round(length/2)))
+q = next_prime( round(pi.n()*p) )
+N = p*q
+qbar = q + ZZ.random_element(0,2^hidden-1)
+F.<x> = PolynomialRing(Zmod(N), implementation='NTL')
+f = x - qbar
+d = f.small_roots(X=2^hidden-1, beta=0.5)[0] # time random
+print("test 2")
+print("we want to find:", q)
+print("we found:", qbar - d)
+#moi = coppersmith_univariate(f, 0.5)
+#print("et moi:", moi + qbar)
