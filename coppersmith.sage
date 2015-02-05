@@ -1,6 +1,17 @@
 def coppersmith_univariate(pol, modulus, beta):
-    """Howgrave-Graham revisited method
-    using with epsilon
+    """
+    Howgrave-Graham revisited method of Coppersmith following theorem:
+    
+    modulus integer of unknown factorization,
+    0 < beta <= 1
+    0 < epsilon <= beta / 7
+    b | modulus and b >= modulus^beta,
+    pol is a monic polynomial of degree dd,
+    
+    THEN
+    
+    we can find roots of pol(x) = 0 mod b with
+    |root| <= (1/2) * modulus^((beta^2/dd) - epsilon)
     """
     # init
     dd = pol.degree()
@@ -19,9 +30,9 @@ def coppersmith_univariate(pol, modulus, beta):
     otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
     """
     epsilon = beta / 7
-    mm = ceil(beta**2 / (dd * epsilon))
-    tt = floor(dd * mm * ((1/beta) - 1))
-    XX = (1/2)*ceil(modulus**((beta**2/dd) - epsilon)) # not * 1/2 ?
+    mm = ceil(beta**2 / (dd * epsilon)) # why do we define m like this?
+    tt = floor(dd * mm * ((1/beta) - 1)) # why do we define t like this?
+    XX = ceil(modulus**((beta**2/dd) - epsilon)) # why not * 1/2 ? if i add * 0.5 doesnt work
     
     # change ring of pol and x
     polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ? => base_ring must be a ring
