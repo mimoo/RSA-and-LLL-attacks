@@ -21,7 +21,7 @@ def coppersmith_univariate(pol, beta):
     """
     epsilon = beta / 7
     mm = ceil(beta**2 / (dd * epsilon))
-    tt = floor(dd * mm * ((1/beta) - 1)) # t = 0 if beta = 1, rly?
+    tt = floor(dd * mm * ((1/beta) - 1))
 
     # change ring of pol and x
     polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ? => base_ring must be a ring
@@ -34,9 +34,9 @@ def coppersmith_univariate(pol, beta):
             gg.append(x**jj * NN**(mm - ii) * polZ**ii)
     for ii in range(tt):
         gg.append(x**ii * polZ**mm)
-    
+
     # compute bound X
-    XX = ceil(N**((beta**2/dd) - epsilon))
+    XX = ceil(N**((beta**2/dd) - epsilon)) # not * 1/2 ?
     
     # construct lattice B
     nn = dd * mm + tt
