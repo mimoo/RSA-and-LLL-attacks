@@ -34,9 +34,6 @@ def coppersmith_univariate(pol, modulus, beta):
             gg.append(x**jj * modulus**(mm - ii) * polZ**ii)
     for ii in range(tt):
         gg.append(x**ii * polZ**mm)
-
-    # compute bound X
-
     
     # construct lattice B
     nn = dd * mm + tt
@@ -50,22 +47,11 @@ def coppersmith_univariate(pol, modulus, beta):
 
     # LLL
     BB = BB.LLL()
-    
-    # Find shortest vector in new basis
-    """ Apparently Sage doesn't sort after LLL
-    """
-    normn = norm(BB[0])
-    norm_index = 0
-
-    for ii in range(1, nn):
-        if norm(BB[ii]) < normn:
-            normn = norm(BB[ii])
-            norm_index = ii
 
     # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
-        new_pol += x**ii * BB[norm_index, ii] / XX**ii
+        new_pol += x**ii * BB[0, ii] / XX**ii
 
     # factor polynomial
     potential_roots = new_pol.roots() # doesn't find anything...
@@ -83,7 +69,7 @@ def coppersmith_univariate(pol, modulus, beta):
     
 # Test on Stereotyped Messages
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
-
+print("=============test 1=============")
 Nbits, Kbits = 512, 56
 e = 3
 p = 2^256 + 2^8 + 2^5 + 2^3 + 1
@@ -99,11 +85,15 @@ C = ZmodN(M)^e
 P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
-print("short root is:", K)
+print("we want to find: " + str(K))
 roots = coppersmith_univariate(f, N, 1)
-print("we found:", roots)
-
+print("we found:" + str(roots))
+if len(roots) > 0 and roots[0] == K:
+    print("success!")
+else:
+    print("failure")
 # Test on Factoring with High Bits Known
+print("=============test 2=============")
 length = 512
 hidden = 110
 p = next_prime(2^int(round(length/2)))
@@ -112,10 +102,8 @@ N = p*q
 qbar = q + ZZ.random_element(0,2^hidden-1)
 F.<x> = PolynomialRing(Zmod(N), implementation='NTL')
 f = x - qbar
-
-print("test 2")
-print("we want to find:", q)
+print("we want to find:" + str(q))
 #d = f.small_roots(X=2^hidden-1, beta=0.5)[0] # time random
 #print("we found:", qbar - d)
-moi = coppersmith_univariate(f, N, 0.5)
-print("et moi:", moi)
+roots = coppersmith_univariate(f, N, 0.5)
+print("we found:" + str(moi))
