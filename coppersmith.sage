@@ -21,11 +21,12 @@ def coppersmith_univariate(pol, modulus, beta):
     epsilon = beta / 7
     mm = ceil(beta**2 / (dd * epsilon))
     tt = floor(dd * mm * ((1/beta) - 1))
-
+    XX = ceil(modulus**((beta**2/dd) - epsilon)) # not * 1/2 ?
+    
     # change ring of pol and x
     polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ? => base_ring must be a ring
     x = polZ.parent().gen()
-    
+
     # compute polynomials
     gg = []
     for ii in range(mm):
@@ -35,7 +36,7 @@ def coppersmith_univariate(pol, modulus, beta):
         gg.append(x**ii * polZ**mm)
 
     # compute bound X
-    XX = ceil(N**((beta**2/dd) - epsilon)) # not * 1/2 ?
+
     
     # construct lattice B
     nn = dd * mm + tt
@@ -68,7 +69,7 @@ def coppersmith_univariate(pol, modulus, beta):
 
     # factor polynomial
     potential_roots = new_pol.roots() # doesn't find anything...
-
+    print("debug, potential_roots:", potential_roots)
     # test roots on original pol
     roots = []
     for root in potential_roots:
