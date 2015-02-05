@@ -21,7 +21,7 @@ def coppersmith_univariate(pol, modulus, beta):
     epsilon = beta / 7
     mm = ceil(beta**2 / (dd * epsilon))
     tt = floor(dd * mm * ((1/beta) - 1))
-    XX = ceil(modulus**((beta**2/dd) - epsilon)) # not * 1/2 ?
+    XX = (1/2)*ceil(modulus**((beta**2/dd) - epsilon)) # not * 1/2 ?
     
     # change ring of pol and x
     polZ = pol.change_ring(ZZ) # shouldnt it be bb^mm ? => base_ring must be a ring
