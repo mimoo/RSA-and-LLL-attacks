@@ -1,10 +1,9 @@
-def coppersmith_univariate(pol, beta):
+def coppersmith_univariate(pol, modulus, beta):
     """Howgrave-Graham revisited method
     using with epsilon
     """
     # init
     dd = pol.degree()
-    NN = pol.parent().characteristic()
 
     # checks
     if not 0 < beta <= 1:
@@ -31,7 +30,7 @@ def coppersmith_univariate(pol, beta):
     gg = []
     for ii in range(mm):
         for jj in range(dd):
-            gg.append(x**jj * NN**(mm - ii) * polZ**ii)
+            gg.append(x**jj * modulus**(mm - ii) * polZ**ii)
     for ii in range(tt):
         gg.append(x**ii * polZ**mm)
 
@@ -75,7 +74,7 @@ def coppersmith_univariate(pol, beta):
     for root in potential_roots:
         result = ZZ(pol(ZZ(root[0])))
 
-        if gcd(NN, result) >= NN**beta:
+        if gcd(modulus, result) >= modulus**beta:
             roots.append(root[0])
 
     # no roots found
@@ -94,14 +93,13 @@ K = ZZ.random_element(0, 2^Kbits)
 Kdigits = K.digits(2)
 M = [0]*Kbits + [1]*(Nbits-Kbits)
 for i in range(len(Kdigits)): M[i] = Kdigits[i]
-
 M = ZZ(M, 2)
 C = ZmodN(M)^e
 P.<x> = PolynomialRing(ZmodN, implementation='NTL')
 f = (2^Nbits - 2^Kbits + x)^e - C
 
 print("short root is:", K)
-roots = coppersmith_univariate(f, 1)
+roots = coppersmith_univariate(f, N, 1)
 print("we found:", roots)
 
 # Test on Factoring with High Bits Known
@@ -113,9 +111,10 @@ N = p*q
 qbar = q + ZZ.random_element(0,2^hidden-1)
 F.<x> = PolynomialRing(Zmod(N), implementation='NTL')
 f = x - qbar
-d = f.small_roots(X=2^hidden-1, beta=0.5)[0] # time random
+
 print("test 2")
 print("we want to find:", q)
+#d = f.small_roots(X=2^hidden-1, beta=0.5)[0] # time random
 #print("we found:", qbar - d)
-moi = coppersmith_univariate(f, 0.5)
+moi = coppersmith_univariate(f, N, 0.5)
 print("et moi:", moi)
