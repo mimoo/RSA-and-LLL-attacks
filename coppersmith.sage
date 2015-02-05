@@ -32,9 +32,8 @@ def coppersmith_univariate(pol, beta):
     for ii in range(mm):
         for jj in range(dd):
             gg.append(x**jj * NN**(mm - ii) * polZ**ii)
-    hh = [] # beta=1 => t=0 => no h_i polynomials
     for ii in range(tt):
-        hh.append(x**ii * polZ**mm)
+        gg.append(x**ii * polZ**mm)
     
     # compute bound X
     XX = ceil(N**((beta**2/dd) - epsilon))
@@ -47,12 +46,7 @@ def coppersmith_univariate(pol, beta):
     """
     for ii in range(nn):
         for jj in range(ii+1):
-            # fill gg
-            if ii < dd*mm:
-                BB[ii, jj] = gg[ii][jj] * XX**jj
-            # fill hh
-            else:
-                BB[ii, jj] = hh[ii][jj]
+            BB[ii, jj] = gg[ii][jj] * XX**jj
 
     # LLL
     BB = BB.LLL()
@@ -72,7 +66,7 @@ def coppersmith_univariate(pol, beta):
     new_pol = 0
     for ii in range(nn):
         new_pol += x**ii * BB[norm_index, ii] / XX**ii
-    
+
     # factor polynomial
     potential_roots = new_pol.roots() # doesn't find anything...
 
@@ -122,6 +116,6 @@ f = x - qbar
 d = f.small_roots(X=2^hidden-1, beta=0.5)[0] # time random
 print("test 2")
 print("we want to find:", q)
-print("we found:", qbar - d)
-#moi = coppersmith_univariate(f, 0.5)
-#print("et moi:", moi + qbar)
+#print("we found:", qbar - d)
+moi = coppersmith_univariate(f, 0.5)
+print("et moi:", moi)
