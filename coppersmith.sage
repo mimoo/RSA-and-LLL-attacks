@@ -126,43 +126,43 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
             roots.append(root[0])
 
     # no roots found
-    return roots
+    return roots, new_pol, gg # new_pol and gg for debug
 
 ############################################
 # Test on Stereotyped Messages
 ##########################################    
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
 
-print "//////////////////////////////////"
-print "// TEST 1"
-print "////////////////////////////////"
+# print "//////////////////////////////////"
+# print "// TEST 1"
+# print "////////////////////////////////"
 
 
-Nbits, Kbits = 512, 56; e = 3; p = 2^256 + 2^8 + 2^5 + 2^3 + 1; q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1; N = p*q; ZmodN = Zmod( N ); K = ZZ.random_element(0, 2^Kbits); Kdigits = K.digits(2); M = [0]*Kbits + [1]*(Nbits-Kbits); 
-for i in range(len(Kdigits)): M[i] = Kdigits[i]; 
-M = ZZ(M, 2); C = ZmodN(M)^e; P.<x> = PolynomialRing(ZmodN, implementation='NTL'); f = (2^Nbits - 2^Kbits + x)^e - C
+# Nbits, Kbits = 512, 56; e = 3; p = 2^256 + 2^8 + 2^5 + 2^3 + 1; q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1; N = p*q; ZmodN = Zmod( N ); K = ZZ.random_element(0, 2^Kbits); Kdigits = K.digits(2); M = [0]*Kbits + [1]*(Nbits-Kbits); 
+# for i in range(len(Kdigits)): M[i] = Kdigits[i]; 
+# M = ZZ(M, 2); C = ZmodN(M)^e; P.<x> = PolynomialRing(ZmodN, implementation='NTL'); f = (2^Nbits - 2^Kbits + x)^e - C
 
 
-# PLAY WITH THOSE
-""" epsilon can be anything?
-    if epsilon is <= 1/7 * beta
-    then we can use m = ceil(beta^2/delta epsilon)
-    otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
-"""
+# # PLAY WITH THOSE
+# """ epsilon can be anything?
+#     if epsilon is <= 1/7 * beta
+#     then we can use m = ceil(beta^2/delta epsilon)
+#     otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
+# """
 
-dd = f.degree()
-beta = 1
-epsilon = beta / 7
-mm = ceil(beta**2 / (dd * epsilon))
-tt = floor(dd * mm * ((1/beta) - 1))
-XX = ceil(N**((beta**2/dd) - epsilon))
-roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
+# dd = f.degree()
+# beta = 1
+# epsilon = beta / 7
+# mm = ceil(beta**2 / (dd * epsilon))
+# tt = floor(dd * mm * ((1/beta) - 1))
+# XX = ceil(N**((beta**2/dd) - epsilon))
+# roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
-# output
-print "\n# Solutions"
-print "we want to find:",str(K)
-print "we found:", str(roots)
-print "\n"
+# # output
+# print "\n# Solutions"
+# print "we want to find:",str(K)
+# print "we found:", str(roots)
+# print "\n"
 
 ############################################
 # Test on Factoring with High Bits Known
@@ -181,9 +181,16 @@ mm = ceil(beta**2 / (dd * epsilon))
 tt = floor(dd * mm * ((1/beta) - 1))
 XX = ceil(N**((beta**2/dd) - epsilon))
 # can't find any solutions although the bounds predict we should... mm....
-# tt += 1; XX += 100000000000000000000000000000000
+roots_osef, new_pol_broken, gg = coppersmith_univariate(f, N, beta, mm, tt, XX)
 # now it works
-roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
+tt += 1; XX += 100000000000000000000000000000000
+roots, new_pol, gg_osef = coppersmith_univariate(f, N, beta, mm, tt, XX)
+
+# so if LLL worked correctly, the new_pol_broken should have the root we found modulo N^m
+print "should be zero", new_pol_broken(roots[0]) % N**mm
+# it doesn't have this root. So it is not a linear combination of the polynomials of the lattice
+# OR the polynomials we generated are not correct
+# let's test them
 
 # output
 #d = f.small_roots(X=2^hidden-1, beta=0.5)[0]; print("we found:", qbar - d)
