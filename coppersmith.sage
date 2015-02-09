@@ -170,7 +170,7 @@ epsilon = beta / 7
 mm = ceil(beta**2 / (dd * epsilon))
 tt = floor(dd * mm * ((1/beta) - 1))
 XX = ceil(N**((beta**2/dd) - epsilon))
-XX += 1000000000000000000000000000000000
+XX += 100000000000000000000000000000000
 roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
 # output
