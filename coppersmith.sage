@@ -32,16 +32,18 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     # calculate bounds and display them
     #
     """
-    we want to find g(x) such that ||g(xX)|| <= b^m / sqroot(n)
-    we know LLL will give us a short vector v such that:
+    * we want to find g(x) such that ||g(xX)|| <= b^m / sqrt(n)
+
+    * we know LLL will give us a short vector v such that:
     ||v|| <= 2^((n - 1)/4) * det(L)^(1/n)
 
-    so we want to satisfy:
-    2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqroot(n)
-    so we can obtain ||v|| < N^(beta*m) / sqroot(n) <= b^m / sqroot(n)
-    (it's important to play with N because we might not know b)
-
+    * we will use that vector as a coefficient vecotr for our g(x)
     
+    * so we want to satisfy:
+    2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n)
+    
+    so we can obtain ||v|| < N^(beta*m) / sqrt(n) <= b^m / sqrt(n)
+    (it's important to play with N because we might not know b)
     """
     
     # t optimized?
@@ -116,7 +118,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
         if gcd(modulus, result) >= modulus**beta:
             roots.append(root[0])
 
-    # no roots found
+    # 
     return roots
 
 ############################################
