@@ -1,4 +1,4 @@
-def coppersmith_univariate(pol, modulus, beta, epsilon, mm, tt, XX):
+def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     """
     Howgrave-Graham revisited method of Coppersmith following theorem:
     
@@ -143,10 +143,10 @@ M = ZZ(M, 2); C = ZmodN(M)^e; P.<x> = PolynomialRing(ZmodN, implementation='NTL'
 dd = f.degree()
 beta = 1
 epsilon = beta / 7
-mm = ceil(beta**2 / (dd * epsilon)) # why do we define m like this?
-tt = floor(dd * mm * ((1/beta) - 1)) # why do we define t like this?
-XX = ceil(N**((beta**2/dd) - epsilon)) # why not * 1/2 ? if i add * 0.5 doesnt work
-roots = coppersmith_univariate(f, N, beta, epsilon, mm, tt, XX)
+mm = ceil(beta**2 / (dd * epsilon))
+tt = floor(dd * mm * ((1/beta) - 1))
+XX = ceil(N**((beta**2/dd) - epsilon))
+roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
 # output
 print "\n# Solutions"
@@ -167,14 +167,14 @@ length = 512; hidden = 110; p = next_prime(2^int(round(length/2))); q = next_pri
 beta = 0.5
 dd = f.degree()
 epsilon = beta / 7
-mm = ceil(beta**2 / (dd * epsilon)) # why do we define m like this?
-tt = floor(dd * mm * ((1/beta) - 1)) # why do we define t like this?
-XX = ceil(N**((beta**2/dd) - epsilon)) # why not * 1/2 ? if i add * 0.5 doesnt work
-
-roots = coppersmith_univariate(f, N, beta, epsilon, mm, tt, XX)
+mm = ceil(beta**2 / (dd * epsilon))
+tt = floor(dd * mm * ((1/beta) - 1))
+XX = ceil(N**((beta**2/dd) - epsilon))
+XX += 1000000000000000000000000000000000
+roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
 # output
 #d = f.small_roots(X=2^hidden-1, beta=0.5)[0]; print("we found:", qbar - d)
 print "\n# Solutions"
-print "we want to find:", q
+print "we want to find:", qbar - q
 print "we found:", roots
