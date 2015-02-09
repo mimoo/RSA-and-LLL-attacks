@@ -89,7 +89,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     
     # construct lattice B
     BB = Matrix(ZZ, nn)
-    
+
     for ii in range(nn):
         for jj in range(ii+1):
             BB[ii, jj] = gg[ii][jj] * XX**jj
@@ -105,7 +105,10 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     cond2 = RR(modulus^(beta*mm) / sqrt(nn))
     print "* N^(beta*m) / sqrt(n) = ", cond2
     print "* ||v|| < N^(beta*m) / sqrt(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* ||v|| >= N^(beta*m) / sqrt(n) #NO SOLUTIONS MIGHT BE FOUND"
-
+    '''
+    The second test doesn't pass here, eventhough the bound above is working.
+    Maybe the problem is after LLL, maybe the polynomial we find does have correct roots...
+    '''
     # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
