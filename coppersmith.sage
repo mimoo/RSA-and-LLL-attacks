@@ -64,12 +64,12 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     # solution possible?
     print "\n# Solutions possible?\n"
     detL = RR(modulus^(dd * mm * (mm + 1) / 2) * XX^(nn * (nn - 1) / 2))
-    print "we can find a solution if 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqroot(n)"
+    print "we can find a solution if 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n)"
     cond1 = RR(2^((nn - 1)/4) * detL^(1/nn))
     print "* 2^((n - 1)/4) * det(L)^(1/n) = ", cond1
     cond2 = RR(modulus^(beta*mm) / sqrt(nn))
-    print "* N^(beta*m) / sqroot(n) = ", cond2
-    print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqroot(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) #NO SOLUTIONS MIGHT BE FOUND"
+    print "* N^(beta*m) / sqrt(n) = ", cond2
+    print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) #NO SOLUTIONS MIGHT BE FOUND"
     
     #
     # Coppersmith revisited algo
@@ -89,15 +89,22 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     
     # construct lattice B
     BB = Matrix(ZZ, nn)
-    """here sage's implementation uses rectangular matrix
-    why???
-    """
+    
     for ii in range(nn):
         for jj in range(ii+1):
             BB[ii, jj] = gg[ii][jj] * XX**jj
 
     # LLL
     BB = BB.LLL()
+
+    # solution possible? double check // this shouldn't be necessary if the previous check is correct
+    print "\n# Howgrave-Graham works?\n"
+    print "we can find a solution if ||v|| < N^(beta*m) / sqrt(n) with v being the shortest vector of the new basis"
+    cond1 = RR(norm(BB[0]))
+    print "* ||v|| = ", cond1
+    cond2 = RR(modulus^(beta*mm) / sqrt(nn))
+    print "* N^(beta*m) / sqrt(n) = ", cond2
+    print "* ||v|| < N^(beta*m) / sqrt(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* ||v|| >= N^(beta*m) / sqrt(n) #NO SOLUTIONS MIGHT BE FOUND"
 
     # transform shortest vector in polynomial    
     new_pol = 0
@@ -170,7 +177,9 @@ epsilon = beta / 7
 mm = ceil(beta**2 / (dd * epsilon))
 tt = floor(dd * mm * ((1/beta) - 1))
 XX = ceil(N**((beta**2/dd) - epsilon))
-XX += 100000000000000000000000000000000
+# can't find any solutions although the bounds predict we should... mm....
+# tt += 1; XX += 100000000000000000000000000000000
+# now it works
 roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
 # output
