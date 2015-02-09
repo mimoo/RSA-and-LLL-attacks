@@ -61,6 +61,8 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     print "* M =", cond2
     print "* X <= M # GOOD" if XX <= cond2 else "* X > M # NOT GOOD"
 
+    print "\n\n# Note that no solutions will be found if you don't respect |root| < X\n\n"
+
     # solution possible?
     print "\n# Solutions possible?\n"
     detL = RR(modulus^(dd * mm * (mm + 1) / 2) * XX^(nn * (nn - 1) / 2))
@@ -96,19 +98,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
 
     # LLL
     BB = BB.LLL()
-
-    # solution possible? double check // this shouldn't be necessary if the previous check is correct
-    print "\n# Howgrave-Graham works?\n"
-    print "we can find a solution if ||v|| < N^(beta*m) / sqrt(n) with v being the shortest vector of the new basis"
-    cond1 = RR(norm(BB[0]))
-    print "* ||v|| = ", cond1
-    cond2 = RR(modulus^(beta*mm) / sqrt(nn))
-    print "* N^(beta*m) / sqrt(n) = ", cond2
-    print "* ||v|| < N^(beta*m) / sqrt(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* ||v|| >= N^(beta*m) / sqrt(n) #NO SOLUTIONS MIGHT BE FOUND"
-    '''
-    The second test doesn't pass here, eventhough the bound above is working.
-    Maybe the problem is after LLL, maybe the polynomial we find does have correct roots...
-    '''
+    
     # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
@@ -126,7 +116,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
             roots.append(root[0])
 
     # no roots found
-    return roots, new_pol, gg # new_pol and gg for debug
+    return roots
 
 ############################################
 # Test on Stereotyped Messages
@@ -171,29 +161,30 @@ print "//////////////////////////////////"
 print "// TEST 2"
 print "////////////////////////////////"
 
-length = 512; hidden = 110; p = next_prime(2^int(round(length/2))); q = next_prime( round(pi.n()*p) ); N = p*q; qbar = q + ZZ.random_element(0,2^hidden-1); F.<x> = PolynomialRing(Zmod(N), implementation='NTL'); f = x - qbar;
+# RSA gen
+length = 512;
+p = next_prime(2^int(round(length/2)));
+q = next_prime( round(pi.n()*p) );
+N = p*q;
+
+# qbar is q + [hidden_size_random]
+hidden = 110;
+diff = ZZ.random_element(0, 2^hidden-1)
+qbar = q + diff; 
+
+F.<x> = PolynomialRing(Zmod(N), implementation='NTL'); 
+f = x - qbar;
 
 # PLAY WITH THOSE:
-beta = 0.5
+beta = 0.5 # we should have q > N^beta
 dd = f.degree()
 epsilon = beta / 7
 mm = ceil(beta**2 / (dd * epsilon))
 tt = floor(dd * mm * ((1/beta) - 1))
-XX = ceil(N**((beta**2/dd) - epsilon))
-# can't find any solutions although the bounds predict we should... mm....
-roots_osef, new_pol_broken, gg = coppersmith_univariate(f, N, beta, mm, tt, XX)
-# now it works
-tt += 1; XX += 100000000000000000000000000000000
-roots, new_pol, gg_osef = coppersmith_univariate(f, N, beta, mm, tt, XX)
-
-# so if LLL worked correctly, the new_pol_broken should have the root we found modulo N^m
-print "should be zero", new_pol_broken(roots[0]) % N**mm
-# it doesn't have this root. So it is not a linear combination of the polynomials of the lattice
-# OR the polynomials we generated are not correct
-# let's test them
+XX = ceil(N**((beta**2/dd) - epsilon)) + 1000000000000000000000000000000000 # we should have |diff| < X
+roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
 
 # output
-#d = f.small_roots(X=2^hidden-1, beta=0.5)[0]; print("we found:", qbar - d)
 print "\n# Solutions"
 print "we want to find:", qbar - q
 print "we found:", roots
