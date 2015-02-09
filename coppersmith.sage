@@ -83,16 +83,16 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     gg = []
     for ii in range(mm):
         for jj in range(dd):
-            gg.append(x**jj * modulus**(mm - ii) * polZ**ii)
+            gg.append((x * XX)**jj * modulus**(mm - ii) * polZ(x * XX)**ii)
     for ii in range(tt):
-        gg.append(x**ii * polZ**mm)
+        gg.append((x * XX)**ii * polZ(x * XX)**mm)
     
     # construct lattice B
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
         for jj in range(ii+1):
-            BB[ii, jj] = gg[ii][jj] * XX**jj
+            BB[ii, jj] = gg[ii][jj]
 
     # LLL
     BB = BB.LLL()
