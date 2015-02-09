@@ -1,4 +1,4 @@
-def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
+def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     """
     Howgrave-Graham revisited method of Coppersmith following theorem:
     
@@ -11,7 +11,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     THEN
     
     we can find roots of pol(x) = 0 mod b with
-    |root| <= (1/2) * modulus^((beta^2/dd) - epsilon)
+    |root| <= |X|
     """
     #
     # init
@@ -51,7 +51,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     print "* X^(n-1) = ", cond1
     cond2 = pow(modulus, beta*mm)
     print "* N^(beta*m) = ", cond2
-    print "* X^(n-1) < N^(beta*m) # GOOD" if cond1 < cond2 else "* X^(n-1) >= N^(beta*m) # NOT GOOD"
+    print "* X^(n-1) < N^(beta*m) \n-> GOOD" if cond1 < cond2 else "* X^(n-1) >= N^(beta*m) \n-> NOT GOOD"
     
     # bound for X
     print "\n# X bound respected?\n"
@@ -59,9 +59,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     print "* X =", XX
     cond2 = RR(modulus^(((2*beta*mm)/(nn-1)) - ((dd*mm*(mm+1))/(nn*(nn-1)))) / 2)
     print "* M =", cond2
-    print "* X <= M # GOOD" if XX <= cond2 else "* X > M # NOT GOOD"
-
-    print "\n\n# Note that no solutions will be found if you don't respect |root| < X\n\n"
+    print "* X <= M \n-> GOOD" if XX <= cond2 else "* X > M \n-> NOT GOOD"
 
     # solution possible?
     print "\n# Solutions possible?\n"
@@ -71,7 +69,10 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
     print "* 2^((n - 1)/4) * det(L)^(1/n) = ", cond1
     cond2 = RR(modulus^(beta*mm) / sqrt(nn))
     print "* N^(beta*m) / sqrt(n) = ", cond2
-    print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) # SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) #NO SOLUTIONS MIGHT BE FOUND"
+    print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) \n-> SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) \n-> NO SOLUTIONS MIGHT BE FOUND (but we never know)"
+
+    # warning about X
+    print "\n# Note that no solutions will be found _for sure_ if you don't respect |root| < X AND b >= modulus^beta\n"
     
     #
     # Coppersmith revisited algo
@@ -98,7 +99,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
 
     # LLL
     BB = BB.LLL()
-    
+
     # transform shortest vector in polynomial    
     new_pol = 0
     for ii in range(nn):
@@ -146,7 +147,7 @@ def coppersmith_univariate(pol, modulus, beta, mm, tt, XX):
 # mm = ceil(beta**2 / (dd * epsilon))
 # tt = floor(dd * mm * ((1/beta) - 1))
 # XX = ceil(N**((beta**2/dd) - epsilon))
-# roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
+# roots = coppersmith_howgrave_univariate(f, N, beta, mm, tt, XX)
 
 # # output
 # print "\n# Solutions"
@@ -176,13 +177,13 @@ F.<x> = PolynomialRing(Zmod(N), implementation='NTL');
 f = x - qbar;
 
 # PLAY WITH THOSE:
-beta = 0.5 # we should have q > N^beta
+beta = 0.5 # we should have q >= N^beta
 dd = f.degree()
 epsilon = beta / 7
 mm = ceil(beta**2 / (dd * epsilon))
 tt = floor(dd * mm * ((1/beta) - 1))
 XX = ceil(N**((beta**2/dd) - epsilon)) + 1000000000000000000000000000000000 # we should have |diff| < X
-roots = coppersmith_univariate(f, N, beta, mm, tt, XX)
+roots = coppersmith_howgrave_univariate(f, N, beta, mm, tt, XX)
 
 # output
 print "\n# Solutions"
