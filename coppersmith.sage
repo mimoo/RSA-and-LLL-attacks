@@ -72,7 +72,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) \n-> SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) \n-> NO SOLUTIONS MIGHT BE FOUND (but we never know)"
 
     # warning about X
-    print "\n# Note that no solutions will be found _for sure_ if you don't respect |root| < X AND b >= modulus^beta\n"
+    print "\n# Note that no solutions will be found _for sure_ if you don't respect:\n* |root| < X \n* b >= modulus^beta\n"
     
     #
     # Coppersmith revisited algo
@@ -124,36 +124,36 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
 ##########################################    
 # (from http://www.sagemath.org/doc/reference/polynomial_rings/sage/rings/polynomial/polynomial_modn_dense_ntl.html#sage.rings.polynomial.polynomial_modn_dense_ntl.small_roots)
 
-# print "//////////////////////////////////"
-# print "// TEST 1"
-# print "////////////////////////////////"
+print "//////////////////////////////////"
+print "// TEST 1"
+print "////////////////////////////////"
 
 
-# Nbits, Kbits = 512, 56; e = 3; p = 2^256 + 2^8 + 2^5 + 2^3 + 1; q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1; N = p*q; ZmodN = Zmod( N ); K = ZZ.random_element(0, 2^Kbits); Kdigits = K.digits(2); M = [0]*Kbits + [1]*(Nbits-Kbits); 
-# for i in range(len(Kdigits)): M[i] = Kdigits[i]; 
-# M = ZZ(M, 2); C = ZmodN(M)^e; P.<x> = PolynomialRing(ZmodN, implementation='NTL'); f = (2^Nbits - 2^Kbits + x)^e - C
+Nbits, Kbits = 512, 56; e = 3; p = 2^256 + 2^8 + 2^5 + 2^3 + 1; q = 2^256 + 2^8 + 2^5 + 2^3 + 2^2 + 1; N = p*q; ZmodN = Zmod( N ); K = ZZ.random_element(0, 2^Kbits); Kdigits = K.digits(2); M = [0]*Kbits + [1]*(Nbits-Kbits); 
+for i in range(len(Kdigits)): M[i] = Kdigits[i]; 
+M = ZZ(M, 2); C = ZmodN(M)^e; P.<x> = PolynomialRing(ZmodN, implementation='NTL'); f = (2^Nbits - 2^Kbits + x)^e - C
 
 
-# # PLAY WITH THOSE
-# """ epsilon can be anything?
-#     if epsilon is <= 1/7 * beta
-#     then we can use m = ceil(beta^2/delta epsilon)
-#     otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
-# """
+# PLAY WITH THOSE
+""" epsilon can be anything?
+    if epsilon is <= 1/7 * beta
+    then we can use m = ceil(beta^2/delta epsilon)
+    otherwise m >= max{ beta^2/delta epsilon, 7beta/delta }
+"""
 
-# dd = f.degree()
-# beta = 1
-# epsilon = beta / 7
-# mm = ceil(beta**2 / (dd * epsilon))
-# tt = floor(dd * mm * ((1/beta) - 1))
-# XX = ceil(N**((beta**2/dd) - epsilon))
-# roots = coppersmith_howgrave_univariate(f, N, beta, mm, tt, XX)
+dd = f.degree()
+beta = 1
+epsilon = beta / 7
+mm = ceil(beta**2 / (dd * epsilon))
+tt = floor(dd * mm * ((1/beta) - 1))
+XX = ceil(N**((beta**2/dd) - epsilon))
+roots = coppersmith_howgrave_univariate(f, N, beta, mm, tt, XX)
 
-# # output
-# print "\n# Solutions"
-# print "we want to find:",str(K)
-# print "we found:", str(roots)
-# print "\n"
+# output
+print "\n# Solutions"
+print "we want to find:",str(K)
+print "we found:", str(roots)
+print "\n"
 
 ############################################
 # Test on Factoring with High Bits Known
