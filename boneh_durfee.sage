@@ -13,14 +13,13 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
     gg = []
     for kk in range(mm + 1):
         for ii in range(mm - kk + 1):
-            #print kk, ii
             gg.append((x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY)^kk)
 
     # y-shifts (selected by Herrman and May)
-    ''' DOESNT WORK'''
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             gg.append((y * YY)^jj * polZ(x * XX, y * YY)^kk * modulus^(mm - kk))
+
     gg.sort()
 
     # unravelled linerization (Herrman and May)
@@ -46,31 +45,18 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
                 BB[ii, jj] = gg[ii].coefficient({x:0,y:0})
             else:
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomial)
-    print BB
-    return 0
 
     # LLL
     BB = BB.LLL()
 
+    # transform shortest vectors in polynomials  
+    pol1 = pol2 = 0
 
-    # transform shortest vector in polynomial    
-    new_pol = 0
     for ii in range(nn):
-        new_pol += x**ii * BB[0, ii] / XX**ii
+        pol1 += monomials[ii] * BB[0, ii]
+        pol2 += monomials[ii] * BB[1, ii]
 
-    # factor polynomial
-    potential_roots = new_pol.roots()
-
-    # test roots on original pol
-    roots = []
-    for root in potential_roots:
-        result = ZZ(pol(ZZ(root[0])))
-
-        if gcd(modulus, result) >= modulus**beta:
-            roots.append(root[0])
-
-    # 
-    return roots
+    return 0
 
 
 ############################################
@@ -80,7 +66,7 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
 
 e = 2
 P.<x,y> = PolynomialRing(Zmod(e))
-pol = x + y
+pol = 1 + x * (5 + y)
 delta = 4
 m = 2
 t = 1
