@@ -11,39 +11,33 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
     # compute polynomials
     # x-shifts
     gg = []
-    for kk in range(mm):
-        for ii in range(mm - kk):
+    for kk in range(mm + 1):
+        for ii in range(mm - kk + 1):
+            #print kk, ii
             gg.append((x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY)^kk)
-    gg.sort()
 
     # y-shifts (selected by Herrman and May)
-    hh = []
-    for jj in range(tt):
-        for kk in range(floor(mm/tt) * jj, mm):
-            hh.append((y * YY)^jj * polZ(x * XX, y * YY)^kk * modulus^(mm - kk))
-    hh.sort()
+    ''' DOESNT WORK'''
+    for jj in range(1, tt + 1):
+        for kk in range(floor(mm/tt) * jj, mm + 1):
+            gg.append((y * YY)^jj * polZ(x * XX, y * YY)^kk * modulus^(mm - kk))
+    gg.sort()
 
     # unravelled linerization (Herrman and May)
-    nn = (mm + 1) * (mm + 2) / 2 +  tt * (mm + 1)
     monomials = [] # jusqu'à nn
 
-    # monomials
     # x-shift
     for ii in range(mm + 1):
         for jj in range(ii + 1):
             monomials.append(x^ii * y^jj)
 
     # y-shift
-    ''' NOT WORKING '''
-    for jj in range(tt + 1):
+    for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
-            print kk, floor(mm/tt)*jj, mm+1
             monomials.append((x*y)^kk * y^jj)
 
-    print monomials
-    return 0
-
     # construct lattice B
+    nn = len(monomials)
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
@@ -52,9 +46,12 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
                 BB[ii, jj] = gg[ii].coefficient({x:0,y:0})
             else:
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomial)
+    print BB
+    return 0
 
     # LLL
     BB = BB.LLL()
+
 
     # transform shortest vector in polynomial    
     new_pol = 0
@@ -81,13 +78,13 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
 ##########################################
 
 
-e = 5
+e = 2
 P.<x,y> = PolynomialRing(Zmod(e))
 pol = x + y
 delta = 4
 m = 2
 t = 1
-X = 5
+X = 3
 Y = 5
 
 result = boneh_durfee(pol, e, delta, m, t, X, Y)
