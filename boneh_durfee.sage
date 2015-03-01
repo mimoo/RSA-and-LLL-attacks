@@ -1,7 +1,10 @@
-def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
+def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     """
     Boneh and Durfee revisited by Herrmann and May
-    d = N^delta
+    finds a solution if:
+    * |x| < e^delta
+    * |y| < e^0.5
+    whenever delta < 1 - sqrt(2)/2 ~ 0.292
     """
 
     # change ring of pol and x
@@ -40,14 +43,16 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
-        for jj, monomial in enumerate(monomials):
+        for jj in range(ii):
             if jj == 0:
-                BB[ii, jj] = gg[ii].coefficient({x:0,y:0})
-            else:
-                BB[ii, jj] = gg[ii].monomial_coefficient(monomial)
+                BB[ii, jj] = gg[ii](0,0)
+            elif monomials[jj] in gg[ii].monomials():
+                BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
     # LLL
     BB = BB.LLL()
+
+    print BB
 
     # transform shortest vectors in polynomials  
     pol1 = pol2 = 0
@@ -70,15 +75,23 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
 # Test 
 ##########################################
 
+# RSA gen
+length = 512;
+p = next_prime(2^int(round(length/2)));
+q = next_prime( round(pi.n()*p) );
+N = p*q;
 
-e = 2
+d = 5
+e = d.inverse_mod((p-1)*(q-1))
+
+# Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (5 + y)
-delta = 4
 m = 2
 t = 1
-X = 3
-Y = 5
+X = floor(e^0.292)
+Y = floor(e^0.5)
 
-solx, soly = boneh_durfee(pol, e, delta, m, t, X, Y)
+# boneh_durfee
+solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 print solx, soly
