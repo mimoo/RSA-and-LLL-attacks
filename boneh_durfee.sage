@@ -76,9 +76,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     pol1 = pol2 = 0
 
     for ii in range(nn):
-        pol1 += monomials[ii] * BB[0, ii]
-        pol2 += monomials[ii] * BB[1, ii]
-
+        pol1 += monomials[ii] * BB[0, ii] / monomials[ii](X,Y)
+        pol2 += monomials[ii] * BB[1, ii] / monomials[ii](X,Y)
+        
     # resultant
     polx = pol1.resultant(pol2, y)
     poly = pol1.resultant(pol2, x)
