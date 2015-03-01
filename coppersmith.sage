@@ -77,7 +77,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     print "\n# Note that no solutions will be found _for sure_ if you don't respect:\n* |root| < X \n* b >= modulus^beta\n"
     
     #
-    # Coppersmith revisited algo
+    # Coppersmith revisited algo for univariate
     #
 
     # change ring of pol and x

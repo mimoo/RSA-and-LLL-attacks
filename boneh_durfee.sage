@@ -7,6 +7,15 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     whenever delta < 1 - sqrt(2)/2 ~ 0.292
     """
 
+
+    #
+    # calculate bounds and display them
+    #
+
+    #
+    # Algorithm
+    #
+
     # change ring of pol and x
     polZ = pol.change_ring(ZZ)
     x, y = polZ.parent().gens()
@@ -43,16 +52,25 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
-        for jj in range(ii):
-            if jj == 0:
-                BB[ii, jj] = gg[ii](0,0)
-            elif monomials[jj] in gg[ii].monomials():
+
+        BB[ii, 0] = gg[ii](0, 0)
+
+        for jj in range(1, ii + 1):
+            if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
+
+    #
+    # DET
+    #
+    det = 1
+    for ii in range(nn):
+        det *= BB[ii, ii]
+
+    print "det:", det
+    return BB,0
 
     # LLL
     BB = BB.LLL()
-
-    print BB
 
     # transform shortest vectors in polynomials  
     pol1 = pol2 = 0
@@ -83,15 +101,22 @@ N = p*q;
 
 d = 5
 e = d.inverse_mod((p-1)*(q-1))
+"""
+not sure d always has an inverse !
+"""
 
 # Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
-pol = 1 + x * (5 + y)
+pol = 1 + x * (N + 1 + y)
 m = 2
 t = 1
+"""
+how to choose m and t?
+"""
 X = floor(e^0.292)
 Y = floor(e^0.5)
+"""why those values?
+"""
 
 # boneh_durfee
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
-print solx, soly
