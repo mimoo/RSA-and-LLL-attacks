@@ -56,7 +56,14 @@ def boneh_durfee(pol, modulus, delta, mm, tt, XX, YY):
         pol1 += monomials[ii] * BB[0, ii]
         pol2 += monomials[ii] * BB[1, ii]
 
-    return 0
+    # resultant
+    polx = pol1.resultant(pol2, y)
+    poly = pol1.resultant(pol2, x)
+
+    solx = polx.roots()
+    soly = poly.roots()
+
+    return solx, soly
 
 
 ############################################
@@ -73,4 +80,5 @@ t = 1
 X = 3
 Y = 5
 
-result = boneh_durfee(pol, e, delta, m, t, X, Y)
+solx, soly = boneh_durfee(pol, e, delta, m, t, X, Y)
+print solx, soly
