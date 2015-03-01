@@ -66,9 +66,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for ii in range(nn):
         det *= BB[ii, ii]
 
-    print "det:", det
-    return BB,0
-
     # LLL
     BB = BB.LLL()
 
@@ -78,10 +75,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for ii in range(nn):
         pol1 += monomials[ii] * BB[0, ii] / monomials[ii](X,Y)
         pol2 += monomials[ii] * BB[1, ii] / monomials[ii](X,Y)
-        
+
     # resultant
     polx = pol1.resultant(pol2, y)
     poly = pol1.resultant(pol2, x)
+    '''doesn't work!'''
 
     solx = polx.roots()
     soly = poly.roots()
@@ -98,12 +96,14 @@ length = 512;
 p = next_prime(2^int(round(length/2)));
 q = next_prime( round(pi.n()*p) );
 N = p*q;
+phi = (p-1)*(q-1)
 
-d = 5
+d = 3
+while gcd(d, phi) != 1:
+    d += 2
 e = d.inverse_mod((p-1)*(q-1))
-"""
-not sure d always has an inverse !
-"""
+
+print "d:", d
 
 # Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
