@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 %
 \title{Survey: Lattice Reduction techniques to attack RSA}
@@ -18,20 +19,53 @@
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
 In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
 Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. Years after \textbf{Wiener} found that you could successfully break RSA if the private exponent was too small. In 2000, \textbf{Boneh} and \textbf{Durfee} found a better attack, still based on Lattice, that was simplified afterwards by a work from \textbf{Herrmann} and \textbf{Mayers}.\\
-In this survey we will see in what \textbf{model} the attacks are taking place. We will explain 
-
+In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place. Section 4 will be an overview of the Coppersmith attack revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee attack revisited by Herrmann and May. Finally we will see \textbf{some applications} of those attacks.
 \end{abstract}
-
-\newpage
-
-
 
 \newpage
 
 \section{RSA}\label{rsa}
 
-Let's quickly recall how RSA works.
+Let's quickly recall \textbf{what is} and \textbf{how} RSA works:\\
+RSA is an \textbf{asymmetric cryptosystem}. A generator algorithm derives two kind of keys: a \textbf{public key} and a \textbf{private key}, these can be swapped around thanks to the asymmetric property of RSA to allow us to use the system as an \textbf{encryption} system or as a \textbf{signature} system.\\
+
+\subsection{Generation}
+
+To use RSA we need a public key to encrypt and a private key to decrypt. We first generate the private key pair as follow:\\
+
+We generate $p, q$ \textbf{primes}. For security issues they should be around the \textbf{same size}. Those primes are the \textbf{core elements} of RSA. Knowing one of those allows us to compute the private key, thus allowing us to break the system. They can also be used to speed up calculations using the Chinese Remainder Theorem. We will see all about that later.\\
+Knowing $p$ and $q$ we can then compute the \textbf{modulus} $N = p \times q$ which will be part of the public key as well as the private key. And you will see why.\\
+
+Now comes the interesting part, we need to find a \textbf{public exponent} which will be used for \textbf{encryption}. For computation purpose a \textbf{Fermat prime} ($2^{m} + 1$) is often used as public exponent (it makes things faster in \textbf{binary exponentiation}). In the case of a \textbf{signature scheme}, we would want the speed up to occur for the \textbf{private exponent} so we would use such a number as a private exponent and we would reverse the following steps.\\
+Anyway, any kind of exponent can theoretically be chosen, as long as it is coprime with $\varphi(N)$ (The \textbf{Euler's Totient function}).
+
+\[e \leftarrow \mathbb{Z_N}^{\ast}\]
+
+if $e$ is \textbf{coprime} with $N$ then it is part of the multiplicative group $(\mathbb{Z}/N\mathbb{Z})^{\ast}$ and thus \textbf{invertible}.\\
+
+Now it is pretty easy to find the private exponent $d$ by inverting our public exponent $e$.\\
+
+All of this is possible because we can easily compute $\varphi(N) = (p - 1) \times (q - 1)$. And here resides the \textbf{security} of RSA. Imagine for a moment that we could easily factor $N$ into $p$ and $q$, then we would be able to invert the public exponent $e$. That's why we say that \textbf{the security of RSA is reduced to the Factorization Problem}.
+
+\subsection{Encryption}
+
+\subsection{Decryption}
+
+\section{Lattice}\label{lattice}
 
 \section{Attacks}\label{attacks}
+
+\section{Coppersmith}\label{coppersmith}
+
+This survey is no replacement for the original papers of Coppersmith\cite{coppersmith} and Howgrave-Graham\cite{howgrave-graham}. If you want to get a real understanding of those techniques I also advise you to read a survey from May\cite{may}.
+
+\newpage
+\begin{thebibliography}{1}
+
+\bibitem{coppersmith} Don Coppersmith {\em Finding Small Solutions to Small Degree Polynomials}
+\bibitem{howgrave-graham} Nicholas Howgrave-Graham {\em Finding Small Roots of Univariate Modular Equations Revisited}
+\bibitem{may} Alexander May {\em Using LLL-Reduction for Solving RSA and Factorization Problems}
+
+\end{thebibliography}
 
 \end{document}
