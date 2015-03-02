@@ -35,7 +35,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     gg.sort()
 
     # unravelled linerization (Herrman and May)
-    monomials = [] # jusqu'à nn
+    monomials = []
 
     # x-shift
     for ii in range(mm + 1):
@@ -66,6 +66,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for ii in range(nn):
         det *= BB[ii, ii]
 
+    bound = modulus^(mm * (nn - 1)) / (nn * 2^nn)^((nn - 1)/2)
+
+    print "det=", det
+    print "bound=", bound
+    print "det < bound?", det < bound
+
+    return 0,0
     # LLL
     BB = BB.LLL()
 
@@ -108,7 +115,7 @@ print "d:", d
 # Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
-m = 2
+m = 20
 t = 1
 """
 how to choose m and t?

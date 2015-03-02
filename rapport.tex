@@ -4,44 +4,34 @@
 \usepackage[francais]{babel}
 \usepackage{amsmath}
 
-\usepackage[default]{mathpazo}
-\usepackage[T1]{fontenc}
-
-\usepackage{url}
-\usepackage{hyperref}
-\urlstyle{sf}
-
-\usepackage{titlesec}
-\newcommand{\sectionbreak}{\clearpage}
-
-\usepackage{graphicx}
-\setkeys{Gin}{width=\textwidth}
-
-\usepackage{setspace}
-\setstretch{1.3}
-\setlength{\parindent}{0pt}
-\baselineskip=30pt
-\setlength{\parskip}{\bigskipamount}
-
-% secdot package for adding dot after section numbers
-\usepackage{secdot}
-\sectiondot{section}
-\sectiondot{subsection}
-\sectiondot{subsubsection}
-
-% prevent overfull lines
-\sloppy
-
 %
-\title{Mathematical Attacks on RSA}
+\title{Survey: Lattice Reduction techniques to attack RSA}
 \author{David Wong}
 \date{March 2015}
+
 
 \begin{document}
 
 \maketitle
 
+\begin{abstract}
+\textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
+In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
+Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. Years after \textbf{Wiener} found that you could successfully break RSA if the private exponent was too small. In 2000, \textbf{Boneh} and \textbf{Durfee} found a better attack, still based on Lattice, that was simplified afterwards by a work from \textbf{Herrmann} and \textbf{Mayers}.\\
+In this survey we will see in what \textbf{model} the attacks are taking place. We will explain 
+
+\end{abstract}
+
+\newpage
+
+
+
+\newpage
+
 \section{RSA}\label{rsa}
 
+Let's quickly recall how RSA works.
+
+\section{Attacks}\label{attacks}
 
 \end{document}

@@ -110,7 +110,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     # factor polynomial
     potential_roots = new_pol.roots()
 
-    # test roots on original pol
+    # test roots
     roots = []
     for root in potential_roots:
         result = ZZ(pol(ZZ(root[0])))
