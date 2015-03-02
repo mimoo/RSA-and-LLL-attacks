@@ -4,6 +4,9 @@
 \usepackage[francais]{babel}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{tikz}
 
 %
 \title{Survey: Lattice Reduction techniques to attack RSA}
@@ -39,19 +42,88 @@ Knowing $p$ and $q$ we can then compute the \textbf{modulus} $N = p \times q$ wh
 Now comes the interesting part, we need to find a \textbf{public exponent} which will be used for \textbf{encryption}. For computation purpose a \textbf{Fermat prime} ($2^{m} + 1$) is often used as public exponent (it makes things faster in \textbf{binary exponentiation}). In the case of a \textbf{signature scheme}, we would want the speed up to occur for the \textbf{private exponent} so we would use such a number as a private exponent and we would reverse the following steps.\\
 Anyway, any kind of exponent can theoretically be chosen, as long as it is coprime with $\varphi(N)$ (The \textbf{Euler's Totient function}).
 
-\[e \leftarrow \mathbb{Z_N}^{\ast}\]
+\[e \leftarrow \mathbb{Z}_{\varphi(N)}^{\ast}\]
 
-if $e$ is \textbf{coprime} with $N$ then it is part of the multiplicative group $(\mathbb{Z}/N\mathbb{Z})^{\ast}$ and thus \textbf{invertible}.\\
+if $e$ is \textbf{coprime} with $\varphi(N)$ then it is part of the multiplicative group $(\mathbb{Z}/\varphi(N)\mathbb{Z})^{\ast}$ and thus \textbf{invertible} in $\mathbb{Z}/\varphi(N)\mathbb{Z}$.\\
 
 Now it is pretty easy to find the private exponent $d$ by inverting our public exponent $e$.\\
 
-All of this is possible because we can easily compute $\varphi(N) = (p - 1) \times (q - 1)$. And here resides the \textbf{security} of RSA. Imagine for a moment that we could easily factor $N$ into $p$ and $q$, then we would be able to invert the public exponent $e$. That's why we say that \textbf{the security of RSA is reduced to the Factorization Problem}.
+All of this is possible because we can easily compute $\varphi(N)$:
 
-\subsection{Encryption}
+\[\varphi(N) = (p - 1) \times (q - 1)\]
 
-\subsection{Decryption}
+And here resides the \textbf{security} of RSA. Imagine for a moment that we could easily factor $N$ into $p$ and $q$, then we would be able to invert the public exponent $e$. That's why we say that \textbf{the security of RSA is reduced to the Factorization Problem}.\\
+
+Now let the \textbf{private key} be $\textbf{(N, d)}$ with the addition of $(p, q)$ if we need to speed up calculations.
+And let the \textbf{public key} be $\textbf{(N, e)}$.
+
+\subsection{Encryption/Decryption}
+
+To \textbf{encrypt} a message $m$, with $m < N$ we just do:
+\[ c = m^e \pmod{N} \]
+
+And to \textbf{decrypt}:
+\[ m = c^d \pmod{N} \]\\
+
+
+This works because the decryption step gives us:
+\[ c^d = (m^e)^d \pmod{N} \]
+
+And $e$ being $d$'s inverse tells us that:
+\begin{align*}
+	e = d^{-1} \pmod{\varphi(N)} \\
+	\implies ed = 1 \pmod{\varphi(N)} \\
+	\implies ed = \varphi(N) + 1
+\end{align*}
+
+Coupled with \textbf{Euler's Theorem} stating that if $a$ and $n$ are coprime then:
+\[ a^{\varphi(n)} = 1 \pmod{n} \]
+
+Tells us that $m^{ed} = m \pmod{N}$
 
 \section{Lattice}\label{lattice}
+
+\subsection{Introduction}
+The attacks we will describe latter both make use of the \textbf{Lenstra–Lenstra–Lovász lattice basis reduction algorithm}. Hence it is necessary for us to understand what are Lattices and why is this \textbf{LLL} algorithm so useful.\\
+Think about Lattices like \textbf{Vector Spaces}. Imagine a simple vector space of two vectors. You can add them together, multiply them by scalars (let's say numbers of $\mathbb{R}$) and it spans a vector space.
+
+\begin{tikzpicture}[scale=.5]
+\draw [lightgray] [<->] (0,5) -- (10,5);
+\draw [lightgray] [<->] (5,10) -- (5,0);
+\draw [ultra thick] [->] (5,5) -- (6, 8);
+\draw [ultra thick] [->] (5,5) -- (6, 6);
+\end{tikzpicture}
+
+Now imagine that our vector space's \textbf{scalars are the integers}, taken in $\mathbb{Z}$. The space spanned by the vectors is now \textbf{discrete}. Meaning that for any point of this lattice there is a ball centered around that point, of radius different from zero, that contains only that point. Nothing else.
+
+\begin{tikzpicture}[scale=.5]
+\draw [lightgray] [<->] (0,5) -- (10,5);
+\draw [lightgray] [<->] (5,10) -- (5,0);
+\draw [fill] (1,1) circle [radius=0.1];
+\draw [fill] (2,2) circle [radius=0.1];
+\draw [fill] (3,3) circle [radius=0.1];
+\draw [fill] (4,4) circle [radius=0.1];
+\draw [fill] (5,5) circle [radius=0.1];
+\draw [fill] (6,6) circle [radius=0.1];
+\draw [fill] (7,7) circle [radius=0.1];
+\draw [fill] (8,8) circle [radius=0.1];
+\draw [fill] (9,9) circle [radius=0.1];
+
+\draw [fill] (2,4) circle [radius=0.1];
+\draw [fill] (3,5) circle [radius=0.1];
+\draw [fill] (4,6) circle [radius=0.1];
+\draw [fill] (5,7) circle [radius=0.1];
+\draw [fill] (6,8) circle [radius=0.1];
+\draw [fill] (7,9) circle [radius=0.1];
+
+\draw [fill] (4,2) circle [radius=0.1];
+\end{tikzpicture}
+
+Lattice are interesting in cryptography because we seldom deal with real numbers and they bring us a lot of tools to deal with numbers.
+
+\subsection{basis}
+
+\subsection{LLL}
 
 \section{Attacks}\label{attacks}
 
