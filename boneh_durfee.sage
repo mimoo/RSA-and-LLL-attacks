@@ -11,44 +11,51 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     #
     # calculate bounds and display them
     #
-
+    '''to do'''
     #
     # Algorithm
     #
 
     # change ring of pol and x
-    polZ = pol.change_ring(ZZ)
-    x, y = polZ.parent().gens()
+    #polZ = pol.change_ring(ZZ)
+    #x, y = polZ.parent().gens()
+    '''useless?'''
 
-    # compute polynomials
+    # substitution (Herrman and May)
+    PR.<x, y, u> = PolynomialRing(ZZ)
+    Q = PR.quotient(x*y + 1 - u) # u = x*y + 1
+    polZ = Q(pol).lift()
+
+    UU = XX*YY + 1
+
     # x-shifts
     gg = []
     for kk in range(mm + 1):
         for ii in range(mm - kk + 1):
-            gg.append((x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY)^kk)
+            gg.append((x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY, u * UU)^kk)
 
     # y-shifts (selected by Herrman and May)
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
-            gg.append((y * YY)^jj * polZ(x * XX, y * YY)^kk * modulus^(mm - kk))
-
-    gg.sort()
+            yshift = (y * YY)^jj * polZ(x * XX, y * YY, u * UU)^kk * modulus^(mm - kk)
+            gg.append(Q(yshift).lift()) # substitution
 
     # unravelled linerization (Herrman and May)
     monomials = []
 
     # x-shift
-    for ii in range(mm + 1):
-        for jj in range(ii + 1):
-            monomials.append(x^ii * y^jj)
+    for kk in range(mm + 1):
+        for ii in range(kk + 1):
+            monomials.append(u^(ii) * x^(kk-ii))
 
     # y-shift
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
-            monomials.append((x*y)^kk * y^jj)
+            monomials.append(u^kk * y^jj)
 
     # construct lattice B
     nn = len(monomials)
+    return monomials,0
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
