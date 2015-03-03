@@ -25,7 +25,7 @@
 \maketitle
 
 \begin{abstract}
-\textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
+\textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
 In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
 Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. Years after \textbf{Wiener} found that you could successfully break RSA if the private exponent was too small. In 2000, \textbf{Boneh} and \textbf{Durfee} found a better attack, still based on Lattice, that was simplified afterwards by a work from \textbf{Herrmann} and \textbf{Mayers}.\\
 In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place. Section 4 will be an overview of the Coppersmith attack revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee attack revisited by Herrmann and May. Finally we will see \textbf{some applications} of those attacks.
@@ -90,7 +90,7 @@ Tells us that $m^{ed} = m \pmod{N}$
 \section{Lattice}\label{lattice}
 
 \subsection{Introduction}
-The attacks we will describe latter both make use of the \textbf{Lenstra–Lenstra–Lovász lattice basis reduction algorithm}. Hence it is necessary for us to understand what are Lattices and why is this \textbf{LLL} algorithm so useful.\\
+The attacks we will describe later both make use of the \textbf{Lenstra–Lenstra–Lovász lattice basis reduction algorithm}. Hence it is necessary for us to understand what is a lattice and why is this \textbf{LLL} algorithm so useful.\\
 Think about Lattices like \textbf{Vector Spaces}. Imagine a simple vector space of two vectors. You can add them together, multiply them by scalars (let's say numbers of $\mathbb{R}$) and it spans a vector space.
 
 \begin{tikzpicture}[scale=.5]
@@ -168,7 +168,7 @@ Now imagine that our vector space's \textbf{scalars are the integers}, taken in 
 
 Lattice are interesting in cryptography because we seldom deal with real numbers and they bring us a lot of tools to deal with integers.
 
-As for vector spaces, lattices can also be described by many different basis represented as \textbf{matrices}. Contrary to vector spaces, we generally represent the vectors of the basis as \textbf{rows} in their corresponding matrices.\\
+Just as vector spaces, lattices can also be described by different basis represented as \textbf{matrices}. Contrary to vector spaces, we generally represent the vectors of the basis as \textbf{rows} in their corresponding matrices.\\
 
 Last but not least, if $\{\tilde{b}_1\,\hdots,\tilde{b}_w\}$ are the vectors of the Gram-Schmidt basis of a lattice $L$ then we define the \textbf{determinant} of the lattice as such:
 
@@ -189,29 +189,27 @@ with $\mu_{i,j} = \frac{b_i \cdot \tilde{b}_j}{\tilde{b}_j \cdot \tilde{b}_j}$ a
 \end{center}
 \end{definition}
 
-We will not see how LLL works here, see Chris Peikert's course\cite{chrispeikert} for a detailed view of the algorithm.
+We will not see dig into the interals of LLL here, see Chris Peikert's course\cite{chrispeikert} for a detailed view of the algorithm.
 
 \subsection{Wanted properties of LLL}
 
 LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is useful for us because if we consider the row vectors of a lattice's basis as \textbf{coefficient vectors of polynomials}. We can find a \textbf{linear combination} of those polynomials that has \textbf{``particularly small'' coefficients}. But let's not unveil too much too soon. Here are some relevant properties of a LLL reduced basis that we will need later:
 
-%
-%REMAKE THIS
-%
-%\begin{property}
-%Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
 
-%\[ \|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \]
-%\[ \|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
-%\end{property}
+\begin{property}
+Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
 
-%\begin{property}
-%Let $L \in \mathbb{Z}^n$ be a lattice spanned by $B = \{b_1, \hdots, b_n\}$. The LLL algorithm outputs a reduced lattice basis $\{v_1,\hdots,v_n\}$ with
+\[ \|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \]
+\[ \|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
+\end{property}
 
-%\[ \|v_i\| \leq 2^{\frac{n(n-1)}{4(n-i+1)}} \cdot det(L)^{\frac{1}{n-i+1}} \hspace{5mm} \text{ for } i = 1,\hdots,n\]
+\begin{property}
+Let $L \in \mathbb{Z}^n$ be a lattice spanned by $B = \{b_1, \hdots, b_n\}$. The LLL algorithm outputs a reduced lattice basis $\{v_1,\hdots,v_n\}$ with
 
-%in time polynomial in $n$ and in the bit-size of the entries of the basis matrix $B$.
-%\end{property}
+\[ \|v_i\| \leq 2^{\frac{n(n-1)}{4(n-i+1)}} \cdot det(L)^{\frac{1}{n-i+1}} \hspace{5mm} \text{ for } i = 1,\hdots,n\]
+
+in time polynomial in $n$ and in the bit-size of the entries of the basis matrix $B$.
+\end{property}
 
 
 \section{Attacks}\label{attacks}
