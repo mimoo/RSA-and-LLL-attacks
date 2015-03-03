@@ -30,9 +30,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # x-shifts
     gg = []
+
     for kk in range(mm + 1):
         for ii in range(mm - kk + 1):
-            gg.append((x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY, u * UU)^kk)
+            xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(x * XX, y * YY, u * UU)^kk
+            gg.append(xshift)
 
     # y-shifts (selected by Herrman and May)
     for jj in range(1, tt + 1):
@@ -40,27 +42,34 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             yshift = (y * YY)^jj * polZ(x * XX, y * YY, u * UU)^kk * modulus^(mm - kk)
             gg.append(Q(yshift).lift()) # substitution
 
-    # unravelled linerization (Herrman and May)
+    # monomials
     monomials = []
+    for polynomial in gg:
+        for monomial in polynomial.monomials():
+            if monomial not in monomials:
+                monomials.append(monomial)
 
-    # x-shift
-    for kk in range(mm + 1):
-        for ii in range(kk + 1):
-            monomials.append(u^(ii) * x^(kk-ii))
+    # unravelled linerization (Herrman and May)
+    # monomials = []
 
-    # y-shift
-    for jj in range(1, tt + 1):
-        for kk in range(floor(mm/tt) * jj, mm + 1):
-            monomials.append(u^kk * y^jj)
+    # # x-shift
+    # for ii in range(mm + 1):
+    #     for jj in range(ii + 1):
+    #         monomials.append(x^ii * u^jj)
+
+    # # y-shift
+    # for jj in range(1, tt + 1):
+    #     for kk in range(floor(mm/tt) * jj, mm + 1):
+    #         monomials.append(u^kk * y^jj)
 
     # construct lattice B
     nn = len(monomials)
-    return monomials,0
+
     BB = Matrix(ZZ, nn)
 
     for ii in range(nn):
 
-        BB[ii, 0] = gg[ii](0, 0)
+        BB[ii, 0] = gg[ii](0, 0, 0)
 
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
@@ -74,12 +83,12 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         det *= BB[ii, ii]
 
     bound = modulus^(mm * (nn - 1)) / (nn * 2^nn)^((nn - 1)/2)
+    bound = int(bound)
 
-    print "det=", det
-    print "bound=", bound
-    print "det < bound?", det < bound
+    if det >= bound:
+        print "we don't have det < bound"
+        print "det - bound = ", det - bound
 
-    return 0,0
     # LLL
     BB = BB.LLL()
 
@@ -87,16 +96,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     pol1 = pol2 = 0
 
     for ii in range(nn):
-        pol1 += monomials[ii] * BB[0, ii] / monomials[ii](X,Y)
-        pol2 += monomials[ii] * BB[1, ii] / monomials[ii](X,Y)
+        pol1 += monomials[ii] * BB[0, ii] / monomials[ii](XX,YY,UU)
+        pol2 += monomials[ii] * BB[1, ii] / monomials[ii](XX,YY,UU)
 
     # resultant
-    polx = pol1.resultant(pol2, y)
-    poly = pol1.resultant(pol2, x)
-    '''doesn't work!'''
+    polx = pol1.resultant(pol2)
 
-    solx = polx.roots()
-    soly = poly.roots()
+    print polx
 
     return solx, soly
 
@@ -122,8 +128,10 @@ print "d:", d
 # Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
-m = 20
-t = 1
+delta = (2 - sqrt(2)) / 2
+tho = (1 - 2 * delta)
+m = 10
+t = int(tho * m)
 """
 how to choose m and t?
 """
