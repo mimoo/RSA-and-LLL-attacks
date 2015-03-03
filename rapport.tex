@@ -256,13 +256,29 @@ g(x_0) = 0 \pmod{b}^m \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
 Then $g(x_0)=0$ holds over the integers.
 \end{theorem}
 
-What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} that shares the same root as our function $f$ but modulo $N^m$ and it has to have \textbf{``small'' coefficients} so that its norm would be ``small'' as well.
+What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} that shares the same root as our function $f$ but modulo $N^m$ and it has to have \textbf{``small'' coefficients} so that its norm would be ``small'' as well.\\
+
+\begin{tikzpicture}
+\node [above] at (2,4) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+\draw [<-] (0,0) -- (0,4);
+\node [below] at (0.6,0) {$f'(x_0) = 0$ over $\mathbb{Z}$};
+\draw [purple,<-] (0,1) -- (1,1);
+\node [right] at (1.2,1.35) {$f'(x_0) = 0 \pmod{N^m}$};
+\node [right] at (1.2,.65) {$\|f'(xX)\| < \frac{N^m}{sqrt{n}}$};
+\draw [purple,<-] (3,2) -- (3,4);
+\draw [purple,<-] (0,0) -- (0,1);
+
+\end{tikzpicture}
+
+Howgrave-Graham's idea is that we need to find this $f'$ through a \textbf{linear combination} of polynomials who have $x_0$ as roots, and the more polynomials we can play with, the better it is. We will see now that it's very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.
+
+LLL reduction property is that it only does linear combination of the vectors, and gives us a bound one the shortest vector of the new basis
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
 This survey is no replacement for the original papers of Boneh and Durfee\cite{bonehdurfee} and Herrmann and May\cite{herrmannmay}.
 
-
+We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of bivariate polynomials, Wiener as well, but in this survey we will focus on Boneh and Durfee.
 
 
 
