@@ -5,10 +5,9 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
-
 \usepackage{tikz}
 
-\setlength{\parindent}{0pt}
+\setlength{\parindent}{0pt} % no identation
 
 %
 \title{Survey: Lattice Reduction techniques to attack RSA}
@@ -17,6 +16,8 @@
 
 %
 \newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{theorem}{Theorem}
 
 
 \begin{document}
@@ -165,57 +166,118 @@ Now imagine that our vector space's \textbf{scalars are the integers}, taken in 
 \end{tikzpicture}
 \end{figure}
 
-Lattice are interesting in cryptography because we seldom deal with real numbers and they bring us a lot of tools to deal with numbers.
+Lattice are interesting in cryptography because we seldom deal with real numbers and they bring us a lot of tools to deal with integers.
 
-\subsection{basis}
+As for vector spaces, lattices can also be described by many different basis represented as \textbf{matrices}. Contrary to vector spaces, we generally represent the vectors of the basis as \textbf{rows} in their corresponding matrices.\\
 
-As for vector spaces, the same lattice can be described by many different basis represented as \textbf{matrices}. Contrary to vector spaces, we generally represent the vectors of the basis as \textbf{rows} in their corresponding matrix.
+Last but not least, if $\{\tilde{b}_1\,\hdots,\tilde{b}_w\}$ are the vectors of the Gram-Schmidt basis of a lattice $L$ then we define the \textbf{determinant} of the lattice as such:
+
+\[ det(L) := \prod_{i=1}^{w} \|\tilde{b}_i\| \]
 
 \subsection{LLL}
 
-The \textbf{Lenstra–Lenstra–Lovász} lattice basis reduction algorithm is a step by step calculus that reduces a lattice basis in polynomial time. The lattice is left unchanged but the row vectors of its new basis are "\textbf{smaller}" according to some definitions.
+The \textbf{Lenstra–Lenstra–Lovász} \textit{lattice basis reduction algorithm} is a step by step calculus that reduces a lattice basis in polynomial time. The lattice is left unchanged but the row vectors of its new basis are ``\textbf{smaller}'' according to some definitions:
 
 \begin{definition}
-A basis $B = \{b_1,\hdots,b_n\} \in \mathbb{R}^n$ is a $\delta$-LLL-Reduced Basis if the following holds:
+Let $L$ be a lattice with a basis $B$. The $\delta$-LLL algorithm applied on $L$'s basis $B$ produces a new basis of $L$: $B' = \{b_1,\hdots,b_n\}$ satisfying:
 \begin{eqnarray}
 \forall \hspace{1mm} 1 \leq j < i \leq n \text{ we have } |\mu_{i,j}| \leq \frac{_1}{^2}\\
-\forall \hspace{1mm} 1 \leq i < n \text{ we have } \delta \cdot \|\tilde{b_i}\|^2 \leq \| \mu_{i+1,i}\cdot \tilde{b_i} + \tilde{b_{i + 1}}\|^2
+\forall \hspace{1mm} 1 \leq i < n \text{ we have } \delta \cdot \|\tilde{b_i}\|^2 \leq \| \mu_{i+1,i}\cdot \tilde{b}_i + \tilde{b}_{i + 1}\|^2
 \end{eqnarray}
+\begin{center}
+with $\mu_{i,j} = \frac{b_i \cdot \tilde{b}_j}{\tilde{b}_j \cdot \tilde{b}_j}$ and $\tilde{b}_1 = b_1$ (Gram-Schmidt)
+\end{center}
 \end{definition}
+
+We will not see how LLL works here, see Chris Peikert's course\cite{chrispeikert} for a detailed view of the algorithm.
 
 \subsection{Wanted properties of LLL}
 
-Here is the first interesting properties and the reason why LLL will be useful for us later on:
+LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is useful for us because if we consider the row vectors of a lattice's basis as \textbf{coefficient vectors of polynomials}. We can find a \textbf{linear combination} of those polynomials that has \textbf{``particularly small'' coefficients}. But let's not unveil too much too soon. Here are some relevant properties of a LLL reduced basis that we will need later:
 
-\begin{definition}
-Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
+%
+%REMAKE THIS
+%
+%\begin{property}
+%Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
 
-\[ \|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b_i}\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \]
-\[ \|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
-\end{definition}
+%\[ \|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \]
+%\[ \|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
+%\end{property}
 
-This follows:
+%\begin{property}
+%Let $L \in \mathbb{Z}^n$ be a lattice spanned by $B = \{b_1, \hdots, b_n\}$. The LLL algorithm outputs a reduced lattice basis $\{v_1,\hdots,v_n\}$ with
 
-\begin{definition}
-Let $L \in \mathbb{Z}^n$ be a lattice spanned by $B = \{b_1, \hdots, b_n\}$. The LLL algorithm outputs a reduced lattice basis $\{v_1,\hdots,v_n\}$ with
+%\[ \|v_i\| \leq 2^{\frac{n(n-1)}{4(n-i+1)}} \cdot det(L)^{\frac{1}{n-i+1}} \hspace{5mm} \text{ for } i = 1,\hdots,n\]
 
-\[ \|v_i\| \leq 2^{\frac{n(n-1)}{4(n-i+1)}} \cdot det(L)^{\frac{1}{n-i+1}} \hspace{5mm} \text{ for } i = 1,\hdots,n\]
+%in time polynomial in $n$ and in the bit-size of the entries of the basis matrix $B$.
+%\end{property}
 
-in time polynomial in $n$ and in the bit-size of the entries of the basis matrix $B$.
-\end{definition}
 
 \section{Attacks}\label{attacks}
 
+Attacks on RSA falls into two categories: the attacks on the \textbf{implementation} or the \textbf{mathematical attacks}. Over the years the mathematical cryptanalysis has proven to be hard and thus the cryptosystem is still considered as secure nowadays (march 2015). But what a researcher could find interesting is to attack a \textbf{relaxed} version of the RSA problem. What if we knew ``a part'' of the message, or what if we knew ``an approximation'' of one of the prime, or what if the private exponent was ``too small''...
+
+% As an example let's see the simple Hadstad broadcast attack:
+
+% Hadstad Broadcast Attack
+
+% But what if m was not small, but we know m up to a small part
+
 \section{Coppersmith}\label{coppersmith}
 
-This survey is no replacement for the original papers of Coppersmith\cite{coppersmith} and Howgrave-Graham\cite{howgrave-graham}. If you want to get a real understanding of those techniques I also advise you to read a survey from May\cite{may}.
+This survey is no replacement for the original papers of Coppersmith\cite{coppersmith} and Howgrave-Graham\cite{howgrave-graham}. If you want to get a real understanding of those techniques I also advise you to read the survey from May\cite{may}.
+
+That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there. Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
+
+Let's say we know $m_0$ of the message $m = m_0 + x$. And of course we don't know $x$. We have \textbf{our problem} translated to the following equation:
+
+\[ f(x) = (m_0 + x)^e - c = 0 \pmod{N} \]
+
+Well. \textbf{Coppersmith} says we can solve this if $x$ and $e$ are small enough:
+
+\begin{theorem}
+Let $N$ be an integer of unknown factorization, which has a divisor $b \geq N^{\beta}$, $0 < \beta \leq 1$. Let $f(x)$ be a univariate monic polynomial of degree $\delta$ and let $c \geq 1$.\\
+Then we can find in time $\mathcal{O}(c\delta^5log^9(N))$ all solutions $x_0$ of the equation
+
+\[ f(x) = 0 \pmod{b} \hspace{2mm} \text{ with } \hspace{2mm} |x_0| \leq c \cdot N^{\frac{\beta^2}{\delta}} \]
+\end{theorem}
+
+In our case that would mean that for $c=1$ and $beta=1$ we could find a solution of our previous equation if $|x_0| \leq N^{\frac{1}{e}}$. And here we find something very similar to Håstad's Broadcast Attack.
+
+To find the root of a polynomial over the integers we possess efficient algorithms, but to find a root over a ring of integers modulo $N$ is a different story.
+But here's the trick, reformulated by \textbf{Howgrave-Graham}:
+
+\begin{theorem}
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\begin{eqnarray}
+g(x_0) = 0 \pmod{b}^m \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
+\end{eqnarray}
+
+Then $g(x_0)=0$ holds over the integers.
+\end{theorem}
+
+What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} that shares the same root as our function $f$ but modulo $N^m$ and it has to have \textbf{``small'' coefficients} so that its norm would be ``small'' as well.
+
+\section{Boneh-Durfee}\label{bonehdurfee}
+
+This survey is no replacement for the original papers of Boneh and Durfee\cite{bonehdurfee} and Herrmann and May\cite{herrmannmay}.
+
+
+
+
 
 \newpage
 \begin{thebibliography}{1}
 
+\bibitem{chrispeikert} Chris Peikert {\em Lattices in Cryptography, Georgia Tech, Fall 2013: Lecture 2, 3}
 \bibitem{coppersmith} Don Coppersmith {\em Finding Small Solutions to Small Degree Polynomials}
 \bibitem{howgrave-graham} Nicholas Howgrave-Graham {\em Finding Small Roots of Univariate Modular Equations Revisited}
 \bibitem{may} Alexander May {\em Using LLL-Reduction for Solving RSA and Factorization Problems}
+\bibitem{bonehdurfee} Boneh and Durfee {\em Cryptanalysis of RSA with Private Key d Less Than $N^{0.292}$}
+\bibitem{herrmannmay} Herrmann and May {\em Maximizing Small Root Bounds by Linearization and Applications to Small Secret Exponent RSA}
+
 
 \end{thebibliography}
 
