@@ -76,10 +76,11 @@ This works because the decryption step gives us:
 \[ c^d = (m^e)^d \pmod{N} \]
 
 And $e$ being $d$'s inverse tells us that:
+
 \begin{align*}
-	e = d^{-1} \pmod{\varphi(N)} \\
-	\implies ed = 1 \pmod{\varphi(N)} \\
-	\implies ed = \varphi(N) + 1
+	&e = d^{-1} \pmod{\varphi(N)} \\
+	\implies& ed = 1 \pmod{\varphi(N)} \\
+	\implies& ed = \varphi(N) + 1
 \end{align*}
 
 Coupled with \textbf{Euler's Theorem} stating that if $a$ and $n$ are coprime then:
@@ -199,8 +200,10 @@ LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is use
 \begin{property}
 Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
 
-\[ \|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \]
-\[ \|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
+\begin{align*}
+ &\|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \\
+ &\|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} 
+\end{align*}
 \end{property}
 
 \begin{property}
@@ -248,10 +251,11 @@ But here's the trick, reformulated by \textbf{Howgrave-Graham}:
 
 \begin{theorem}
 Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
-\begin{eqnarray}
-g(x_0) = 0 \pmod{b}^m \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
-\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
-\end{eqnarray}
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{b}^m \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
+\end{align}
 
 Then $g(x_0)=0$ holds over the integers.
 \end{theorem}
@@ -272,7 +276,18 @@ What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} tha
 
 Howgrave-Graham's idea is that we need to find this $f'$ through a \textbf{linear combination} of polynomials who have $x_0$ as roots, and the more polynomials we can play with, the better it is. We will see now that it's very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.
 
-LLL reduction property is that it only does linear combination of the vectors, and gives us a bound one the shortest vector of the new basis
+The \textbf{LLL reduction} has the property that it only does \textbf{linear operations} on the basis vectors, which is what we want, and the \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1}).
+
+Now if we could control that upper bound so that we obtain Howgrave-Graham's second property on the shortest vector of the new basis, it would work. The \textbf{upper bound} is a function of the dimension and the determinant as seen bellow:
+
+\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
+
+But first let's see how to build the polynomials we will fill the first lattice basis with:
+
+\begin{align*}
+	g_{i,j}(x) &= x^j \cdot N^i \cdot f^{m-i}(x) \text{ for } i = 0,\hdots,m-1, j=0,\hdots,\delta-1\\
+	h_i(x) &= x^i \cdot f^m(x) \text{ for } i = 0,\hdots,t-1
+\end{align*}
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 

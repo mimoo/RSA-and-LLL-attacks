@@ -1,10 +1,26 @@
 
 # INTRO
 
-* reminder on RSA:
+## reminder on RSA:
+
+it does:
 - encrypt 
 - sign
 
+it comes from:
+- generate p, q primes; N = p * q; (e, N) and (d, N)
+- encryption: m^e = c [N]
+- decryption: c^d = m [N]
+
+how it works:
+- recall, euler theorem: a^phi(N) = 1 [N]
+- so we want to find e d = k phi(N) + 1 because:
+	a^(e d) = a^phi(N) + 1 = a [N]
+- we can rewrite that as e d = 1 [phi(N)]
+- we need to find one invertible e in (Zphi(N))* multiplicativ group
+- then invert it (extended euclidian algorithm)
+
+## attacks
 * what sorts of attack we do today:
 - implementation, side-channel
 - mathematical (it's hard)
