@@ -270,24 +270,72 @@ What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} tha
 \node [right] at (1.2,1.35) {$g(x_0) = 0 \pmod{N^m}$};
 \node [right] at (1.2,.65) {$\|g(xX)\| < \frac{N^m}{sqrt{n}}$};
 \draw [purple,<-] (3,2) -- (3,4);
-\draw [purple,<-] (0,0) -- (0,1);
-
 \end{tikzpicture}
 
-Howgrave-Graham's idea is that we need to find this $g$ through a \textbf{linear combination} of polynomials who have $x_0$ as roots, and the more polynomials we can play with, the better it is. We will see now that it's very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.
+Howgrave-Graham's idea is that we need to find this $g$ through a \textbf{integer linear combination} of polynomials who have $x_0$ as roots, and the more polynomials we can play with, the better it is. We will see now that it's very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.
 
-The \textbf{LLL reduction} has the property that it only does \textbf{linear operations} on the basis vectors, which is what we want, and the \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1}).
+The \textbf{LLL reduction} has the property that it only does \textbf{integer linear operations} on the basis vectors, which is what we want, and the \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1}).
 
 Now if we could control that upper bound so that we obtain Howgrave-Graham's second property on the shortest vector of the new basis, it would work. The \textbf{upper bound} is a function of the dimension and the determinant as seen bellow:
 
-\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
+\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]\\
 
-But first let's see how to \textbf{build the polynomials} we will use to fill the first lattice basis with:
+But first let's see how to \textbf{build the polynomials} $f_i$ (we will call them $g_{i,j}$ and $h_i$) we will build our $g(x_0) = 0$ with. Note that $\delta$ is the degree of $f$:
 
 \begin{align*}
-	g_{i,j}(x) &= x^j \cdot N^i \cdot f^{m-i}(x) \text{ for } i = 0,\hdots,m-1, j=0,\hdots,\delta-1\\
+	g_{i,j}(x) &= x^j \cdot N^i \cdot f^{m-i}(x) \text{ for } i = 0,\hdots,m-1,\hspace{2mm} j=0,\hdots,\delta-1\\
 	h_i(x) &= x^i \cdot f^m(x) \text{ for } i = 0,\hdots,t-1
 \end{align*}
+
+Those polynomials achieve two things:
+\begin{itemize}
+	\item{they have the \textbf{same root} $x_0$ but modulo $N^m$}
+	\item{each iteration introduce a new polynomial, that allows us to build a \textbf{triangular} lattice (so that the determinant is easier to calculate)}\\
+\end{itemize}
+
+If you don't understand how they have the same root $x_0$ remember that since $f(x_0) = 0 \pmod{N}$ we know that $f(x_0) = k \cdot N$\\
+
+Any integer linear combination of those polynomials will as expected, give us another polynomial that has $x_0$ as root.
+
+\[ g(x_0) = \sum^n_{i=1}a_i\cdot f_i(x_0) = 0 \pmod{N^m}\hspace{5mm} a_i \in \mathbb{Z} \]
+
+To obtain Howgrave-Graham's second point ($\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}$) we will use $g_{i,j}(xX)$ and $h_i(xX)$ as row vectors in our lattice's basis.\\
+
+\begin{tikzpicture}
+% 1
+\node [above right] at (.5,10) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+\draw [<-] (1,0) -- (1,10);
+\node [below right] at (0.5,0) {$g(x_0) = 0$ over $\mathbb{Z}$};
+% 2
+\draw [<-] (1,1) -- (1.5,1);
+\node [right] at (1.7,1.35) {$g(x_0) = 0 \pmod{N^m}$};
+\node [right] at (1.7,.65) {$\|g(xX)\| < \frac{N^m}{sqrt{n}}$};
+\draw [<-] (3.5,2) -- (3.5,10);
+% new 3
+\draw [purple,->] (6,10) -- (6,9.5);
+\node [below right] at (4,9.3) {generate $f_i$ s.t. $f_i(x_0) = 0 \pmod{N^m}$};
+
+\draw [purple,->] (6,8.6) -- (6,7.8);
+\node [below right] at (4,7.5) {$B = \begin{pmatrix}
+  f_i(xX) \\
+  \vdots  \\
+  f_n(xX)
+ \end{pmatrix}$};
+ 
+\draw [purple,->] (6,5.5) -- (6,4.4);
+\node [right] at (6.3,5) {LLL};
+
+\node [below right] at (4,4.1) {$B' = \begin{pmatrix}
+  b_1 = g(xX) \\
+  b_2\\
+  \vdots  \\
+  b_n
+ \end{pmatrix}$};
+ 
+\draw [<-] (3.5,3) -- (4,3);
+\end{tikzpicture}
+
+
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
