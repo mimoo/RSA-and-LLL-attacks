@@ -274,13 +274,18 @@ What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} tha
 \draw [purple,<-] (3,2) -- (3,4);
 \end{tikzpicture}
 
-Howgrave-Graham's idea is that we need to find this $g$ through a \textbf{integer linear combination} of polynomials who have $x_0$ as roots, and the more polynomials we can play with, the better it is. We will see now that it's very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.
+Howgrave-Graham's idea is that we need to find this polynomial $g$ by \textbf{combining} polynomials who also have $x_0$ as roots. The more polynomials we can play with, the better. We will see later that it is very easy for us to create polynomials $f_i$ such that $f_i(x_0) = 0 \pmod{N^m}$. And that is the reason why we choose to find a polynomial over $N^m$ and not over $N$.\\
 
-The \textbf{LLL reduction} has the property that it only does \textbf{integer linear operations} on the basis vectors, which is what we want, and the \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1}).
+The \textbf{LLL reduction} has two properties that are useful to us:
+\begin{itemize}
+	\item{It only does \textbf{integer linear operations} on the basis vectors}
+	\item{The \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1})}\\
+\end{itemize}
+The first point allows us to combine them to build a function that still has $x_0$ as root modulo $N^m$:
 
-Now if we could control that upper bound so that we obtain Howgrave-Graham's second property on the shortest vector of the new basis, it would work. The \textbf{upper bound} is a function of the dimension and the determinant as seen bellow:
+\[ g(x_0) = \sum^n_{i=1}a_i\cdot f_i(x_0) = 0 \pmod{N^m}\hspace{5mm} a_i \in \mathbb{Z} \]
 
-\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]\\
+The second point allows us to get Howgrave-Graham's second point ($\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}$).\\
 
 But first let's see how to \textbf{build the polynomials} $f_i$ (we will call them $g_{i,j}$ and $h_i$) we will build our $g(x_0) = 0$ with. Note that $\delta$ is the degree of $f$:
 
@@ -298,9 +303,7 @@ Those polynomials achieve two things:
 If you don't understand how they have the same root $x_0$ remember that since $f(x_0) = 0 \pmod{N}$ we know that $f(x_0) = k \cdot N$\\
 
 Now we just have to create a lattice basis with $f_i(xX)$ as row vectors (because we want them to build a polynomial $g(xX)$ to test Howgrave-Graham second point).\\
-Any integer linear combination of those polynomials will as expected, give us another polynomial that has $x_0$ as root:
 
-\[ g(x_0) = \sum^n_{i=1}a_i\cdot f_i(x_0) = 0 \pmod{N^m}\hspace{5mm} a_i \in \mathbb{Z} \]
 
 Let's take a look at the \textbf{overview} again:\\
 
@@ -336,13 +339,21 @@ Let's take a look at the \textbf{overview} again:\\
  \end{pmatrix}$};
  
 \draw [<-,purple] (3.5,3) -- (4,3);
-\end{tikzpicture}
+\end{tikzpicture}\\
 
 Now the shortest vector of $B'$ (the LLL-reduced basis) should be the coefficient vector of $g(xX)$. \\
 
-Now, to obtain Howgrave-Graham's second point on our $g$ ($\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}$) we have to manipulate $g_{i,j}(xX)$ and $h_i(xX)$ to obtain a small enough determinant ($\|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}}$). This is the bound we wish to obtain on the determinant:
+As I said earlier, the LLL reduction allows us to achieve an \textbf{upper bound} on this shortest vector:
+
+\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]\\
+
+Now, to obtain Howgrave-Graham's second point on our $g$ ($\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}$) we have to manipulate $g_{i,j}(xX)$ and $h_i(xX)$ to obtain a small enough determinant. This is the bound we wish to obtain on the determinant:
 
 \[ det(L) < N^{m \cdot n}\]
+
+And here's the determinant:
+
+\[ det(L) = N^{\frac{1}{2}\delta m (m+1)}X^{\frac{1}{2}n(n-1)} \]
 
 To do that we need to \textbf{tweak} $m$ and $t$ until we obtain the correct bounds. Note that the bound on the shortest vector of the reduced lattice basis is generous. That means that even if we don't correctly bound our determinant, we might find an answer.
 
@@ -354,7 +365,11 @@ Coppersmith method is actually more general than what we just saw. It also works
 
 This survey is no replacement for the original papers of Boneh and Durfee\cite{bonehdurfee} and Herrmann and May\cite{herrmannmay}.
 
-We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of bivariate polynomials, Wiener as well, but in this survey we will focus on Boneh and Durfee.
+We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of bivariate polynomials but left it at that. More recently, Boneh and Durfee released papers on RSA attacks using the initial ideas of Coppersmith for finding small roots of bivariate polynomials.
+
+Let's introduce the problem:
+
+
 
 
 
