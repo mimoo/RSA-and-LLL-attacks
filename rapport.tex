@@ -229,6 +229,8 @@ Attacks on RSA falls into two categories: the attacks on the \textbf{implementat
 
 This survey is no replacement for the original papers of Coppersmith\cite{coppersmith} and Howgrave-Graham\cite{howgrave-graham}. If you want to get a real understanding of those techniques I also advise you to read the survey from May\cite{may}.
 
+\subsection{Known modulus}\label{knownmodulus}
+
 That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there. Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
 
 Let's say we know $m_0$ of the message $m = m_0 + x$. And of course we don't know $x$. We have \textbf{our problem} translated to the following equation:
@@ -268,7 +270,7 @@ What Howgrave-Graham is saying is that we need to \textbf{find a polynomial} tha
 \node [below] at (0.6,0) {$g(x_0) = 0$ over $\mathbb{Z}$};
 \draw [purple,<-] (0,1) -- (1,1);
 \node [right] at (1.2,1.35) {$g(x_0) = 0 \pmod{N^m}$};
-\node [right] at (1.2,.65) {$\|g(xX)\| < \frac{N^m}{sqrt{n}}$};
+\node [right] at (1.2,.65) {$\|g(xX)\| < \frac{N^m}{\sqrt{n}}$};
 \draw [purple,<-] (3,2) -- (3,4);
 \end{tikzpicture}
 
@@ -310,7 +312,7 @@ Let's take a look at the \textbf{overview} again:\\
 % 2
 \draw [<-] (1,1) -- (1.5,1);
 \node [right] at (1.7,1.35) {$g(x_0) = 0 \pmod{N^m}$};
-\node [right] at (1.7,.65) {$\|g(xX)\| < \frac{N^m}{sqrt{n}}$};
+\node [right] at (1.7,.65) {$\|g(xX)\| < \frac{N^m}{\sqrt{n}}$};
 \draw [<-] (3.5,2) -- (3.5,10);
 % new 3
 \draw [purple,->] (6,10) -- (6,9.5);
@@ -343,6 +345,10 @@ Now, to obtain Howgrave-Graham's second point on our $g$ ($\|g(xX)\| < \frac{_{b
 \[ det(L) < N^{m \cdot n}\]
 
 To do that we need to \textbf{tweak} $m$ and $t$ until we obtain the correct bounds. Note that the bound on the shortest vector of the reduced lattice basis is generous. That means that even if we don't correctly bound our determinant, we might find an answer.
+
+\subsection{Any modulus}{anymodulus}
+
+Coppersmith method is actually more general than what we just saw. It also works for unknown modulus. For example, imagine the problem where we know an approximation of ...
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
