@@ -6,8 +6,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     * |y| < e^0.5
     whenever delta < 1 - sqrt(2)/2 ~ 0.292
     """
-
-
     #
     # calculate bounds and display them
     #
@@ -15,11 +13,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     #
     # Algorithm
     #
-
-    # change ring of pol and x
-    #polZ = pol.change_ring(ZZ)
-    #x, y = polZ.parent().gens()
-    '''useless?'''
 
     # substitution (Herrman and May)
     PR.<u, x, y> = PolynomialRing(ZZ)
@@ -70,9 +63,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
     #
-    # DET
+    # DET CHECK (OPTIONAL)
     #
-    
+    """
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
@@ -83,11 +76,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     if det >= bound:
         print "we don't have det < bound"
         print "det - bound = ", det - bound
-    
+    """
     # LLL
     BB = BB.LLL()
 
-    # transform shortest vectors in polynomials  
+    # shortest vectors to polynomials  
     pol1 = pol2 = 0
 
     for ii in range(nn):
@@ -102,6 +95,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # resultant
     polx = pol1.resultant(pol2)
 
+    # DOESN'T WORK HERE
     print polx
 
     return solx, soly
@@ -118,7 +112,7 @@ q = next_prime( round(pi.n()*p) );
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = 3
+d = 3 # short d
 while gcd(d, phi) != 1:
     d += 2
 e = d.inverse_mod((p-1)*(q-1))
@@ -130,15 +124,10 @@ P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
-m = 10
+m = 8
 t = int(tho * m)
-"""
-how to choose m and t?
-"""
 X = floor(e^0.292)
 Y = floor(e^0.5)
-"""why those values?
-"""
 
 # boneh_durfee
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
