@@ -248,15 +248,23 @@ Then we can find in time $\mathcal{O}(c\delta^5log^9(N))$ all solutions $x_0$ of
 
 In our case that would mean that for $c=1$ and $beta=1$ we could find a solution of our previous equation if $|x_0| \leq N^{\frac{1}{e}}$. And here we find something very similar to Håstad's Broadcast Attack.
 
-To find the root of a polynomial over the integers we possess efficient algorithms, but to find a root over a ring of integers modulo $N$ is a different story.
-But here's the trick, reformulated by \textbf{Howgrave-Graham}:
+To find the roots of a polynomial \textbf{over a ring of integers modulo} $N$ is a very \textbf{difficult} task, whereas we possess efficient tools to find roots of  polynomials \textbf{over the integers} (Berlekamp–Zassenhaus, van Hoeij, Hensel lifting...). Hence Coppersmith's intuition to look for such a polynomial:
+
+\begin{tikzpicture}
+\node [above] at (2,1) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+\draw [<-,purple] (0,0) -- (0,1);
+\node [below] at (0.6,0) {$g(x_0) = 0$ over $\mathbb{Z}$};
+\end{tikzpicture}
+
+
+But how can we go from $f$ to $g$ here? The theorem of \textbf{Howgrave-Graham} gives us a clue:
 
 \begin{theorem}
 Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
 \setcounter{equation}{0}
 \begin{align}
-&g(x_0) = 0 \pmod{b}^m \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
-&\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
+&g(x_0) = 0 \pmod{N^m} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{N^m}}{^{\sqrt{n}}}
 \end{align}
 
 Then $g(x_0)=0$ holds over the integers.
@@ -357,21 +365,101 @@ And here's the determinant:
 
 To do that we need to \textbf{tweak} $m$ and $t$ until we obtain the correct bounds. Note that the bound on the shortest vector of the reduced lattice basis is generous. That means that even if we don't correctly bound our determinant, we might find an answer.
 
-\subsection{Any modulus}{anymodulus}
+\subsection{Any modulus}\label{anymodulus}
 
-Coppersmith method is actually more general than what we just saw. It also works for unknown modulus. For example, imagine the problem where we know an approximation of ...
+Coppersmith method is actually more general. It also works for unknown modulus.\\
+For example, imagine the problem where we know an approximation of one of the prime. This attack is called \textbf{Factoring with High Bits Known}.
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
 This survey is no replacement for the original papers of Boneh and Durfee\cite{bonehdurfee} and Herrmann and May\cite{herrmannmay}.
 
-We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of bivariate polynomials but left it at that. More recently, Boneh and Durfee released papers on RSA attacks using the initial ideas of Coppersmith for finding small roots of bivariate polynomials.
+We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of \textbf{bivariate polynomials} but left it at that. More recently, Boneh and Durfee have released papers on some RSA attacks that make use of the initial ideas of Coppersmith for finding small roots of bivariate polynomials.
 
 Let's introduce the problem:
 
+Boneh and Durfee are telling us we can, \textbf{most of the time} (they released a heuristic and not a theorem), successfully \textbf{factor} $\textbf{N}$ if the \textbf{private exponent $\textbf{d}$ is too small}. Precisely if $d < N^{0.292}$.\\
 
+Recall how RSA works:
+\begin{align*}
+&e \cdot d = 1 \pmod{\varphi(N)}\\
+\implies& e \cdot d = k \cdot \varphi(N) + 1\\
+\implies& k \cdot \varphi(N) + 1 = 0 \pmod{e}\\
+\implies& k \cdot (N + 1 - p - q) + 1 = 0 \pmod{e}
+\end{align*}
+Here the unknowns are $k$ and $(-p-q)$. We can write that problem as a polynomial with root $x_0$ and $y_0$:
+\[ f(x,y) = x \cdot (A + y) \pmod{e} \]
 
+Now we use \textbf{Coppersmith's heuristic for multivariate polynomials}. Coupled with \textbf{Howgrave-Graham's Theorem} for bivariate polynomials:
 
+\begin{theorem}
+Let $g(x)$ be an bivariate polynomial with at most $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0,y_0) = 0 \pmod{e^m} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X \text{ and } |y_0| \leq Y\\
+&\|g(xX,yY)\| < \frac{_{e^m}}{^{\sqrt{n}}}
+\end{align}
+Then $g(x_0,y_0)=0$ holds over the integers.\\
+\end{theorem}
+
+But the problem here is that \textbf{one polynomial is not enough} to get the roots of a bivariate equation. What we need are \textbf{two polynomials}, then we could use the \textbf{resultant} or a Gröbner basis to find the roots.
+
+Coppersmith proposed to take \textbf{the two shortest vectors}, of the LLL-reduced basis, as polynomials. Let's take a look at what it should look from a distance:
+
+\begin{tikzpicture}
+% 1
+\node [above right] at (.5,10) {$f(x_0, y_0) = 0 \pmod{e}$ with $|x_0| < X$ and $|y_0| < Y$};
+\draw [<-] (1,0) -- (1,10);
+\node [below right] at (0.5,0) {$g_1(x_0,y_0) = 0$ over $\mathbb{Z}$};
+% new 1
+\node [below right] at (0.5,-.6) {$g_2(x_0,y_0) = 0$ over $\mathbb{Z}$};
+\draw [->] (1,-1.4) -- (1,-2.1);
+\node [below right] at (0.5,-2.1) {$r(x) = resultant_x(g_1, g_2)$};
+% 2
+\draw [<-] (1,1) -- (1.5,1);
+\node [right] at (1.7,1.35) {$g_1(x_0,y_0) = 0 \pmod{e^m}$ and $\|g_1(xX,yY)\| < \frac{e^m}{\sqrt{n}}$};
+\node [right] at (1.7,.65) {$g_2(x_0,y_0) = 0 \pmod{e^m}$ and $\|g_2(xX,yY)\| < \frac{e^m}{\sqrt{n}}$};
+\draw [<-] (3.5,2) -- (3.5,10);
+% new 3
+\draw [->] (6,10) -- (6,9.5);
+\node [below right] at (4,9.3) {generate $f_i$ s.t. $f_i(x_0,y_0) = 0 \pmod{N^m}$};
+
+\draw [->] (6,8.6) -- (6,7.8);
+\node [below right] at (4,7.5) {$B = \begin{pmatrix}
+  f_i(xX,yY) \\
+  \vdots  \\
+  f_n(xX,yY)
+ \end{pmatrix}$};
+ 
+\draw [->] (6,5.5) -- (6,4.4);
+\node [right] at (6.3,5) {LLL};
+
+\node [below right] at (4,4.1) {$B' = \begin{pmatrix}
+  b_1 = g_1(xX, yY) \\
+  b_2 = g_2(xX, yY)\\
+  \vdots  \\
+  b_n
+ \end{pmatrix}$};
+ 
+\draw [<-] (3.5,3) -- (4,3);
+\end{tikzpicture}\\
+
+And once we find the root $x_0$ of $r$ we can re-inject it in $g_1$ to find $y_0$.
+
+\textbf{This doesn't always yield a solution}. For example, if the two polynomials $g_1$ and $g_2$ are not independent, the resultant will be zero.\\
+
+\textbf{Boneh and Durfee} proposed a construction of the $f_i$ polynomials as follow:
+\begin{align*}
+	\text{for } k = 0,\hdots,m&:\\
+	g_{i,k}(x) &= x^i \cdot f^k(x,y) \cdot e^{m-k} \text{ for } i=0,\hdots,m-k\\
+	h_{j,k}(x) &= y^j \cdot f^k(x,y) \cdot e^{m-k} \text{ for } j = 0,\hdots,t
+\end{align*}
+
+They called the $g_{i,k}$ \textbf{x-shifts} and the $h_{j,k}$ \textbf{y-shifts}.\\
+
+By using these polynomials to build the lattice, carefully balancing the variables so that the determinant of the triangular basis doesn't exceed $e^{mn}$, Boneh and Durfee showed that LLL successfuly yielded useful results if $d < N^{0.284}$.\\
+
+To achieve their \textbf{improved results} of $d < N^{0.292}$, they created the concepts of Geometrically Progressive Matrices and showed that by \textbf{removing some of the y-shifts}, the bounds on the shortest vector found by LLL were improved. Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky. This is where \textbf{Herrmann and May} intervene.
 
 \newpage
 \begin{thebibliography}{1}
