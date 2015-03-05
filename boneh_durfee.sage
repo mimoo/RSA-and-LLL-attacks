@@ -95,16 +95,19 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     pol1 = pol2 = 0
 
     for ii in range(nn):
-        pol1 += monomials[ii] * BB[0, ii] / monomials[ii](UU,XX,YY)
-        pol2 += monomials[ii] * BB[1, ii] / monomials[ii](UU,XX,YY)
+        pol1 += monomials[ii](x*y+1,x,y) * BB[0, ii] / monomials[ii](UU,XX,YY)
+        pol2 += monomials[ii](x*y+1,x,y) * BB[1, ii] / monomials[ii](UU,XX,YY)
 
     # revert substitution
+    '''
     u, x, y = pol1.parent().gens() #dunno why I have to do this
     pol1 = pol1.subs({u:x*y + 1})
     pol2 = pol2.subs({u:x*y + 1})
+    '''
 
+    return pol1, pol2
     # resultant
-    polx = pol1.resultant(pol2)
+    polx = pol1.resultant(pol2, x)
 
     # DOESN'T WORK HERE
     print polx
