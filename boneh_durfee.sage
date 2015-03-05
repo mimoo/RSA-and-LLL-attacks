@@ -21,6 +21,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     UU = XX*YY + 1
 
+    #
+    # debug
+    # 
+    yy = -p -q
+    xx = (e * d - 1) / (N + 1 + yy)
+    uu = xx*yy + 1
+
     # x-shifts
     gg = []
 
@@ -28,6 +35,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for ii in range(mm - kk + 1):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
+            # if xx^ii * modulus^(mm-kk) * polZ(uu,xx,yy)^kk % modulus^mm != 0:
+            #     print "xshift % e^m:",kk,ii
     gg.sort()
 
     # x-shifts monomials
@@ -43,27 +52,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
             gg.append(Q(yshift).lift()) # substitution
+            # if yy^jj * polZ(uu,xx,yy)^kk * modulus^(mm-kk) % modulus^mm != 0:
+            #     print "yshift:",jj,kk
 
     # y-shifts monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
-
-    #
-    # DEBUG
-    # 
-    
-    # what are the roots?
-    #e * d = 1 + x (N + 1 -p - q)
-    y_temp = -p -q
-    x_temp = (e * d - 1) / (N + 1 + y_temp)
-    for ii in range(len(gg) - 1):
-        print gg[ii](x_temp*y_temp,x_temp,y_temp) % e
-    return 0,0
-
-    #
-    # END DEBUG
-    #
 
     # construct lattice B
     nn = len(monomials)
