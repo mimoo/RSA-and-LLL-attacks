@@ -61,11 +61,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
-
+    
     #
     # DET CHECK (OPTIONAL)
     #
-    """
+    
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
@@ -75,8 +75,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     if det >= bound:
         print "we don't have det < bound"
-        print "det - bound = ", det - bound
-    """
+        #print "det - bound = ", abs(det - bound)
+    
     # LLL
     BB = BB.LLL()
 
@@ -124,7 +124,7 @@ P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
-m = 8
+m = 7
 t = int(tho * m)
 X = floor(e^0.292)
 Y = floor(e^0.5)
