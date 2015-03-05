@@ -49,6 +49,22 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
 
+    #
+    # DEBUG
+    # 
+    
+    # what are the roots?
+    #e * d = 1 + x (N + 1 -p - q)
+    y_temp = -p -q
+    x_temp = (e * d - 1) / (N + 1 + y_temp)
+    for ii in range(len(gg) - 1):
+        print gg[ii](x_temp*y_temp,x_temp,y_temp) % e
+    return 0,0
+
+    #
+    # END DEBUG
+    #
+
     # construct lattice B
     nn = len(monomials)
 
@@ -98,7 +114,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # DOESN'T WORK HERE
     print polx
 
-    return solx, soly
+    return polx, gg
 
 
 ############################################
@@ -124,7 +140,7 @@ P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
-m = 7
+m = 5
 t = int(tho * m)
 X = floor(e^0.292)
 Y = floor(e^0.5)
