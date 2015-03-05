@@ -2,11 +2,13 @@
 
 This repo will host implementations of different RSA attacks using lattice reduction techniques (in particular **LLL**).
 
-First, we'll see how **Coppersmith** found out that you could use lattice reduction techniques to attack a relaxed RSA (we know parts of the message, or we know parts of one of the prime).
+First, we'll see how **Coppersmith** found out that you could use lattice reduction techniques to attack a relaxed model of RSA (we know parts of the message, or we know parts of one of the prime, ...).
 
-Second we'll see how **Boneh and Durfee** used coppersmith to factor the RSA modulus under certain assumptions.
+Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to factor the RSA modulus when the private key is too small (`d < N^2.929`).
 
-# Coppersmith.sage
+If you want to use the files see below for explanations. If you want to dig deeper you can read my survey [here](rapport.pdf) (**work in progress**).
+
+# Coppersmith
 
 I've implemented the work of **Coppersmith** (to be correct the reformulation of his attack by **Howgrave-Graham**) in [coppersmith.sage](coppersmith.sage).
 
@@ -63,4 +65,11 @@ What is important here if you want to find a solution:
 *  we should have `q >= N^beta`
 * as usual `XX` is the upper bound of the root, so the difference should be: |diff| < X
 
-note: diff = | q - q` |
+note: `diff = |q-q`|`
+
+# Boneh Durfee
+
+I'm currently implementing the work of Boneh and Durfee in the file `boneh_durfee.sage` (to be correct, its simplification from **Herrmann and May**).
+
+The attack works if the private exponent `d` is too small compared to the modulus: `d < N^0.292`.
+
