@@ -197,24 +197,13 @@ We will not see dig into the interals of LLL here, see Chris Peikert's course\ci
 
 LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is useful for us because if we consider the row vectors of a lattice's basis as \textbf{coefficient vectors of polynomials}. We can find a \textbf{linear combination} of those polynomials that has \textbf{``particularly small'' coefficients}. But let's not unveil too much too soon. Here are some relevant properties of a LLL reduced basis that we will need later:
 
-
 \begin{property}
-Let $\{b_1,\hdots,b_n\}$ be a $\delta$-LLL-reduced basis for a lattice $L$ in $\mathbb{R}^n$, and let $\tilde{b_1},\hdots,\tilde{b_n}$ be the Gram-Schmidt basis. Then we have
+Let $L$ be a lattice of dimension $n$. In polynomial time, the LLL algorithm outputs reduced basis vectors $v_i$, for $1 \leq i \leq n$, satisfying:
 
-\begin{align*}
- &\|b_j\|^2 \leq 2^{i-1} \cdot \|\tilde{b}_i\|^2 \hspace{10mm}\text{ for } 1 \leq j \leq i \leq n \\
- &\|\tilde{b_1}\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} 
-\end{align*}
+\[ \|v_1\| \leq \|v_2\| \leq \hdots \leq \|v_i\| \leq 2^{\frac{n(n-1)}{4(n+1-i)}} \cdot det(L)^{\frac{1}{n+1-i}} \]
 \end{property}
 
-\begin{property}
-Let $L \in \mathbb{Z}^n$ be a lattice spanned by $B = \{b_1, \hdots, b_n\}$. The LLL algorithm outputs a reduced lattice basis $\{v_1,\hdots,v_n\}$ with
-
-\[ \|v_i\| \leq 2^{\frac{n(n-1)}{4(n-i+1)}} \cdot det(L)^{\frac{1}{n-i+1}} \hspace{5mm} \text{ for } i = 1,\hdots,n\]
-
-in time polynomial in $n$ and in the bit-size of the entries of the basis matrix $B$.
-\end{property}
-
+We can see that we can modify the bound on our vectors by modifying the dimension and the determinant of the lattice basis.
 
 \section{Attacks}\label{attacks}
 
