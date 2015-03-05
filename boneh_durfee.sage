@@ -35,6 +35,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for ii in range(mm - kk + 1):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
+    gg.sort()
 
     # x-shifts monomials
     monomials = []
@@ -64,15 +65,14 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
         BB[ii, 0] = gg[ii](0, 0, 0)
 
-        for jj in range(1, nn):
+        for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
-    return BB, gg
     #
     # DET
     #
-    """
+    
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
@@ -83,7 +83,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     if det >= bound:
         print "we don't have det < bound"
         print "det - bound = ", det - bound
-    """
+    
     # LLL
     BB = BB.LLL()
 
@@ -93,6 +93,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for ii in range(nn):
         pol1 += monomials[ii] * BB[0, ii] / monomials[ii](UU,XX,YY)
         pol2 += monomials[ii] * BB[1, ii] / monomials[ii](UU,XX,YY)
+
+    # revert substitution
+    u, x, y = pol1.parent().gens() #dunno why I have to do this
+    pol1 = pol1.subs({u:x*y + 1})
+    pol2 = pol2.subs({u:x*y + 1})
 
     # resultant
     polx = pol1.resultant(pol2)
@@ -125,7 +130,7 @@ P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
-m = 4
+m = 10
 t = int(tho * m)
 """
 how to choose m and t?
