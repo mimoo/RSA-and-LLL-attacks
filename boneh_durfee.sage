@@ -21,13 +21,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     UU = XX*YY + 1
 
-    #
-    # debug
-    # 
-    yy = -p -q
-    xx = (e * d - 1) / (N + 1 + yy)
-    uu = xx*yy + 1
-
     # x-shifts
     gg = []
 
@@ -91,28 +84,27 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # LLL
     BB = BB.LLL()
 
-    # shortest vectors to polynomials  
+    # shortest vectors to polynomials
     pol1 = pol2 = 0
 
     for ii in range(nn):
         pol1 += monomials[ii](x*y+1,x,y) * BB[0, ii] / monomials[ii](UU,XX,YY)
         pol2 += monomials[ii](x*y+1,x,y) * BB[1, ii] / monomials[ii](UU,XX,YY)
 
-    # revert substitution
     '''
+    # revert substitution
     u, x, y = pol1.parent().gens() #dunno why I have to do this
     pol1 = pol1.subs({u:x*y + 1})
     pol2 = pol2.subs({u:x*y + 1})
     '''
 
-    return pol1, pol2
     # resultant
-    polx = pol1.resultant(pol2, x)
+    polx = pol1.resultant(pol2)
 
     # DOESN'T WORK HERE
     print polx
 
-    return polx, gg
+    return 0, 0
 
 
 ############################################
@@ -138,10 +130,20 @@ P.<x,y> = PolynomialRing(Zmod(e))
 pol = 1 + x * (N + 1 + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
-m = 5
+m = 7
 t = int(tho * m)
 X = floor(e^0.292)
 Y = floor(e^0.5)
+
+#
+# debug
+# 
+yy = -p -q
+xx = (e * d - 1) / (N + 1 + yy)
+uu = xx*yy + 1
+
+print "|y| < Y:", abs(yy) < Y
+print "|x| < X:", abs(xx) < X
 
 # boneh_durfee
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
