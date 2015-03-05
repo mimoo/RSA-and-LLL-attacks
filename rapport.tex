@@ -462,9 +462,11 @@ They called the $g_{i,k}$ \textbf{x-shifts} and the $h_{j,k}$ \textbf{y-shifts}.
 
 By using these polynomials to build the lattice, carefully balancing the variables so that the determinant of the triangular basis doesn't exceed $e^{mn}$, Boneh and Durfee showed that LLL successfuly yielded useful results if $d < N^{0.284}$.\\
 
-To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved. Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky.
+To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved.\\
+This is because of the "\textbf{helpful vectors}" notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.\\
+Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky.
 
-\textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to manipulate and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
+\textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to handle and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
 
 The \textbf{Unravelled Linearization} technique consists in \textbf{modifying} our initial polynomial $f$. Done cleverly this will modify the $f_i$ so that after removing the y-shifts, our sublattice basis will \textbf{directly be triangular}.
 
