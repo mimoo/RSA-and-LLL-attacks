@@ -404,7 +404,7 @@ Then $g(x_0,y_0)=0$ holds over the integers.\\
 
 But the problem here is that \textbf{one polynomial is not enough} to get the roots of a bivariate equation. What we need are \textbf{two polynomials}, then we could use the \textbf{resultant} or a Gröbner basis to find the roots.
 
-Coppersmith proposed to take \textbf{the two shortest vectors}, of the LLL-reduced basis, as polynomials. Let's take a look at what it should look from a distance:
+Coppersmith proposed to take \textbf{the two shortest vectors}, of the LLL-reduced basis, as polynomials. Let's take a look at what it should look from a distance:\\
 
 \begin{tikzpicture}
 % 1
@@ -459,7 +459,19 @@ They called the $g_{i,k}$ \textbf{x-shifts} and the $h_{j,k}$ \textbf{y-shifts}.
 
 By using these polynomials to build the lattice, carefully balancing the variables so that the determinant of the triangular basis doesn't exceed $e^{mn}$, Boneh and Durfee showed that LLL successfuly yielded useful results if $d < N^{0.284}$.\\
 
-To achieve their \textbf{improved results} of $d < N^{0.292}$, they created the concepts of Geometrically Progressive Matrices and showed that by \textbf{removing some of the y-shifts}, the bounds on the shortest vector found by LLL were improved. Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky. This is where \textbf{Herrmann and May} intervene.
+To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved. Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky.
+
+\textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to manipulate and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
+
+The \textbf{Unravelled Linearization} technique consists in \textbf{modifying} our initial polynomial $f$. Done cleverly this will modify the $f_i$ so that after removing the y-shifts, our sublattice basis will \textbf{directly be triangular}.
+
+Herrmann and May propose to do the following \textbf{substitution} on $f$:
+
+\[ f(x,y)=\underbrace{1 + xy}_u + Ax \pmod{e} \]
+
+This leaves us with the \textbf{linear polynomial} $\bar{f}(u, x) = u + Ax$ (note the lexicographic order, $u$ before $x$) and a relation $xy = u - 1$.
+
+
 
 \newpage
 \begin{thebibliography}{1}
