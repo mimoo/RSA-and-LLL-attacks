@@ -471,7 +471,13 @@ Herrmann and May propose to do the following \textbf{substitution} on $f$:
 
 This leaves us with the \textbf{linear polynomial} $\bar{f}(u, x) = u + Ax$ (note the lexicographic order, $u$ before $x$) and a relation $xy = u - 1$.
 
+The x-shifts are still constructed as usual:
 
+\[ \bar{g}_{i,k}(u,x) = x^i \cdot \bar{f}^k \cdot e^{m-k} \text{ for } k = 0,\hdots,m \text{ and } i=0,\hdots,m-k \]
+
+The y-shifts are \textbf{selected} so that using the previous relation $xy = u - 1$ we end up with a \textbf{triangular} lattice basis:
+
+\[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]
 
 \newpage
 \begin{thebibliography}{1}
