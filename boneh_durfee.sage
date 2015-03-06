@@ -6,7 +6,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     * |y| < e^0.5
     whenever delta < 1 - sqrt(2)/2 ~ 0.292
     """
-    
+
     # substitution (Herrman and May)
     PR.<u, x, y> = PolynomialRing(ZZ)
     Q = PR.quotient(x*y + 1 - u) # u = x*y + 1
@@ -66,19 +66,21 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(ii + 1, nn):
             if BB[ii,jj] != 0:
                 print "ugggg", ii, jj
+
     '''debug det'''
+    # from the lattice
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
 
+    # from the formula
     sx = mm^3 / 6
     sy = tho^2 * sx
     su = ((1/6) + (tho/3))*mm^3
     se = su
-    detformulae = XX^sx * YY^sy * UU^su * modulus^se
+    detformula = XX^sx * YY^sy * UU^su * modulus^se
 
-    print det - int(detformulae)
-    return 0,0
+    print det - int(detformula)
 
     bound = modulus^(mm*nn)
 
@@ -87,7 +89,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         print "det - bound = ", abs(det - bound)
     else:
         print "det < bound"
-    
     
     # LLL
     BB = BB.LLL()
