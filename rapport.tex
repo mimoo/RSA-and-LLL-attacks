@@ -11,7 +11,8 @@
 
 %
 \title{Survey: Lattice Reduction Attacks on RSA}
-\author{David Wong}
+\author{David Wong\\
+\small{supervised by Guilhem Castagnos}}
 \date{\emph{University of Bordeaux}, March 2015}
 
 %
@@ -28,15 +29,17 @@
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalysts and Researchers have looked for ways to \textbf{attack RSA}.\\
-In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
-Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. In 1990, \textbf{Wiener} had found that you could successfully break RSA if the private exponent was too small ($d<N^{1/4}$). In 2000, \textbf{Boneh} and \textbf{Durfee} improved that bound ($d<N^{0.292}$) using lattices and LLL in a Coppersmith-like attack. Their work was later simplified by \textbf{Herrmann} and \textbf{May}.\\
-In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place and see \textbf{Håstad's Broadcast Attack} as an introduction to Coppersmith. Section 4 will be an overview of the Coppersmith algorithm revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee algorithm revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.\\
+One branch of cryptanalysis on RSA is take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sort of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh and Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
 \\
-\textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.
+\textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.\\
 
 \end{abstract}
 
-\newpage
+\section{Introduction}\label{introduction}
+
+In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply. His work was implemented for various problems from revealing part of a message if most of the message was known to breaking RSA if a good enough approximation of one of the prime was known.\\
+Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. In 1990, \textbf{Wiener} had found that you could successfully break RSA if the private exponent was too small ($d<N^{1/4}$). In 2000, \textbf{Boneh} and \textbf{Durfee} improved that bound ($d<N^{0.292}$) using lattices and LLL in a Coppersmith-like attack. Their work was later simplified by \textbf{Herrmann} and \textbf{May}.\\
+In the 2nd and 3rd sections of this survey I will briefly explain how RSA and Lattice work. In section 4 we will see in what \textbf{model} the attacks are taking place and see \textbf{Håstad's Broadcast Attack} as an introduction to Coppersmith. Section 5 will be an overview of the Coppersmith algorithm revisited by Howgrave-Graham. Section 6 will be an overview of the Boneh and Durfee algorithm revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.
 
 \section{RSA}\label{rsa}
 
