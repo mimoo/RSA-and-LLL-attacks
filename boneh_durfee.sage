@@ -22,7 +22,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
     gg.sort()
-    print "xshifts:", len(gg)
+    '''print "xshifts:", len(gg)'''
 
     # x-shifts monomials
     monomials = []
@@ -57,18 +57,19 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
     '''debug'''
-    for ii in range(nn):
-        '''check if vector is helpful'''
-        if BB[ii,ii] > modulus^mm:
-            print "vector "+str(ii)+" not helpful", BB[ii, ii]
+    # for ii in range(nn):
+    #     '''check if vector is helpful'''
+    #     if BB[ii,ii] > modulus^mm:
+    #         print "vector "+str(ii)+" not helpful", BB[ii, ii]
 
-        '''check triangular matrix'''  
-        for jj in range(ii + 1, nn):
-            if BB[ii,jj] != 0:
-                print "ugggg", ii, jj
+    #     '''check triangular matrix'''  
+    #     for jj in range(ii + 1, nn):
+    #         if BB[ii,jj] != 0:
+    #             print "ugggg", ii, jj
 
     '''debug det'''
     # from the lattice
+    '''
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
@@ -89,7 +90,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         print "det - bound = ", abs(det - bound)
     else:
         print "det < bound"
-    
+    '''
     # LLL
     BB = BB.LLL()
 
@@ -109,6 +110,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     pol2 = pol2.subs({u:x*y + 1})
     '''
 
+    print pol1(xx,yy)
+    print pol2(xx,yy)
+
     # resultant
     polx = pol1.resultant(pol2)
 
@@ -124,7 +128,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
 # RSA gen
 length = 512
-length = 30
 p = next_prime(2^int(round(length/2)));
 q = next_prime( round(pi.n()*p) );
 N = p*q;
@@ -149,8 +152,8 @@ X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
 # hard debug
-m = 5
-t = 1
+m = 15
+t = 9
 
 #
 # debug
