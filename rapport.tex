@@ -27,8 +27,8 @@
 \begin{abstract}
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
 In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
-Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. Years after \textbf{Wiener} found that you could successfully break RSA if the private exponent was too small. In 2000, \textbf{Boneh} and \textbf{Durfee} found a better attack, still based on Lattice, that was simplified afterwards by a work from \textbf{Herrmann} and \textbf{Mayers}.\\
-In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place. Section 4 will be an overview of the Coppersmith attack revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee attack revisited by Herrmann and May. Finally we will see \textbf{some applications} of those attacks.
+Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. In 1990, \textbf{Wiener} had found that you could successfully break RSA if the private exponent was too small ($d<N^{1/4}$). In 2000, \textbf{Boneh} and \textbf{Durfee} improved that bound ($d<N^{0.292}$) using lattices and LLL in a Coppersmith-like attack. Their work was later simplified by \textbf{Herrmann} and \textbf{May}.\\
+In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place. Section 4 will be an overview of the Coppersmith attack revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee attack revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.
 \end{abstract}
 
 \newpage
@@ -94,7 +94,7 @@ Tells us that $m^{ed} = m \pmod{N}$
 The attacks we will describe later both make use of the \textbf{Lenstra–Lenstra–Lovász lattice basis reduction algorithm}. Hence it is necessary for us to understand what is a lattice and why is this \textbf{LLL} algorithm so useful.\\
 Think about Lattices like \textbf{Vector Spaces}. Imagine a simple vector space of two vectors. You can add them together, multiply them by scalars (let's say numbers of $\mathbb{R}$) and it spans a vector space.
 
-\begin{tikzpicture}[scale=.5]
+\begin{tikzpicture}[scale=.55]
 \draw [lightgray] [<->] (0,5) -- (10,5);
 \draw [lightgray] [<->] (5,10) -- (5,0);
 \draw [thick,purple] [->] (5,5) -- (6, 8);
@@ -192,6 +192,128 @@ Let $L$ be a lattice with a basis $B$. The $\delta$-LLL algorithm applied on $L$
 with $\mu_{i,j} = \frac{b_i \cdot \tilde{b}_j}{\tilde{b}_j \cdot \tilde{b}_j}$ and $\tilde{b}_1 = b_1$ (Gram-Schmidt)
 \end{center}
 \end{definition}
+
+\begin{tikzpicture}[scale=.55]
+\node [above] at (5,10) {\textbf{random basis}};
+\node [above] at (18,10) {\textbf{reduced basis}};
+\draw [lightgray] [<->] (0,5) -- (10,5);
+\draw [lightgray] [<->] (5,10) -- (5,0);
+
+\draw [fill,purple,opacity=.4] (9,1) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (7,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (8,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (9,3) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (5,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (6,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (7,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (8,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (9,5) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (3,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (4,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (5,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (6,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (7,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (8,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (9,7) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (1,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (2,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (3,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (4,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (5,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (6,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (7,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (8,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (9,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (1,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (2,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (3,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (4,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (5,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (6,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (7,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (1,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (2,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (3,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (4,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (5,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (1,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (2,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (3,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (1,9) circle [radius=0.1];
+
+%
+\draw [thick,black] [->] (11,5) -- (12,5);
+\node [above] at (11.5,5) {$_{LLL}$};
+%
+
+\draw [lightgray] [<->] (13,5) -- (23,5);
+\draw [lightgray] [<->] (18,10) -- (18,0);
+
+\draw [fill,purple,opacity=.4] (22,1) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (20,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (21,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (22,3) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (18,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (19,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (20,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (21,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (22,5) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (16,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (17,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (18,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (19,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (20,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (21,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (22,7) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (14,1) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (15,2) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (16,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (17,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (18,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (19,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (20,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (21,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (22,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (14,3) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (15,4) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (16,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (17,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (18,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (19,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (20,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (14,5) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (15,6) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (16,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (17,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (18,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (14,7) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (15,8) circle [radius=0.1];
+\draw [fill,purple,opacity=.4] (16,9) circle [radius=0.1];
+
+\draw [fill,purple,opacity=.4] (14,9) circle [radius=0.1];
+
+% vectors
+\draw [thick,purple] [->] (5,5) -- (7, 9);
+\draw [thick,purple] [->] (5,5) -- (6, 8);
+
+\draw [thick,purple] [->] (18,5) -- (19, 4);
+\draw [thick,purple] [->] (18,5) -- (19, 6);
+\end{tikzpicture}\\
 
 We will not see dig into the interals of LLL here, see Chris Peikert's course\cite{chrispeikert} for a detailed view of the algorithm.
 
@@ -392,6 +514,9 @@ Recall how RSA works:
 Here the unknowns are $k$ and $(-p-q)$. We can write that problem as a polynomial with root $x_0$ and $y_0$:
 \[ f(x,y) = x \cdot (A + y) \pmod{e} \]
 
+with $A = N + 1$ and $y = -p -q$.\\
+Note that to reduce the unknowns we can also use $A = \frac{N + 1}{2}$ and $y = \frac{-p-q}{2}$.\\
+
 Now we use \textbf{Coppersmith's heuristic for multivariate polynomials}. Coupled with \textbf{Howgrave-Graham's Theorem} for bivariate polynomials:
 
 \begin{theorem}
@@ -481,7 +606,11 @@ The x-shifts are still constructed as usual:
 
 The y-shifts are \textbf{selected} so that using the previous relation $xy = u - 1$ we end up with a \textbf{triangular} lattice basis:
 
-\[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]
+\[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]\\
+
+Now that we have built a lattice basis, we have to know how we need to \textbf{bound our two shortest vectors} so that Howgrave-Graham second point is respected. From LLL's property:
+
+\[ \|v_1\| \leq \|v_2\| \leq 2^{\frac{n}{4}} \cdot det(L)^{\frac{1}{n-1}} \]
 
 \newpage
 \begin{thebibliography}{1}
