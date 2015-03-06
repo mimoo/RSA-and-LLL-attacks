@@ -36,7 +36,7 @@ In the 1st and 2nd sections of this survey I will briefly explain how RSA and La
 \section{RSA}\label{rsa}
 
 Let's quickly recall \textbf{what is} and \textbf{how} RSA works:\\
-RSA is an \textbf{asymmetric cryptosystem}. A generator algorithm derives two kind of keys: a \textbf{public key} and a \textbf{private key}, these can be swapped around thanks to the asymmetric property of RSA to allow us to use the system as an \textbf{encryption} system or as a \textbf{signature} system.\\
+RSA is an \textbf{asymmetric cryptosystem}. A generator algorithm derives two kinds of keys: a \textbf{public key} and a \textbf{private key}, these can be swapped around thanks to the asymmetric property of RSA to allow us to use the system as an \textbf{encryption} system or as a \textbf{signature} system.\\
 
 \subsection{Generation}
 
@@ -176,6 +176,8 @@ Last but not least, if $\{\tilde{b}_1\,\hdots,\tilde{b}_w\}$ are the vectors of 
 
 \[ det(L) := \prod_{i=1}^{w} \|\tilde{b}_i\| \]
 
+You will see that in the technique we present, to easily compute the determinant of a lattice we will make the lattice \textbf{full rank} (dimension = rank) and \textbf{triangular}. So that the determinant is computable by doing the products of the \textbf{diagonal terms} of the lattice basis.
+
 \subsection{LLL}
 
 The \textbf{Lenstra–Lenstra–Lovász} \textit{lattice basis reduction algorithm} is a step by step calculus that reduces a lattice basis in polynomial time. The lattice is left unchanged but the row vectors of its new basis are ``\textbf{smaller}'' according to some definitions:
@@ -295,7 +297,7 @@ But first let's see how to \textbf{build the polynomials} $f_i$ (we will call th
 Those polynomials achieve two things:
 \begin{itemize}
 	\item{they have the \textbf{same root} $x_0$ but modulo $N^m$}
-	\item{each iteration introduce a new polynomial, that allows us to build a \textbf{triangular} lattice (so that the determinant is easier to calculate)}\\
+	\item{each iteration introduce a new polynomial. That allows us to build a \textbf{triangular} lattice (so that the determinant is easier to calculate)}\\
 \end{itemize}
 
 If you don't understand how they have the same root $x_0$ remember that since $f(x_0) = 0 \pmod{N}$ we know that $f(x_0) = k \cdot N$\\
@@ -357,7 +359,7 @@ Now, to obtain Howgrave-Graham's second point on our $g$ we have to manipulate $
 
 \[ det(L) < 2^{-\frac{n(n-1)}{4}} \cdot n^{-\frac{n}{2}} \cdot N^{n \cdot m} \]
 
-The small values can be considered as "error values" to \textbf{simplify our bound}:
+The small terms can be considered as "error terms" to \textbf{simplify our bound}:
 
 \[ det(L) < N^{m \cdot n}\]
 

@@ -6,14 +6,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     * |y| < e^0.5
     whenever delta < 1 - sqrt(2)/2 ~ 0.292
     """
-    #
-    # calculate bounds and display them
-    #
-    '''to do'''
-    #
-    # Algorithm
-    #
-
+    
     # substitution (Herrman and May)
     PR.<u, x, y> = PolynomialRing(ZZ)
     Q = PR.quotient(x*y + 1 - u) # u = x*y + 1
@@ -73,33 +66,28 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(ii + 1, nn):
             if BB[ii,jj] != 0:
                 print "ugggg", ii, jj
-    #
-    # DET CHECK (OPTIONAL)
-    #
-    '''
-    since howgrave graham (2):
-    \|g(xX)\| < e^m / sqrt(n)
-    +
-    LLL property (1):
-    $\|b_2\| \leq 2^{\frac{n}{2}} \cdot det(L)^{\frac{1}{n-1}}
-    we want
-    2^{\frac{n}{2}} \cdot det(L)^{\frac{1}{n-1}} < e^m/sqrt(n)
-    =>
-    det(L) < \frac{1}{2^{\frac{n(n-1)}{2}}} \ cdot e^m(n-1)/sqrt(n)^{n-1}
-    '''
+    '''debug det'''
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
 
-    #bound = modulus^(mm * (nn-1)) / (sqrt(nn)^(nn-1) * 2^( (nn(nn-1))) /2) 
-    #bound = ZZ(bound)
-    '''
+    sx = mm^3 / 6
+    sy = tho^2 * sx
+    su = ((1/6) + (tho/3))*mm^3
+    se = su
+    detformulae = XX^sx * YY^sy * UU^su * modulus^se
+
+    print det - int(detformulae)
+    return 0,0
+
+    bound = modulus^(mm*nn)
+
     if det >= bound:
         print "we don't have det < bound"
         print "det - bound = ", abs(det - bound)
     else:
         print "det < bound"
-    '''
+    
     
     # LLL
     BB = BB.LLL()
@@ -160,8 +148,9 @@ X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
 # hard debug
-m = 3
+m = 5
 t = 1
+
 #
 # debug
 # 
