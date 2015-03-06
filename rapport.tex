@@ -10,25 +10,30 @@
 \setlength{\parindent}{0pt} % no identation
 
 %
-\title{Survey: Lattice Reduction techniques to attack RSA}
+\title{Survey: Lattice Reduction Attacks on RSA}
 \author{David Wong}
-\date{March 2015}
+\date{\emph{University of Bordeaux}, March 2015}
 
 %
 \newtheorem{definition}{Definition}
 \newtheorem{property}{Property}
 \newtheorem{theorem}{Theorem}
 
+%
 
 \begin{document}
 
 \maketitle
 
+\renewcommand{\abstractname}{Abstract}
 \begin{abstract}
-\textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been since the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalists and Researchers have looked for ways to \textbf{attack RSA}.\\
+\textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalysts and Researchers have looked for ways to \textbf{attack RSA}.\\
 In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply.\\
 Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. In 1990, \textbf{Wiener} had found that you could successfully break RSA if the private exponent was too small ($d<N^{1/4}$). In 2000, \textbf{Boneh} and \textbf{Durfee} improved that bound ($d<N^{0.292}$) using lattices and LLL in a Coppersmith-like attack. Their work was later simplified by \textbf{Herrmann} and \textbf{May}.\\
-In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place. Section 4 will be an overview of the Coppersmith attack revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee attack revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.
+In the 1st and 2nd sections of this survey I will briefly explain how RSA and Lattice work. In section 3 we will see in what \textbf{model} the attacks are taking place and see \textbf{Håstad's Broadcast Attack} as an introduction to Coppersmith. Section 4 will be an overview of the Coppersmith algorithm revisited by Howgrave-Graham. Section 5 will be an overview of the Boneh and Durfee algorithm revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.\\
+\\
+\textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.
+
 \end{abstract}
 
 \newpage
@@ -588,7 +593,7 @@ By using these polynomials to build the lattice, carefully balancing the variabl
 
 To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved.\\
 This is because of the "\textbf{helpful vectors}" notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.\\
-Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and computing the determinant of the new rectangular basis is tricky.
+Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and evaluating the determinant of the new rectangular basis is tricky.
 
 \textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to handle and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
 
