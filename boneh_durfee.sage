@@ -85,7 +85,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     if det >= bound:
         print "we don't have det < bound"
-        #print "det - bound = ", abs(det - bound)
+        print "det - bound = ", abs(det - bound)
+    else:
+        print "det < bound"
     
     # LLL
     BB = BB.LLL()
@@ -118,7 +120,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 ##########################################
 
 # RSA gen
-length = 512;
+length = 512
+length = 30
 p = next_prime(2^int(round(length/2)));
 q = next_prime( round(pi.n()*p) );
 N = p*q;
@@ -140,11 +143,11 @@ tho = (1 - 2 * delta)
 m = 7
 t = int(tho * m)
 X = floor(e^0.292)
-Y = floor(e^0.5)
+Y = 2*floor(e^0.5)
 
 # hard debug
-m = 8
-t = 4
+m = 2
+t = 1
 #
 # debug
 # 
