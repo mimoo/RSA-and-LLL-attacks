@@ -28,9 +28,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for ii in range(mm - kk + 1):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
-            # if xx^ii * modulus^(mm-kk) * polZ(uu,xx,yy)^kk % modulus^mm != 0:
-            #     print "xshift % e^m:",kk,ii
     gg.sort()
+    print "xshifts:", len(gg)
 
     # x-shifts monomials
     monomials = []
@@ -45,8 +44,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
             gg.append(Q(yshift).lift()) # substitution
-            # if yy^jj * polZ(uu,xx,yy)^kk * modulus^(mm-kk) % modulus^mm != 0:
-            #     print "yshift:",jj,kk
 
     # y-shifts monomials
     for jj in range(1, tt + 1):
@@ -65,35 +62,52 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
-    
-    '''check triangular matrix'''
 
+    '''debug'''
     for ii in range(nn):
+        '''check if vector is helpful'''
+        if BB[ii,ii] > modulus^mm:
+            print "vector "+str(ii)+" not helpful", BB[ii, ii]
+
+        '''check triangular matrix'''  
         for jj in range(ii + 1, nn):
             if BB[ii,jj] != 0:
                 print "ugggg", ii, jj
     #
     # DET CHECK (OPTIONAL)
     #
-    
+    '''
+    since howgrave graham (2):
+    \|g(xX)\| < e^m / sqrt(n)
+    +
+    LLL property (1):
+    $\|b_2\| \leq 2^{\frac{n}{2}} \cdot det(L)^{\frac{1}{n-1}}
+    we want
+    2^{\frac{n}{2}} \cdot det(L)^{\frac{1}{n-1}} < e^m/sqrt(n)
+    =>
+    det(L) < \frac{1}{2^{\frac{n(n-1)}{2}}} \ cdot e^m(n-1)/sqrt(n)^{n-1}
+    '''
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
 
-    bound = modulus^(mm * (nn - 1)) / (nn * 2^nn)^((nn - 1)/2)
-    bound = int(bound)
-
+    #bound = modulus^(mm * (nn-1)) / (sqrt(nn)^(nn-1) * 2^( (nn(nn-1))) /2) 
+    #bound = ZZ(bound)
+    '''
     if det >= bound:
         print "we don't have det < bound"
         print "det - bound = ", abs(det - bound)
     else:
         print "det < bound"
+    '''
     
     # LLL
     BB = BB.LLL()
 
     # shortest vectors to polynomials
     pol1 = pol2 = 0
+
+    PR.<x,y> = PolynomialRing(ZZ) # useful?
 
     for ii in range(nn):
         pol1 += monomials[ii](x*y+1,x,y) * BB[0, ii] / monomials[ii](UU,XX,YY)
@@ -112,7 +126,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # DOESN'T WORK HERE
     print polx
 
-    return 0, 0
+    return pol1, pol2
 
 
 ############################################
@@ -146,7 +160,7 @@ X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
 # hard debug
-m = 2
+m = 3
 t = 1
 #
 # debug

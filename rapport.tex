@@ -227,7 +227,7 @@ Let's say we know $m_0$ of the message $m = m_0 + x$. And of course we don't kno
 
 \[ f(x) = (m_0 + x)^e - c = 0 \pmod{N} \]
 
-Well. \textbf{Coppersmith} says we can solve this if $x$ and $e$ are small enough:
+Well. \textbf{Coppersmith} says we can solve this in polynomial time if $x$ and $e$ are small enough:
 
 \begin{theorem}
 Let $N$ be an integer of unknown factorization, which has a divisor $b \geq N^{\beta}$, $0 < \beta \leq 1$. Let $f(x)$ be a univariate monic polynomial of degree $\delta$ and let $c \geq 1$.\\
@@ -343,17 +343,25 @@ Now the shortest vector of $B'$ (the LLL-reduced basis) should be the coefficien
 
 As I said earlier, the LLL reduction allows us to achieve an \textbf{upper bound} on this shortest vector:
 
-\[ \|b_1\| < 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]\\
+\[ \|b_1\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
 
-Now, to obtain Howgrave-Graham's second point on our $g$ ($\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}$) we have to manipulate $g_{i,j}(xX)$ and $h_i(xX)$ to obtain a small enough determinant. This is the bound we wish to obtain on the determinant:
-
-\[ det(L) < N^{m \cdot n}\]
-
-And here's the determinant:
+And here's the \textbf{determinant}:
 
 \[ det(L) = N^{\frac{1}{2}\delta m (m+1)}X^{\frac{1}{2}n(n-1)} \]
 
-To do that we need to \textbf{tweak} $m$ and $t$ until we obtain the correct bounds. Note that the bound on the shortest vector of the reduced lattice basis is generous. That means that even if we don't correctly bound our determinant, we might find an answer.
+And recall \textbf{Howgrave-Graham Theorem}'s second point:
+
+\[ \|b1\| = \|g(xX)\| < \frac{_{N^m}}{^{\sqrt{n}}} \]
+
+Now, to obtain Howgrave-Graham's second point on our $g$ we have to manipulate $g_{i,j}(xX)$ and $h_i(xX)$ to obtain a small enough determinant. From the previous equations we \textbf{bound the determinant}:
+
+\[ det(L) < 2^{-\frac{n(n-1)}{4}} \cdot n^{-\frac{n}{2}} \cdot N^{n \cdot m} \]
+
+The small values can be considered as "error values" to \textbf{simplify our bound}:
+
+\[ det(L) < N^{m \cdot n}\]
+
+It is from these equations that Coppersmith bounded the value of $x$ in his theorem. Now if we want to use this algorithm we will have to \textbf{tweak} $m$ and $t$ until we obtain the correct bounds. Note that the bound on the shortest vector of the reduced lattice basis is generous. That means that even if we don't correctly bound our determinant, we might find an answer.
 
 \subsection{Any modulus}\label{anymodulus}
 
