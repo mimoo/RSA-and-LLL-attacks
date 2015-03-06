@@ -66,6 +66,12 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
     
+    '''check triangular matrix'''
+
+    for ii in range(nn):
+        for jj in range(ii + 1, nn):
+            if BB[ii,jj] != 0:
+                print "ugggg", ii, jj
     #
     # DET CHECK (OPTIONAL)
     #
@@ -127,7 +133,8 @@ print "d:", d
 
 # Problem put in equation
 P.<x,y> = PolynomialRing(Zmod(e))
-pol = 1 + x * (N + 1 + y)
+A = int((N+1)/2)
+pol = 1 + x * (A + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
 m = 7
@@ -135,11 +142,14 @@ t = int(tho * m)
 X = floor(e^0.292)
 Y = floor(e^0.5)
 
+# hard debug
+m = 8
+t = 4
 #
 # debug
 # 
-yy = -p -q
-xx = (e * d - 1) / (N + 1 + yy)
+yy = (-p -q)/2
+xx = (e * d - 1) / (A + yy)
 uu = xx*yy + 1
 
 print "|y| < Y:", abs(yy) < Y
