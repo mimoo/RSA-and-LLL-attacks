@@ -22,14 +22,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
 
-            xshifttest = (x)^ii * polZ(u, x, y)^kk * modulus^(mm - kk)
-            if xshifttest == 0 or xshifttest(uu,xx,yy) % e^mm != 0:
-                print "OUIE"
-                print kk, ii
-                return gg, xshifttest
     gg.sort()
-
-    print "xshifts:", len(gg)
 
     # x-shifts monomials
     monomials = []
@@ -44,20 +37,27 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
             gg.append(Q(yshift).lift()) # substitution
-            '''debug'''
-            yshifttest = (y)^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
+            # debug
+            yshifttest = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
             yshifttest = Q(yshifttest).lift()
             if yshifttest == 0 or yshifttest(uu,xx,yy) % e^mm != 0:
                 print "OUIE"
                 print jj, kk
                 return gg, yshifttest
-
-    print "yshifts added", len(gg)
+            # end debug
 
     # y-shifts monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
+
+    '''debug'''
+    for ii in range(36,48):
+        new = gg[ii](u/UU,x/XX,y/YY)
+        print ii, new(uu,xx,yy) % e^mm == 0
+    return new,gg
+    '''end debug'''
+
 
     # construct lattice B
     nn = len(monomials)
@@ -119,11 +119,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         if poltest == 0 or poltest(uu,xx,yy) % e^mm != 0:
             print "AIE AIE AIE number 1"
             print jj
-            print poltest
+            #print poltest
             print poltest == 0
             print poltest(uu,xx,yy) != 0 % e^mm
             print poltest % e^mm
-            return poltest, BB
+           # return poltest, BB
 
     # LLL
     BB = BB.LLL()
