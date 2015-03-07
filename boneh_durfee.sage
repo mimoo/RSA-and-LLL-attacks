@@ -35,20 +35,18 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # y-shifts (selected by Herrman and May)
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
-            yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
+            yshift = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
             yshift = Q(yshift).lift()
+            yshift = yshift(u*UU, x*XX, y*YY)
             gg.append(yshift) # substitution
-
-
-
-
-
-
+            ''' 
             # debug
+            print jj, kk
             yshifttest = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
             yshifttest = Q(yshifttest).lift()
-
-            return yshifttest(u*UU,x*XX,y*YY), yshift
+            yshifttest2 = yshifttest(u*UU,x*XX,y*YY)
+            return yshift, yshifttest2
+            return yshifttest, (yshift, u, x, y, UU, XX, YY)
             return yshifttest, yshift(u/UU,x/XX,y/YY) 
             # why are those different ???????
 
@@ -66,18 +64,18 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 print jj, kk
                 return gg, yshifttest
             # end debug
-
+            '''
     # y-shifts monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
 
-    '''debug'''
+    '''debug
     for ii in range(36,48):
         new = gg[ii](u/UU,x/XX,y/YY)
         print ii, new(uu,xx,yy) % e^mm == 0
     return new,gg
-    '''end debug'''
+    end debug'''
 
 
     # construct lattice B
