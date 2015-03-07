@@ -29,7 +29,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 return gg, xshifttest
     gg.sort()
 
-    '''print "xshifts:", len(gg)'''
+    print "xshifts:", len(gg)
 
     # x-shifts monomials
     monomials = []
@@ -52,6 +52,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 print jj, kk
                 return gg, yshifttest
 
+    print "yshifts added", len(gg)
 
     # y-shifts monomials
     for jj in range(1, tt + 1):
@@ -106,6 +107,23 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     else:
         print "det < bound"
     '''
+
+
+    ''' debug: test if roots work on every vectors'''
+    for jj in range(nn):
+        print jj
+        poltest = 0
+        for ii in range(nn):
+            poltest += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
+        if poltest == 0 or poltest(xx,yy) % e^mm != 0:
+            print "AIE AIE AIE number 1"
+            print jj
+            print poltest
+            print poltest == 0
+            print poltest(xx,yy) != 0 % e^mm
+            print poltest % e^mm
+            return poltest, BB
+
     # LLL
     BB = BB.LLL()
 
@@ -124,10 +142,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         poltest = 0
         for ii in range(nn):
             poltest += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-        if poltest == 0 or poltest(xx,yy) != 0 % e^mm:
+        if poltest == 0 or poltest(xx,yy) % e^mm != 0:
             print "AIE AIE AIE"
             print jj
             print poltest
+            print poltest == 0
+            print poltest(xx,yy) != 0 % e^mm
+            print poltest % e^mm
             return poltest, BB
     print "done, roots work for every vectors"
 
