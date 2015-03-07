@@ -39,44 +39,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             yshift = Q(yshift).lift()
             yshift = yshift(u*UU, x*XX, y*YY)
             gg.append(yshift) # substitution
-            ''' 
-            # debug
-            print jj, kk
-            yshifttest = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
-            yshifttest = Q(yshifttest).lift()
-            yshifttest2 = yshifttest(u*UU,x*XX,y*YY)
-            return yshift, yshifttest2
-            return yshifttest, (yshift, u, x, y, UU, XX, YY)
-            return yshifttest, yshift(u/UU,x/XX,y/YY) 
-            # why are those different ???????
 
-
-
-
-
-
-
-
-
-            # test debug
-            if yshifttest == 0 or yshifttest(uu,xx,yy) % e^mm != 0:
-                print "OUIE"
-                print jj, kk
-                return gg, yshifttest
-            # end debug
-            '''
     # y-shifts monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
-
-    '''debug
-    for ii in range(36,48):
-        new = gg[ii](u/UU,x/XX,y/YY)
-        print ii, new(uu,xx,yy) % e^mm == 0
-    return new,gg
-    end debug'''
-
 
     # construct lattice B
     nn = len(monomials)
@@ -91,24 +58,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
-    '''debug'''
-    # for ii in range(nn):
-    #     '''check if vector is helpful'''
-    #     if BB[ii,ii] > modulus^mm:
-    #         print "vector "+str(ii)+" not helpful", BB[ii, ii]
-
-    #     '''check triangular matrix'''  
-    #     for jj in range(ii + 1, nn):
-    #         if BB[ii,jj] != 0:
-    #             print "ugggg", ii, jj
-
-    '''debug det'''
-    # from the lattice
-    '''
+    # last check
     det = 1
     for ii in range(nn):
         det *= BB[ii, ii]
-
+    '''
     # from the formula
     sx = mm^3 / 6
     sy = tho^2 * sx
@@ -116,33 +70,15 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     se = su
     detformula = XX^sx * YY^sy * UU^su * modulus^se
 
-    print det - int(detformula)
-
+    print "det-detformula:", det - int(detformula)
+    '''
     bound = modulus^(mm*nn)
 
     if det >= bound:
         print "we don't have det < bound"
-        print "det - bound = ", abs(det - bound)
+        print "size of det - bound = ", int(log(abs(det) / abs(bound))/log(2))
     else:
         print "det < bound"
-    '''
-
-
-    ''' debug: test if roots work on every vectors'''
-    #PR.<x,y> = PolynomialRing(ZZ) # useful?
-    for jj in range(nn):
-        print jj
-        poltest = 0
-        for ii in range(nn):
-            poltest += monomials[ii](u,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-        if poltest == 0 or poltest(uu,xx,yy) % e^mm != 0:
-            print "AIE AIE AIE number 1"
-            print jj
-            #print poltest
-            print poltest == 0
-            print poltest(uu,xx,yy) != 0 % e^mm
-            print poltest % e^mm
-           # return poltest, BB
 
     # LLL
     BB = BB.LLL()
@@ -156,28 +92,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         pol1 += monomials[ii](x*y+1,x,y) * BB[0, ii] / monomials[ii](UU,XX,YY)
         pol2 += monomials[ii](x*y+1,x,y) * BB[1, ii] / monomials[ii](UU,XX,YY)
 
-    ''' debug: test if roots work on every vectors'''
-    for jj in range(2,nn):
-        print jj
-        poltest = 0
-        for ii in range(nn):
-            poltest += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-        if poltest == 0 or poltest(xx,yy) % e^mm != 0:
-            print "AIE AIE AIE"
-            print jj
-            print poltest
-            print poltest == 0
-            print poltest(xx,yy) != 0 % e^mm
-            print poltest % e^mm
-            return poltest, BB
-    print "done, roots work for every vectors"
-
-    '''
-    # revert substitution
-    u, x, y = pol1.parent().gens() #dunno why I have to do this
-    pol1 = pol1.subs({u:x*y + 1})
-    pol2 = pol2.subs({u:x*y + 1})
-    '''
     print pol1(xx,yy)
     print pol2(xx,yy)
 
@@ -222,8 +136,8 @@ X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
 # hard debug
-m = 7
-t = 3
+m = 4
+t = 1
 
 #
 # debug
