@@ -36,10 +36,31 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
-            gg.append(Q(yshift).lift()) # substitution
+            yshift = Q(yshift).lift()
+            gg.append(yshift) # substitution
+
+
+
+
+
+
             # debug
             yshifttest = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
             yshifttest = Q(yshifttest).lift()
+
+            return yshifttest(u*UU,x*XX,y*YY), yshift
+            return yshifttest, yshift(u/UU,x/XX,y/YY) 
+            # why are those different ???????
+
+
+
+
+
+
+
+
+
+            # test debug
             if yshifttest == 0 or yshifttest(uu,xx,yy) % e^mm != 0:
                 print "OUIE"
                 print jj, kk
