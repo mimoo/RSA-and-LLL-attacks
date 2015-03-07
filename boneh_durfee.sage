@@ -21,6 +21,12 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for ii in range(mm - kk + 1):
             xshift = (x * XX)^ii * modulus^(mm - kk) * polZ(u * UU, x * XX, y * YY)^kk
             gg.append(xshift)
+
+            xshifttest = (x)^ii * polZ(u, x, y)^kk * modulus^(mm - kk)
+            if xshifttest == 0 or xshifttest(uu,xx,yy) % e^mm != 0:
+                print "OUIE"
+                print kk, ii
+                return gg, xshifttest
     gg.sort()
 
     '''print "xshifts:", len(gg)'''
@@ -38,18 +44,19 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = (y * YY)^jj * polZ(u * UU, x * XX, y * YY)^kk * modulus^(mm - kk)
             gg.append(Q(yshift).lift()) # substitution
+            '''debug'''
+            yshifttest = (y)^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
+            yshifttest = Q(yshifttest).lift()
+            if yshifttest == 0 or yshifttest(uu,xx,yy) % e^mm != 0:
+                print "OUIE"
+                print jj, kk
+                return gg, yshifttest
+
 
     # y-shifts monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
-
-    '''debug polynomials'''
-    for ii in range(len(gg)):
-        if gg[ii] == 0 or gg[ii](uu,xx,yy) % e^mm != 0:
-            print "OUIE"
-            print ii
-            return gg, 0
 
     # construct lattice B
     nn = len(monomials)
@@ -117,7 +124,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         poltest = 0
         for ii in range(nn):
             poltest += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-        if poltest == 0 or poltest(xx,yy) != 0:
+        if poltest == 0 or poltest(xx,yy) != 0 % e^mm:
             print "AIE AIE AIE"
             print jj
             print poltest
