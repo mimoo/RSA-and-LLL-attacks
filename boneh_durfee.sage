@@ -110,17 +110,18 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
 
     ''' debug: test if roots work on every vectors'''
+    #PR.<x,y> = PolynomialRing(ZZ) # useful?
     for jj in range(nn):
         print jj
         poltest = 0
         for ii in range(nn):
-            poltest += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-        if poltest == 0 or poltest(xx,yy) % e^mm != 0:
+            poltest += monomials[ii](u,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
+        if poltest == 0 or poltest(uu,xx,yy) % e^mm != 0:
             print "AIE AIE AIE number 1"
             print jj
             print poltest
             print poltest == 0
-            print poltest(xx,yy) != 0 % e^mm
+            print poltest(uu,xx,yy) != 0 % e^mm
             print poltest % e^mm
             return poltest, BB
 
