@@ -58,6 +58,21 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj])
 
+    nothelpful = 0
+    for ii in range(nn):
+        '''check if vector is helpful'''
+        if BB[ii,ii] > modulus^mm:
+            #print "vector "+str(ii)+" not helpful", BB[ii, ii] - e^mm
+            nothelpful += 1
+
+        '''check triangular matrix'''  
+        for jj in range(ii + 1, nn):
+            if BB[ii,jj] != 0:
+                print "ugggg", ii, jj
+
+    print nothelpful, "vectors are not helpful"
+    print "over ", len(gg), " vectors"
+    
     # last check
     det = 1
     for ii in range(nn):
@@ -94,12 +109,14 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     print pol1(xx,yy)
     print pol2(xx,yy)
+    if gcd(pol1,pol2) != 1:
+        print "polynomials are not independant"
 
     # resultant
-    polx = pol1.resultant(pol2)
+    #polx = pol1.resultant(pol2)
 
     # DOESN'T WORK HERE
-    print polx
+    #print polx
 
     return pol1, pol2
 
@@ -136,8 +153,8 @@ X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
 # hard debug
-m = 4
-t = 1
+m = 7
+t = 3
 
 #
 # debug
