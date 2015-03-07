@@ -1,34 +1,5 @@
 debug = True
 
-# test list of polynomials for a root
-def test_polynomials(BB, monomials, x, y, UU, XX, YY, xx, yy, modulus):
-    polynomials = []
-    for jj in range(len(monomials)):
-        poll.append(0)
-        for ii in range(len(monomials)):
-            poll[-1] += monomials[ii](x*y+1,x,y) * BB[jj, ii] / monomials[ii](UU,XX,YY)
-
-    for polynomial in polynomials:
-        if polynomial(xx,yy) % modulus != 0:
-            print "root not working on polynomial"
-            return false
-    return true
-
-# test if matrix is triangular
-def matrix_is_triangular(BB):
-    for ii in range(BB.dimensions()[0]):
-        if BB[ii, ii] == 0:
-            print "zero detected", ii
-        for jj in range(ii + 1, BB.dimensions()[0]):
-            if BB[ii,jj] != 0:
-                print "not triangular", ii, jj
-
-# test if matrix has full rank
-def matrix_full_rank(BB):
-    a = BB.dimensions()
-    if a[0] != a[1] or a[0] != BB.rank():
-        print "matrix is not full rank"
-
 # display stats on helpful vectors
 def helpful_vectors(BB, modulus):
     nothelpful = 0
@@ -86,23 +57,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
 
-    '''
-    # IF WE USE ABOVE WE GET BAD BOUND ON DET
-    # IF WE USE BELOW WE GET ONLY HELPFUL VECTORS
-
-    # y-shifts (selected by Herrman and May)
-    for jj in range(1, tt + 1):
-        for kk in range(floor(mm/tt) * jj, mm + 1):
-            yshift = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
-            yshift = Q(yshift).lift()
-            yshift = yshift(u*UU, x*XX, y*YY)
-            #gg.append(yshift) # substitution
-            # test if helpful
-            if YY^jj * UU^kk * modulus^(mm-kk) < modulus^mm:
-                print "yshift(",jj,kk,") helpful"
-                gg.append(yshift) # substitution
-                monomials.append(y*jj * u^kk)
-    '''
     # construct lattice B
     nn = len(monomials)
 
@@ -116,48 +70,27 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
 
-    # debug
+    # check if vectors are helpful
     if debug:
-        matrix_is_triangular(BB)
-        matrix_full_rank(BB)
         helpful_vectors(BB, modulus^mm)
     
-    # check on determinant's bound
+    # check if determinant is correctly bounded
     if debug:
         det = BB.det()
         bound = modulus^(mm*(nn-1))
         bound = bound / (nn*(2^nn))^((nn-1)/2)
         if det >= bound:
-            print "we don't have det < bound"
-            print "size of det - bound = ", int(log(abs(det) / abs(bound))/log(2))
+            print "We do not have det < bound. Solutions might not be found."
+            print "size(det) - size(bound) = ", int(log(abs(det) / abs(bound))/log(2))
         else:
             print "det < bound"
-
-    # now we get rid of u
-    PR.<x,y> = PolynomialRing(ZZ)
-
-    # debug
-    if debug:
-        test_polynomials(BB, monomials, x, y, UU, XX, YY, xx, yy, modulus^mm)
 
     # LLL
     BB = BB.LLL()
 
-    # debug
-    if debug:
-        test_polynomials(BB, monomials, x, y, UU, XX, YY, xx, yy, modulus^mm)
+    # vectors -> polynomials
+    PR.<x,y> = PolynomialRing(ZZ)
 
-    '''
-    # shortest vectors to polynomials
-    # this approach doesn't work... we need more vectors
-    pol1 = pol2 = 0
-
-    for ii in range(nn):
-        pol1 += monomials[ii](x*y+1,x,y) * BB[0, ii] / monomials[ii](UU,XX,YY)
-        pol2 += monomials[ii](x*y+1,x,y) * BB[1, ii] / monomials[ii](UU,XX,YY)
-    '''
-
-    # find two vectors we can work with
     pols = []
     for ii in range(nn):
         pols.append(0)
@@ -167,6 +100,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             pols.pop()
             break
 
+    # find two vectors we can work with
     pol1 = pol2 = 0
 
     for ii, pol in enumerate(pols):
@@ -185,11 +119,14 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     PR.<x> = PolynomialRing(ZZ)
     rr = pol1.resultant(pol2)
     rr = rr(x, x)
+
+    # solutions
     soly = rr.roots()[0][0]
 
     ss = pol1(x, soly)
     solx = ss.roots()[0][0]
 
+    #
     return solx, soly
 
 
@@ -197,7 +134,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 # Test 
 ##########################################
 
-# RSA gen
+# RSA gen (optional)
 length = 1024
 p = next_prime(2^int(round(length/2)));
 q = next_prime( round(pi.n()*p) );
@@ -210,35 +147,36 @@ while gcd(d, phi) != 1:
     d += 2
 e = d.inverse_mod((p-1)*(q-1))
 
-print "d=", d
+# and the solutions to be found (optional)
+yy = (-p -q)/2
+xx = (e * d - 1) / (A + yy)
 
-# Problem put in equation
+# Problem put in equation (default)
 P.<x,y> = PolynomialRing(Zmod(e))
 A = int((N+1)/2)
 pol = 1 + x * (A + y)
 delta = (2 - sqrt(2)) / 2
 tho = (1 - 2 * delta)
 m = 7
-t = int(tho * m) # we must have m >= t !
+t = int(tho * m)
 X = floor(e^0.292)
 Y = 2*floor(e^0.5)
 
-# hard debug
-m = 4
-t = 2
-X = xx + 10
-Y = abs(yy) + 10
+# Tweak values here !
+m = 4 # x-shifts
+t = 2 # y-shifts // we must have 1 <= t <= m
+X = floor(e^0.2) # we must have |x| < X
+Y = 2*floor(e^0.5) # we must have |y| < Y
 
-#
-# debug
-# 
-yy = (-p -q)/2
-xx = (e * d - 1) / (A + yy)
-uu = xx*yy + 1
-
-print "|y| < Y:", abs(yy) < Y
-print "|x| < X:", abs(xx) < X
-print "d < N^0.292", d < N^(0.292)
+# If we know the solutions we can check on our values
+print "=== checking values ==="
+print "* |y| < Y:", abs(yy) < Y
+print "* |x| < X:", abs(xx) < X
+print "* d < N^0.292", d < N^(0.292)
 
 # boneh_durfee
+print "=== running algorithm ==="
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
+
+if xx == solx and yy == soly:
+    print "\n>> we found the solutions <<"
