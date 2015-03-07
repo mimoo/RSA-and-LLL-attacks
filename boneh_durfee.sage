@@ -147,20 +147,24 @@ while gcd(d, phi) != 1:
     d += 2
 e = d.inverse_mod((p-1)*(q-1))
 
-# and the solutions to be found (optional)
-yy = (-p -q)/2
-xx = (e * d - 1) / (A + yy)
-
 # Problem put in equation (default)
 P.<x,y> = PolynomialRing(Zmod(e))
 A = int((N+1)/2)
 pol = 1 + x * (A + y)
-delta = (2 - sqrt(2)) / 2
-tho = (1 - 2 * delta)
+
+# and the solutions to be found (optional)
+yy = (-p -q)/2
+xx = (e * d - 1) / (A + yy)
+
+# default values
+alpha = 1
+delta = (2 - sqrt(2)) / 2 # 0.292
+X = 3*floor(e^(1+(delta-1)/alpha))
+Y = 2*floor(e^(1/(2*alpha)))
+
 m = 7
+tho = (1 - 2 * delta)
 t = int(tho * m)
-X = floor(e^0.292)
-Y = 2*floor(e^0.5)
 
 # Tweak values here !
 m = 4 # x-shifts
