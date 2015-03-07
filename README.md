@@ -69,7 +69,26 @@ note: `diff = |q-q`|`
 
 # Boneh Durfee
 
-I'm currently implementing the work of Boneh and Durfee in the file `boneh_durfee.sage` (to be correct, its simplification from **Herrmann and May**).
+The implementation of **Boneh and Durfee** attack (simplified by **Herrmann and May**) can be found in [bonehdurfee.sage](bonehdurfee.sage). 
+
+The attack allows us to break RSA and the private exponent `d`.
+Here's why RSA works (where `e` is the public exponent, `phi` is euler's totient function, `N` is the public modulus): 
+```
+   ed = 1 mod phi(N)
+=> ed = k phi(N) + 1 over Z
+=> k phi(N) + 1 = 0 mod e
+=> k (N - 1 - p - q) + 1 = 0 mod e
+=> 2k [(N - 1)/2 + (-p -q)/2] + 1 = 0 mod e
+```
+
+The last equation gives us a bivariate polynomial `f(x,y) = 1 + x * (A + y)`. Finding the roots of this polynomial will allow us to easily compute the private exponent `d`.
 
 The attack works if the private exponent `d` is too small compared to the modulus: `d < N^0.292`.
 
+To use it:
+
+* look at the tests in [bonehdurfee.sage](bonehdurfee.sage) and make your own with your own values for the public exponent `e` and the public modulus `N`.
+
+* guess how small your `x` and `y` should be. Boneh and Durfee tells us that if `d` is small enough and `|x| < X` and `|y| < Y` then it should find both `x` and `y` in polynomial time.
+
+* tweak `m` and `t` until you find something. Keep in mind that we must have `1 <= t <= m`.
