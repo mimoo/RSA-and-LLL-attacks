@@ -9,6 +9,15 @@ def helpful_vectors(BB, modulus):
 
     print nothelpful, "/", BB.dimensions()[0], " vectors are not helpful"
 
+# display matrix picture with 0 and X
+def matrix_overwiew(BB):
+    for ii in range(BB.dimensions()[0]):
+        a = ''
+        for jj in range(BB.dimensions()[1]):
+            a += '0' if BB[ii,jj] == 0 else 'X'
+            a += ' '
+        print a
+
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     """
     Boneh and Durfee revisited by Herrmann and May
@@ -84,6 +93,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             print "size(det) - size(bound) = ", int(log(abs(det) / abs(bound))/log(2))
         else:
             print "det < bound"
+
+    # debug: display matrix
+    matrix_overwiew(BB)
 
     # LLL
     BB = BB.LLL()
