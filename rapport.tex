@@ -337,9 +337,50 @@ Let $L$ be a lattice of dimension $n$. In polynomial time, the LLL algorithm out
 
 We can see that we can modify the bound on our vectors by modifying the dimension and the determinant of the lattice basis.
 
-\section{Attacks}\label{attacks}
+\section{Relaxed models and small roots problem}\label{attacks}
 
-Attacks on RSA falls into two categories: the attacks on the \textbf{implementation} or the \textbf{mathematical attacks}. Over the years the mathematical cryptanalysis has proven to be hard and thus the cryptosystem is still considered as secure nowadays (march 2015). But what a researcher could find interesting is to attack a \textbf{relaxed} version of the RSA problem. What if we knew ``a part'' of the message, or what if we knew ``an approximation'' of one of the prime, or what if the private exponent was ``too small''...
+Attacks on RSA falls into two categories: the attacks on the \textbf{implementation} or the \textbf{mathematical attacks}. Over the years the mathematical cryptanalysis on RSA have proven to be hard and thus the cryptosystem is still considered as secure nowadays (march 2015). But what a researcher could find interesting is to attack a \textbf{relaxed} model of the RSA problem. What if we knew ``a part'' of the message, or what if we knew ``an approximation'' of one of the prime, or what if the private exponent was ``too small''...\\
+
+Let's imagine for an instant that Alice used RSA to encrypt the same message to 3 different persons, all using the \textbf{same ``small'' public exponent} $e = 3$ as it's common to do. There is an attack, called \textbf{Håstad's Broadcast Attack}, that breaks this model.\\
+
+% diagram of three messages being encrypted
+
+\begin{align*}
+	c_1 &= m^3 \pmod{N_1}\\
+	c_2 &= m^3 \pmod{N_2}\\
+	c_3 &= m^3 \pmod{N_3}
+\end{align*}
+
+Here the trick is to use the \textbf{Chinese Remainder Theorem} to create an equation $\bmod{N_1 \cdot N_2 \cdot N_3}$:
+
+\begin{align*}
+	m^3 = &c_1 \cdot N_2 N_3 \cdot [(N_2 N_3)^{-1} \pmod{N_1}] \\
+			 + &c_2 \cdot N_1 N_3 \cdot [(N_1 N_3)^{-1} \pmod{N_2}] \\
+			 + &c_3 \cdot N_1 N_2 \cdot [(N_1 N_2)^{-1} \pmod{N_3}] 
+			 \pmod{N_1 N_2 N_3}
+\end{align*}
+
+The method is similar to \textbf{Lagrange Interpolation}. For example let me quickly explain the first term, this $m^e$ has to be equal to $c_1$ only when modulo $N_1$, so we can multiply the term $c_1$ by $N_2$ and $N_3$ so that it cancels out when modulo $N_2$ or $N_3$. But when it is modulo $N_1$ we don't want those terms, so we multiply our term by their inverse modulo $N_1$ as well. Easy no? All the variables are known so calculating $m^e \pmod{N_1 N_2 N_3}$ is straight forward.
+
+Let's notice that since  $m < N_1, m < N_2, m < N_3$, we have:
+
+\[ m \times m \times m = m^3 < N_1 N_2 N_3 \]
+
+So our $m^3 \pmod{N_1 N_2 N_3}$ is actually just $m^3$ over $\mathbb{Z}$. 
+
+To recover the message we just have to calculate the cubic root of that big value we just calculated.\\
+
+Generalizing it is pretty easy and let's formulate \textbf{Håstad}'s findings:
+
+\begin{theorem}
+If $c = m^e \pmod{N}$, then we can find $m$ in time polynomial if $|m| < N^{1/e}$.
+\end{theorem}
+
+That's the introduction to our ``small root'' problem. Now what about if $|m| > N^{1/e}$ but we know a part of the message $m_0$:
+
+\[ c = (m_0 + x)^e \pmod{N} \]
+
+Can we efficiently recover x? That's the question Coppersmith is answering.
 
 % As an example let's see the simple Hadstad broadcast attack:
 
@@ -489,7 +530,7 @@ Now, to obtain Howgrave-Graham's second point on our $g$ we have to manipulate $
 
 \[ det(L) < 2^{-\frac{n(n-1)}{4}} \cdot n^{-\frac{n}{2}} \cdot N^{n \cdot m} \]
 
-The small terms can be considered as "error terms" to \textbf{simplify our bound}:
+The small terms can be considered as ``error terms'' to \textbf{simplify our bound}:
 
 \[ det(L) < N^{m \cdot n}\]
 
@@ -500,7 +541,24 @@ It is from these equations that Coppersmith bounded the value of $x$ in his theo
 Coppersmith method is actually more general: it also works for unknown modulus.\\
 For example, imagine the problem where we know an approximation of one of the prime. This attack is called \textbf{Factoring with High Bits Known}.
 
+\[ |\tilde{p} - p| < P \]
 
+% explain problem
+
+You might have noticed that Howgrave-Graham Theorem can be written with an unknown modulus $b$:
+
+\begin{theorem}
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{b^m} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
+\end{align}
+
+Then $g(x_0)=0$ holds over the integers.
+\end{theorem}
+
+This allows us to formulate problems with unknown modulus.
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
@@ -595,7 +653,7 @@ They called the $g_{i,k}$ \textbf{x-shifts} and the $h_{j,k}$ \textbf{y-shifts}.
 By using these polynomials to build the lattice, carefully balancing the variables so that the determinant of the triangular basis doesn't exceed $e^{mn}$, Boneh and Durfee showed that LLL successfuly yielded useful results if $d < N^{0.284}$.\\
 
 To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved.\\
-This is because of the "\textbf{helpful vectors}" notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.\\
+This is because of the ``\textbf{helpful vectors}'' notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.\\
 Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and evaluating the determinant of the new rectangular basis is tricky.
 
 \textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to handle and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
@@ -623,6 +681,12 @@ Now that we have built a lattice basis, we have to know how we need to \textbf{b
 We need to bound $v_1$ and $v_2$ so that they respect Howgrave-Graham's theorem second point. This is the bound we end up with on the determinant:
 
 \[ det(L) < \frac{e^{m(n-1)}}{(n2^n)^{\frac{n-1}{2}}} \]
+
+That can be reduced by removing the ``error terms'':
+
+\[ det(L) < e^{mn} \]
+
+By finding the exact formula of the determinant, made easy by the unravelled linearization step, we can then bound $x$ and $y$.
 
 \newpage
 \begin{thebibliography}{1}
