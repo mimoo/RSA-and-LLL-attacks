@@ -560,8 +560,13 @@ Then $g(x_0)=0$ holds over the integers.
 
 This allows us to formulate problems with unknown modulus.
 
+\subsection{How were the bounds calculated?}\label{bounds}
+
+\subsection{Experiments}\label{coppersmith-experiments}
+
 \section{Boneh-Durfee}\label{bonehdurfee}
 
+\subsection{Overview of the method}\label{overview}
 This survey is no replacement for the original papers of Boneh and Durfee\cite{bonehdurfee} and Herrmann and May\cite{herrmannmay}.
 
 We've seen how Coppersmith found a way of using lattices and the LLL algorithm to find small roots to particular univariate polynomials. What about problems that have two unknowns? Coppersmith gave an heuristic for finding roots of \textbf{bivariate polynomials} but left it at that. More recently, Boneh and Durfee have released papers on some RSA attacks that make use of the initial ideas of Coppersmith for finding small roots of bivariate polynomials.
@@ -687,6 +692,10 @@ That can be reduced by removing the ``error terms'':
 \[ det(L) < e^{mn} \]
 
 By finding the exact formula of the determinant, made easy by the unravelled linearization step, we can then bound $x$ and $y$.
+
+\subsection{How was the bound on $d$ calculated?}\label{bound-boneh-durfee}
+
+\subsection{Experiments}\label{boneh-durfee-experiments}
 
 \newpage
 \begin{thebibliography}{1}
