@@ -21,10 +21,10 @@ def matrix_overview(BB, bound):
             a += '~'
         print a
 
-# tries to erase a non-helpful vector
-# index = -1 at first (last vector)
+# tries to erase unhelpful vectors
+# we start at current = n-1 (last vector)
 def erase_unhelpful(BB, monomials, bound, current):
-    # we stop after 0
+    # end of our recursive function
     if current == -1:
         return BB
 
@@ -52,6 +52,7 @@ def erase_unhelpful(BB, monomials, bound, current):
                 monomials.pop(ii)
                 print "calling function on ", ii-1
                 BB = erase_unhelpful(BB, monomials, bound, ii-1)
+                return BB
 
             # level:1
             # if just one was affected we check
@@ -74,7 +75,8 @@ def erase_unhelpful(BB, monomials, bound, current):
                     monomials.pop(ii)
                     print "calling function on ", ii-1
                     BB = erase_unhelpful(BB, monomials, bound, ii-1)
-    # end
+                    return BB
+    # nothing happened
     return BB
 
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
@@ -138,6 +140,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     if helpful_only:
         BB = erase_unhelpful(BB, monomials, modulus^mm, nn-1)
         nn = BB.dimensions()[0]
+        if nn == 0:
+            print "failure"
+            return 0,0
 
     # check if vectors are helpful
     if debug:
@@ -213,7 +218,7 @@ q = next_prime( round(pi.n()*p) );
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = int(N^(0.28)) # short d
+d = int(N^(0.27)) # short d
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
     d += 2
@@ -240,7 +245,7 @@ t = int(tho * m)
 
 # Tweak values here !
 m = 7 # x-shifts
-t = 2 # y-shifts // we must have 1 <= t <= m
+t = 3 # y-shifts // we must have 1 <= t <= m
 X = xx + 10 # we must have |x| < X
 Y = abs(yy) + 10 # we must have |y| < Y
 
