@@ -10,7 +10,7 @@ def helpful_vectors(BB, modulus):
     print nothelpful, "/", BB.dimensions()[0], " vectors are not helpful"
 
 # display matrix picture with 0 and X
-def matrix_overwiew(BB):
+def matrix_overview(BB):
     for ii in range(BB.dimensions()[0]):
         a = ''
         for jj in range(BB.dimensions()[1]):
@@ -95,7 +95,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             print "det < bound"
 
     # debug: display matrix
-    matrix_overwiew(BB)
+    matrix_overview(BB)
 
     # LLL
     BB = BB.LLL()
@@ -153,7 +153,7 @@ q = next_prime( round(pi.n()*p) );
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = int(2^(log(N^(0.25)))) # short d
+d = int(N^(0.25)) # short d
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
     d += 2

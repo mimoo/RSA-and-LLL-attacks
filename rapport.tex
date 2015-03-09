@@ -29,7 +29,7 @@
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalysts and Researchers have looked for ways to \textbf{attack RSA}.\\
-One branch of cryptanalysis on RSA is take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sort of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh and Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
+One branch of cryptanalysis on RSA is take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sort of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his constructive theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh} and \textbf{Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
 \\
 \textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.\\
 
@@ -37,20 +37,20 @@ One branch of cryptanalysis on RSA is take an interest in a \textbf{relaxed mode
 
 \section{Introduction}\label{introduction}
 
-In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply. His work was implemented for various problems from revealing part of a message if most of the message was known to breaking RSA if a good enough approximation of one of the prime was known.\\
+In 1995, \textbf{Coppersmith} released a paper on how to attack RSA using \textbf{Lattices} and \textbf{Lattice reduction techniques} such as \textbf{LLL}. A few years later, \textbf{Howgrave-Graham} revisited Coppersmith's algorithm and made it easier to understand and apply. His work was implemented for various problems from revealing part of a message if most of the message was known, to breaking RSA if a good enough approximation of one of the prime was known.\\
 Attacks based on Lattice reduction techniques caught up and several researches were done on the subject. In 1990, \textbf{Wiener} had found that you could successfully break RSA if the private exponent was too small ($d<N^{1/4}$). In 2000, \textbf{Boneh} and \textbf{Durfee} improved that bound ($d<N^{0.292}$) using lattices and LLL in a Coppersmith-like attack. Their work was later simplified by \textbf{Herrmann} and \textbf{May}.\\
 In the 2nd and 3rd sections of this survey I will briefly explain how RSA and Lattice work. In section 4 we will see in what \textbf{model} the attacks are taking place and see \textbf{Håstad's Broadcast Attack} as an introduction to Coppersmith. Section 5 will be an overview of the Coppersmith algorithm revisited by Howgrave-Graham. Section 6 will be an overview of the Boneh and Durfee algorithm revisited by Herrmann and May. Finally the \textbf{implementations} of both attack will be added as an appendix.
 
 \section{RSA}\label{rsa}
 
 Let's quickly recall \textbf{what is} and \textbf{how} RSA works:\\
-RSA is an \textbf{asymmetric cryptosystem}. A generator algorithm derives two kinds of keys: a \textbf{public key} and a \textbf{private key}, these can be swapped around thanks to the asymmetric property of RSA to allow us to use the system as an \textbf{encryption} system or as a \textbf{signature} system.\\
+RSA is an \textbf{asymmetric cryptosystem}. A generator algorithm derives two kinds of keys: a \textbf{public key} and a \textbf{private key}, both can be used either to encrypt or decrypt thanks to the asymmetric property of RSA to allow us to use the system as an \textbf{encryption} system or as a \textbf{signature} system.\\
 
 \subsection{Generation}
 
-To use RSA we need a public key to encrypt and a private key to decrypt. We first generate the public key pair as follow:\\
+To use RSA for \textbf{encryption} we need a public key to encrypt and a private key to decrypt. We first generate the \textbf{public key} as follow:\\
 
-We generate $p, q$ \textbf{primes}. For security issues they should be around the \textbf{same size}. Those primes are the \textbf{core elements} of RSA. Knowing one of those allows us to compute the private key, thus allowing us to break the system. They can also be used to speed up calculations using the Chinese Remainder Theorem. We will see all about that later.\\
+We generate \textbf{two primes} $p$ and $q$. For security issues they should be around the \textbf{same size}. Those primes are the \textbf{core elements} of RSA. Knowing one of those allows us to compute the private key, thus allowing us to break the system. They can also be used to speed up calculations using the Chinese Remainder Theorem.\\
 Knowing $p$ and $q$ we can then compute the \textbf{modulus} $N = p \times q$ which will be part of the public key as well as the private key. And you will see why.\\
 
 Now comes the interesting part, we need to find a \textbf{public exponent} which will be used for \textbf{encryption}. For computation purpose a \textbf{Fermat prime} ($2^{m} + 1$) is often used as public exponent (it makes things faster in \textbf{binary exponentiation}). In the case of a \textbf{signature scheme}, we would want the speed up to occur for the \textbf{private exponent} so we would use such a number as a private exponent and we would reverse the following steps.\\
