@@ -153,7 +153,7 @@ q = next_prime( round(pi.n()*p) );
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = int(N^(0.25)) # short d
+d = int(N^(0.27)) # short d
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
     d += 2
@@ -179,10 +179,12 @@ tho = (1 - 2 * delta)
 t = int(tho * m)
 
 # Tweak values here !
-m = 4 # x-shifts
-t = 2 # y-shifts // we must have 1 <= t <= m
-X = floor(e^0.2) # we must have |x| < X
-Y = 2*floor(e^0.5) # we must have |y| < Y
+m = 7 # x-shifts
+t = 3 # y-shifts // we must have 1 <= t <= m
+#X = floor(e^0.2) # we must have |x| < X
+#Y = 2*floor(e^0.5) # we must have |y| < Y
+X = xx + 1
+Y = abs(yy) + 1
 
 # If we know the solutions we can check on our values
 print "=== checking values ==="
