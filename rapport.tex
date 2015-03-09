@@ -362,9 +362,9 @@ Here the trick is to use the \textbf{Chinese Remainder Theorem} to create an equ
 
 The method is similar to \textbf{Lagrange Interpolation}. For example let me quickly explain the first term, this $m^e$ has to be equal to $c_1$ only when modulo $N_1$, so we can multiply the term $c_1$ by $N_2$ and $N_3$ so that it cancels out when modulo $N_2$ or $N_3$. But when it is modulo $N_1$ we don't want those terms, so we multiply our term by their inverse modulo $N_1$ as well. Easy no? All the variables are known so calculating $m^e \pmod{N_1 N_2 N_3}$ is straight forward.
 
-Let's notice that since  $m < N_1, m < N_2, m < N_3$, we have:
+Let's notice that since  $m < N_1, m < N_2, m < N_3$, we must have:
 
-\[ m \times m \times m = m^3 < N_1 N_2 N_3 \]
+\[ m \times m \times m = m^3 < N_1 \times N_2 \times N_3 \]
 
 So our $m^3 \pmod{N_1 N_2 N_3}$ is actually just $m^3$ over $\mathbb{Z}$. 
 
@@ -394,7 +394,8 @@ This survey is no replacement for the original papers of Coppersmith\cite{copper
 
 \subsection{Known modulus}\label{knownmodulus}
 
-That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there. Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
+That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there.\\
+Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
 
 Let's say we know $m_0$ of the message $m = m_0 + x$. And of course we don't know $x$. We have \textbf{our problem} translated to the following equation:
 
@@ -679,6 +680,14 @@ The y-shifts are \textbf{selected} so that using the previous relation $xy = u -
 
 \[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]\\
 
+\begin{tikzpicture}
+\node at (0,0) {$\begin{pmatrix}
+\text{xshift}\\
+0 & 0
+\end{pmatrix}$};
+\draw [->] (2,2) -- (4,2);
+\end{tikzpicture}
+
 Now that we have built a lattice basis, we have to know how we need to \textbf{bound our two shortest vectors} so that Howgrave-Graham second point is respected. From LLL's property:
 
 \[ \|v_1\| \leq \|v_2\| \leq 2^{\frac{n}{4}} \cdot det(L)^{\frac{1}{n-1}} \]
@@ -691,9 +700,13 @@ That can be reduced by removing the ``error terms'':
 
 \[ det(L) < e^{mn} \]
 
-By finding the exact formula of the determinant, made easy by the unravelled linearization step, we can then bound $x$ and $y$.
-
 \subsection{How was the bound on $d$ calculated?}\label{bound-boneh-durfee}
+
+Let's go back to our first equation:
+
+\[ f(k,s) = k \cdot (N + 1 - p - q) \pmod{e} \]
+
+where 
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 

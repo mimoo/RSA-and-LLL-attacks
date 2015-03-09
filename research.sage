@@ -21,9 +21,9 @@ def matrix_overview(BB, bound):
             a += '~'
         print a
 
-# tries to erase unhelpful vectors
+# tries to remove unhelpful vectors
 # we start at current = n-1 (last vector)
-def erase_unhelpful(BB, monomials, bound, current):
+def remove_unhelpful(BB, monomials, bound, current):
     # end of our recursive function
     if current == -1:
         return BB
@@ -44,14 +44,13 @@ def erase_unhelpful(BB, monomials, bound, current):
 
             # level:0
             # if no other vectors end up affected
-            # we erase it
+            # we remove it
             if affected_vectors == 0:
-                print "erasing unhelpful vector ", ii
+                print "* removing unhelpful vector", ii
                 BB = BB.delete_columns([ii])
                 BB = BB.delete_rows([ii])
                 monomials.pop(ii)
-                print "calling function on ", ii-1
-                BB = erase_unhelpful(BB, monomials, bound, ii-1)
+                BB = remove_unhelpful(BB, monomials, bound, ii-1)
                 return BB
 
             # level:1
@@ -64,19 +63,35 @@ def erase_unhelpful(BB, monomials, bound, current):
                     # we give up on this one
                     if BB[kk, affected_vector_index] != 0:
                         affected_deeper = False
-                # erase both it if no other vector was affected and
+                # remove both it if no other vector was affected and
                 # this helpful vector is not helpful enough
                 # compared to our unhelpful one
                 if affected_deeper and abs(bound - BB[affected_vector_index, affected_vector_index]) < abs(bound - BB[ii, ii]):
-                    print "erasing unhelpful vectors ", ii, "and", affected_vector_index
+                    print "* removing unhelpful vectors", ii, "and", affected_vector_index
                     BB = BB.delete_columns([affected_vector_index, ii])
                     BB = BB.delete_rows([affected_vector_index, ii])
                     monomials.pop(affected_vector_index)
                     monomials.pop(ii)
-                    print "calling function on ", ii-1
-                    BB = erase_unhelpful(BB, monomials, bound, ii-1)
+                    BB = remove_unhelpful(BB, monomials, bound, ii-1)
                     return BB
     # nothing happened
+    return BB
+
+def manually_remove(BB, monomials, vectors):
+    # nothing to do?
+    if len(vectors) == 0:
+        return BB
+    print "* manually removing vectors:", vectors
+    # start from last
+    vectors.sort()
+    vectors.reverse()
+    # removing in basis matrix
+    BB = BB.delete_columns(vectors)
+    BB = BB.delete_rows(vectors)
+    # removing in list of monomials
+    for ii in vectors:
+        monomials.pop(ii)
+    #
     return BB
 
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
@@ -117,7 +132,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     
     # y-shifts (selected by David Wong)
     for jj in range(1, tt + 1):
-        for kk in range(1, mm + 1):
+        for kk in range(floor(mm/tt) * jj, mm + 1):
             yshift = y^jj * polZ(u, x, y)^kk * modulus^(mm - kk)
             yshift = Q(yshift).lift()
             gg.append(yshift) # substitution
@@ -138,11 +153,16 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # ERASING ROWS : PROTOTYPE TO GET BETTER BOUNDS
     if helpful_only:
-        BB = erase_unhelpful(BB, monomials, modulus^mm, nn-1)
+        # automatically remove
+        BB = remove_unhelpful(BB, monomials, modulus^mm, nn-1)
+        # manually remove
+        #BB = manually_remove(BB, monomials, [25,26,27,28,29,30,31,32])
+        # reset dimension
         nn = BB.dimensions()[0]
         if nn == 0:
             print "failure"
             return 0,0
+
 
     # check if vectors are helpful
     if debug:
@@ -160,7 +180,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             print "det < bound"
 
     # debug: display matrix
-    matrix_overview(BB, modulus^mm)
+    if debug:
+        print monomials
+        matrix_overview(BB, modulus^mm)
 
     # LLL
     BB = BB.LLL()
@@ -213,12 +235,14 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
 # RSA gen (optional)
 length = 1024
-p = next_prime(2^int(round(length/2)));
-q = next_prime( round(pi.n()*p) );
+p = next_prime(2^int(round(length/2)))
+q = next_prime(round(pi.n()*p))
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = int(N^(0.27)) # short d
+# weak d
+length_d = 0.27
+d = int(N^length_d) 
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
     d += 2
@@ -236,8 +260,8 @@ xx = (e * d - 1) / (A + yy)
 # default values
 alpha = 1
 delta = (2 - sqrt(2)) / 2 # 0.292
-X = 3*floor(e^(1+(delta-1)/alpha))
-Y = 2*floor(e^(1/(2*alpha)))
+X = 2*floor(N^delta) # this might be way higher, you can decrease it
+Y = floor(e^(1/2)) # this bound should be correct if p and q are ~ the same size
 
 m = 7
 tho = (1 - 2 * delta)
@@ -246,8 +270,7 @@ t = int(tho * m)
 # Tweak values here !
 m = 7 # x-shifts
 t = 3 # y-shifts // we must have 1 <= t <= m
-X = xx + 10 # we must have |x| < X
-Y = abs(yy) + 10 # we must have |y| < Y
+X = floor(N^delta / 1000000) # You should be able to decrease this value to get a better difference between the determinant and the bound
 
 # If we know the solutions we can check on our values
 print "=== checking values ==="

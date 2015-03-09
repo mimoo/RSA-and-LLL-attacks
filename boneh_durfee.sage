@@ -153,7 +153,9 @@ q = next_prime( round(pi.n()*p) );
 N = p*q;
 phi = (p-1)*(q-1)
 
-d = int(N^(0.27)) # short d
+# weak d
+length_d = 0.27 # works for 0.267
+d = int(N^length_d) 
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
     d += 2
@@ -169,22 +171,17 @@ yy = (-p -q)/2
 xx = (e * d - 1) / (A + yy)
 
 # default values
-alpha = 1
 delta = (2 - sqrt(2)) / 2 # 0.292
-X = 3*floor(e^(1+(delta-1)/alpha))
-Y = 2*floor(e^(1/(2*alpha)))
-
+X = 2*floor(N^delta) # this might be way higher, you should be able to decrease it
+Y = floor(N^(1/2)) # this bound should be correct if p and q are ~ the same size
 m = 7
-tho = (1 - 2 * delta)
+tho = (1 - 2 * delta) # optimization from Herrmann and May
 t = int(tho * m)
 
 # Tweak values here !
 m = 7 # x-shifts
 t = 3 # y-shifts // we must have 1 <= t <= m
-#X = floor(e^0.2) # we must have |x| < X
-#Y = 2*floor(e^0.5) # we must have |y| < Y
-X = xx + 1
-Y = abs(yy) + 1
+X = floor(N^delta / 1000000) # You should be able to decrease this value to get a better difference between the determinant and the bound
 
 # If we know the solutions we can check on our values
 print "=== checking values ==="
