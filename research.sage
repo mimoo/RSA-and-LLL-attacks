@@ -150,7 +150,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
-
+    return BB, gg
     # ERASING ROWS : PROTOTYPE TO GET BETTER BOUNDS
     if helpful_only:
         # automatically remove

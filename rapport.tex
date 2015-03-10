@@ -5,7 +5,10 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
+
 \usepackage{tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{positioning}
 
 \setlength{\parindent}{0pt} % no identation
 
@@ -659,7 +662,39 @@ They called the $g_{i,k}$ \textbf{x-shifts} and the $h_{j,k}$ \textbf{y-shifts}.
 By using these polynomials to build the lattice, carefully balancing the variables so that the determinant of the triangular basis doesn't exceed $e^{mn}$, Boneh and Durfee showed that LLL successfuly yielded useful results if $d < N^{0.284}$.\\
 
 To achieve their \textbf{improved results} of $d < N^{0.292}$, they showed that using a sublattice by \textbf{ignoring some of the y-shifts}, the bounds on the shortest vectors found by LLL were improved.\\
-This is because of the ``\textbf{helpful vectors}'' notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.\\
+This is because of the ``\textbf{helpful vectors}'' notion of Howgrave-Graham. A vector is helpful if his contribution to the determinant (its monomial that appears in the diagonal of the lattice basis) is less than $e^m$. Boneh and Durfee's method is to discard all y-shifts when their highest monomial exceeds $e^m$.
+
+\begin{tikzpicture}[thick,scale=0.9, every node/.style={transform shape}]
+\fill [purple!20!white] (-7,-.9) to (7,-.9) to (7, -1.9) to (-7,-1.9) to cycle;
+
+\node (matrix1) {$\bordermatrix{
+&1 &x &xy &x^2 &x^2y &x^2y^2 &y &xy^2 &x^2y^3\cr
+  e^2& e^2\cr
+  xe^2& &e^2X\cr
+  fe& e& eAX& eXY\cr
+  x^2e^2& & & & e^2X^2\cr
+  xfe& & eX& & eAX^2& eX^2Y\cr
+  f^2& 1& 2AX& 2XY& A^2X^2& 2AX^2Y& X^2Y^2\cr  
+  ye^2 & & & & & & e^2Y&\cr
+  yfe& & & eAXY& & & & eY& eXY^2\cr
+  yf^2& & & 2AXY& & A^2X^2Y& 2AX^2Y^2& Y& 2XY^2& X^2Y^3}$};
+  
+\node (caption1) [below =.3cm of matrix1] {Boneh-Durfee basis matrix for $m=2$, $t=1$};
+
+\node (matrix2) [below =.5cm of caption1] {$\bordermatrix{
+&1 &x &xy &x^2 &x^2y &x^2y^2 &y &xy^2 &x^2y^3\cr
+  e^2& e^2\cr
+  xe^2& & e^2X\cr
+  fe& e& eAX& eXY\cr
+  x^2e^2& & & & e^2X^2\cr
+  xfe& & eX& & eAX^2& eX^2Y\cr
+  f^2& 1& 2AX& 2XY& A^2X^2& 2AX^2Y& X^2Y^2\cr 
+  yf^2& & & 2AXY& & A^2X^2Y& 2AX^2Y^2& Y& 2XY^2& X^2Y^3}$};
+
+\node (caption2) [below =.3cm of matrix2] {After removing the damaging y-shifts' coefficient vectors};
+
+\end{tikzpicture}\\
+
 Unfortunately by doing this we \textbf{lose the triangular structure} of the basis and evaluating the determinant of the new rectangular basis is tricky.
 
 \textbf{Boneh and Durfee} developed the notion of \textbf{Geometrically progressive matrices} to handle these non-triangular lattice basis. Later \textbf{Blömer and May} took a different approach by noticing that some of the columns could be removed without affecting the determinant too much, that allowed the lattice basis to return to a triangular structure. Both those methods are quite difficult to handle and it's more recently that \textbf{Herrmann and May} found a clever and better way:\\
@@ -673,20 +708,27 @@ Herrmann and May propose to do the following \textbf{substitution} on $f$:
 This leaves us with the \textbf{linear polynomial} $\bar{f}(u, x) = u + Ax$ (note the lexicographic order, $u$ before $x$) and a relation $xy = u - 1$.
 
 The x-shifts are still constructed as usual:
-
 \[ \bar{g}_{i,k}(u,x) = x^i \cdot \bar{f}^k \cdot e^{m-k} \text{ for } k = 0,\hdots,m \text{ and } i=0,\hdots,m-k \]
 
-The y-shifts are \textbf{selected} so that using the previous relation $xy = u - 1$ we end up with a \textbf{triangular} lattice basis:
+The y-shifts are constructed the same way, but we need to apply our relation again afterward to completely perform our unravelled linearization:
+\[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]
 
-\[ \bar{h}_{j,k}(u,x,y) = y^j \cdot \bar{f}^k \cdot e^{m-k} \text{ for } j = 1,\hdots,t \text{ and } k=\left\lfloor\frac{m}{t}\right\rfloor\cdot j,\hdots,m \]\\
+They are \textbf{selected} with the notion of ``\textbf{increasing pattern}'' in mind, so that using the previous relation $xy = u - 1$ we end up with a \textbf{triangular} lattice basis: 
 
-\begin{tikzpicture}
-\node at (0,0) {$\begin{pmatrix}
-\text{xshift}\\
-0 & 0
-\end{pmatrix}$};
-\draw [->] (2,2) -- (4,2);
-\end{tikzpicture}
+\begin{tikzpicture}[thick]
+\node [scale=1.2] (matrix3) {$\bordermatrix{
+&1 &x &u &x^2 &ux &u^2 &u^2y\cr
+  e^2& e^2\cr
+  xe^2& &e^2X\cr
+  \bar{f}e& & eAX& eU\cr
+  x^2e^2& & & & e^2X^2\cr
+  x\bar{f}e& & & & eAX^2& eUX\cr
+  \bar{f}^2& & & & A^2X^2& 2AUX& U^2\cr
+  y\bar{f}^2& & -A^2X& -2AU& & A^2UX& 2AU^2& U^2Y}$};
+
+\node [below =.3cm of matrix3] {The same matrix as above after unravelled linearization};
+
+\end{tikzpicture}\\
 
 Now that we have built a lattice basis, we have to know how we need to \textbf{bound our two shortest vectors} so that Howgrave-Graham second point is respected. From LLL's property:
 
