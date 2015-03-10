@@ -119,13 +119,18 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # find two vectors we can work with
     pol1 = pol2 = 0
+    found = False
 
     for ii, pol in enumerate(pols):
+        if found:
+            break
         for jj in range(ii + 1, len(pols)):
             if gcd(pol, pols[jj]) == 1:
                 print "using vectors", ii, "and", jj
                 pol1 = pol
                 pol2 = pols[jj]
+                # break from that double loop
+                found = True
                 break
 
     # failure
@@ -155,7 +160,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 ##########################################
 
 # RSA gen (optional)
-length = 1024
+length = 512
 p = next_prime(2^int(round(length/2)));
 q = next_prime( round(pi.n()*p) );
 N = p*q;
