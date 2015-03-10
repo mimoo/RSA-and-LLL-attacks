@@ -1,3 +1,5 @@
+import time
+
 debug = True
 
 # display stats on helpful vectors
@@ -10,12 +12,14 @@ def helpful_vectors(BB, modulus):
     print nothelpful, "/", BB.dimensions()[0], " vectors are not helpful"
 
 # display matrix picture with 0 and X
-def matrix_overview(BB):
+def matrix_overview(BB, bound):
     for ii in range(BB.dimensions()[0]):
-        a = ''
+        a = ('%02d ' % ii)
         for jj in range(BB.dimensions()[1]):
             a += '0' if BB[ii,jj] == 0 else 'X'
             a += ' '
+        if BB[ii, ii] >= bound:
+            a += '~'
         print a
 
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
@@ -95,7 +99,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             print "det < bound"
 
     # debug: display matrix
-    matrix_overview(BB)
+    if debug:
+        matrix_overview(BB, modulus^mm)
 
     # LLL
     BB = BB.LLL()
@@ -154,7 +159,7 @@ N = p*q;
 phi = (p-1)*(q-1)
 
 # weak d
-length_d = 0.27 # works for 0.267
+length_d = 0.28 # works for 0.267
 d = int(N^length_d) 
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
@@ -172,8 +177,11 @@ xx = (e * d - 1) / (A + yy)
 
 # default values
 delta = (2 - sqrt(2)) / 2 # 0.292
-X = 2*floor(N^delta) # this might be way higher, you should be able to decrease it
-Y = floor(N^(1/2)) # this bound should be correct if p and q are ~ the same size
+delta = 0.28
+# this might be way higher, you should be able to decrease it
+X = 2*floor(N^delta)
+# this bound should be correct if p and q are ~ the same size
+Y = floor(N^(1/2))
 m = 7
 tho = (1 - 2 * delta) # optimization from Herrmann and May
 t = int(tho * m)
@@ -181,17 +189,22 @@ t = int(tho * m)
 # Tweak values here !
 m = 7 # x-shifts
 t = 3 # y-shifts // we must have 1 <= t <= m
-X = floor(N^delta / 1000000) # You should be able to decrease this value to get a better difference between the determinant and the bound
+#X = floor(X / 1000)
 
 # If we know the solutions we can check on our values
 print "=== checking values ==="
 print "* |y| < Y:", abs(yy) < Y
 print "* |x| < X:", abs(xx) < X
 print "* d < N^0.292", d < N^(0.292)
+print "* size of d:", int(log(d)/log(2))
 
 # boneh_durfee
 print "=== running algorithm ==="
+start_time = time.time()
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
 if xx == solx and yy == soly:
-    print "\n>> we found the solutions <<"
+    print "\n=== we found the solutions ==="
+else:
+    print "=== FAIL ==="
+print("=== %s seconds ===" % (time.time() - start_time))

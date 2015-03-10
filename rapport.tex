@@ -1,30 +1,37 @@
 \documentclass[a4paper,11pt]{article}
 
+% fonts
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
+
+% asm
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 
+% diagrams
 \usepackage{tikz}
 \usetikzlibrary{matrix}
 \usetikzlibrary{positioning}
 
-\setlength{\parindent}{0pt} % no identation
+% tables
+\usepackage{booktabs}
 
-%
+% no identation
+\setlength{\parindent}{0pt}
+
+% theorem
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
+\newtheorem{theorem}{Theorem}
+
+% header
 \title{Survey: Lattice Reduction Attacks on RSA}
 \author{David Wong\\
 \small{supervised by Guilhem Castagnos}}
 \date{\emph{University of Bordeaux}, March 2015}
 
-%
-\newtheorem{definition}{Definition}
-\newtheorem{property}{Property}
-\newtheorem{theorem}{Theorem}
-
-%
-
+% 
 \begin{document}
 
 \maketitle
@@ -568,6 +575,17 @@ This allows us to formulate problems with unknown modulus.
 
 \subsection{Experiments}\label{coppersmith-experiments}
 
+\begin{table}
+\begin{tabular}{@{} l *4c @{}}
+\toprule
+ \multicolumn{1}{c}{Models}    & A  & B  & C  & D  \\ 
+\midrule
+ Model $X$ & X1 & X2 & X3 & X4 \\ 
+ Model $Y$ & Y1 & Y2 & Y3 & Y4 \\
+\bottomrule
+ \end{tabular}
+\end{table}
+
 \section{Boneh-Durfee}\label{bonehdurfee}
 
 \subsection{Overview of the method}\label{overview}
@@ -590,7 +608,6 @@ Here the unknowns are $k$ and $(-p-q)$. We can write that problem as a polynomia
 \[ f(x,y) = x \cdot (A + y) \pmod{e} \]
 
 with $A = N + 1$ and $y = -p -q$.\\
-Note that to reduce the unknowns we can also use $A = \frac{N + 1}{2}$ and $y = \frac{-p-q}{2}$.\\
 
 Now we use \textbf{Coppersmith's heuristic for multivariate polynomials}. Coupled with \textbf{Howgrave-Graham's Theorem} for bivariate polynomials:
 
@@ -746,12 +763,67 @@ That can be reduced by removing the ``error terms'':
 
 Let's go back to our first equation:
 
-\[ f(k,s) = k \cdot (N + 1 - p - q) \pmod{e} \]
+\[ e \cdot d = k \cdot \varphi{N} + 1 = k \cdot (N + 1 - p - q) \]
 
-where 
+Let's recap what we know:
+
+\begin{itemize}
+	\item{$p$ and $q$ should be half the size of $N$:\\
+	\begin{align*}
+		 &\frac{log(p)}{log(N)} \approx \frac{1}{2}\\
+		 \implies &p,q \approx N^{\frac{1}{2}}
+	\end{align*}}
+	\item{$e \approx N$}
+	\item{$d < N^\delta$\\}
+\end{itemize}
+
+The first two are what we usually use in RSA. Our last one is the bound we are trying to define. Of course we want a $\delta$ as small as possible. Now that we have defined all these, let's go back to our previous equation and let's bound our unknowns:
+
+\[ k \cdot ( \underbrace{N + 1}_A + \underbrace{-p-q}_s) \pmod{e}  \hspace{2mm} \mbox{ with } \begin{cases} |s| \approx 2N^{\frac{1}{2}} \\
+ |k| < \frac{N^\delta - 1}{N - 1 + 2N^{\frac{1}{2}}}
+ \end{cases} \]
+ 
+$s$ should be pretty close to our prediction. But $k$? It could be way lower, this incertitude tells us we have the possibility to play with its bound.
+
+Let's note that $s >> k$ and that reducing the size of our unknown $s$ is a good idea. Notice that both $s$ and $A$ are even, that allows us to reformulate our problem with a smaller $s$:
+
+\[ f(x,y) = x \cdot ( A + y) \pmod{e}  \hspace{2mm} \mbox{ with } \begin{cases} x = 2k \\
+ y = (-p-q)/2\\
+ A = (N+1)/2
+ \end{cases} \]
+ 
+ We can now reformulate our bounds and remove the negligible terms:
+
+\[ \begin{cases} |y| \approx N^{\frac{1}{2}}\\
+|k| < 2N^\delta
+\end{cases}\]
+
+We do not need to bound them accurately as the LLL property on the shortest vector bound is a dramatic one.
+
+Remember earlier we said that we need to bound our determinant to obtain Howgrave-Graham's Theorem second point, and LLL's property gave us this bound:
+
+\[ det(L) < e^{mn} \mbox{ with } n = m + t\]
+
+$det(L)$ being a function of $e \approx N$, $\delta$, $m$ and $t$. The bound being a function of $e$, $m$ and $t$.
+
+
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
+My experiments were far from Boneh and Durfee's findings. I found out that I couldn't find any results for $d > N^0.267$. And that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was efficient. Also my implementation ran in a few seconds/minutes whereas Boneh and Durfee's took several hours. I used Sage in a Virtualbox with 512Mo of RAM, 1 core from an Intel i7 @ 2.30GHz
+
+\begin{center} 
+\begin{tabular}{@{} l *7c @{}}
+\toprule
+ \multicolumn{1}{c}{$\delta$} & size of $N$ & size of $d$ & X & Y & m & t & time \\ 
+\midrule
+ 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.3s\\ 
+ 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.6s \\
+ 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 7 & 3 & 11m \\
+\bottomrule
+\end{tabular}
+\end{center} 
+ 
 \newpage
 \begin{thebibliography}{1}
 

@@ -1,4 +1,6 @@
-debug = True
+import time
+
+debug = False
 helpful_only = True
 
 # display stats on helpful vectors
@@ -150,7 +152,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
-    return BB, gg
+    
     # ERASING ROWS : PROTOTYPE TO GET BETTER BOUNDS
     if helpful_only:
         # automatically remove
@@ -280,7 +282,11 @@ print "* d < N^0.292", d < N^(0.292)
 
 # boneh_durfee
 print "=== running algorithm ==="
+start_time = time.time()
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
 if xx == solx and yy == soly:
-    print "\n>> we found the solutions <<"
+    print "\n=== we found the solutions ==="
+else:
+    print "FAIL"
+print("=== %s seconds ===" % (time.time() - start_time))
