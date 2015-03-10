@@ -529,10 +529,6 @@ As I said earlier, the LLL reduction allows us to achieve an \textbf{upper bound
 
 \[ \|b_1\| \leq 2^{\frac{n-1}{4}} \cdot det(L)^{\frac{1}{n}} \]
 
-And here's the \textbf{determinant}:
-
-\[ det(L) = N^{\frac{1}{2}\delta m (m+1)}X^{\frac{1}{2}n(n-1)} \]
-
 And recall \textbf{Howgrave-Graham Theorem}'s second point:
 
 \[ \|b1\| = \|g(xX)\| < \frac{_{N^m}}{^{\sqrt{n}}} \]
@@ -550,13 +546,15 @@ It is from these equations that Coppersmith bounded the value of $x$ in his theo
 \subsection{Any modulus}\label{anymodulus}
 
 Coppersmith method is actually more general: it also works for unknown modulus.\\
-For example, imagine the problem where we know an approximation of one of the prime. This attack is called \textbf{Factoring with High Bits Known}.
+We will see how the \textbf{Factoring with High Bits Known} attack works to understand this part. Imagine the relaxed problem of RSA where we know an approximation $\tilde{p}$ of one of the prime $p$. The approximation is bounded as followed:
 
-\[ |\tilde{p} - p| < P \]
+\[ |\tilde{p} - p| < N^{\frac{1}{4}} \]
 
-% explain problem
+Now we have an equation with one unknown, modulo another unknown:
 
-You might have noticed that Howgrave-Graham Theorem can be written with an unknown modulus $b$:
+\[ \tilde{p} = x_0 \pmod{p} \]
+
+This gives us an equation $f(x) = \tilde{p} - x$ such that $f(x_0) = 0 \pmod{p}$. We can use that in the Coppersmith algorithm we have seen earlier. This is because Howgrave-Graham's theorem works for unknown modulus. Let's see this theorem again:
 
 \begin{theorem}
 Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
@@ -569,22 +567,31 @@ Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a
 Then $g(x_0)=0$ holds over the integers.
 \end{theorem}
 
-This allows us to formulate problems with unknown modulus.
+We know we can build the $f_i$ polynomials as we did before. And here instead of bounding $\|g(xX)\|$ with $p^m$ we can bound it with $N^{\beta m}$ (since we have $p > N^\beta$ in Coppersmith Theorem). This allows us to formulate problems with unknown modulus.
+
+And now obtain a bound on the determinant:
+
+\[ det(L) < N^{m \cdot n \cdot \beta} \]
 
 \subsection{How were the bounds calculated?}\label{bounds}
 
+And here's the \textbf{determinant}:
+
+\[ det(L) = N^{\frac{1}{2}\delta m (m+1)}X^{\frac{1}{2}n(n-1)} \]
+
 \subsection{Experiments}\label{coppersmith-experiments}
 
-\begin{table}
-\begin{tabular}{@{} l *4c @{}}
+\begin{center} 
+\begin{tabular}{@{} l *7c @{}}
 \toprule
- \multicolumn{1}{c}{Models}    & A  & B  & C  & D  \\ 
+ \multicolumn{1}{c}{$\delta$} & size of $N$ & size of $d$ & X & Y & m & t & time \\ 
 \midrule
- Model $X$ & X1 & X2 & X3 & X4 \\ 
- Model $Y$ & Y1 & Y2 & Y3 & Y4 \\
+ 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.3s\\ 
+ 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.6s \\
+ 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 7 & 3 & 11m \\
 \bottomrule
- \end{tabular}
-\end{table}
+\end{tabular}
+\end{center} 
 
 \section{Boneh-Durfee}\label{bonehdurfee}
 
@@ -820,20 +827,24 @@ We end up with an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Bone
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
-My experiments were far from Boneh and Durfee's findings. I found out that in practice, I couldn't find any results for $d > N^0.27$. And that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also my implementation ran in a few seconds/minutes whereas Boneh and Durfee's took several hours. I used Sage 6.4 in a Virtualbox with 512Mo of RAM, 1 core from an Intel i7 @ 2.30GHz
+My experiments were far from Boneh and Durfee's findings. When they took hours to solve for small $m$ and $t$, I took seconds. This is, I guess, the gap between 1999 and 2015: I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also, the LLL-reduced basis first two vectors were not always independent but I could often finds two independent vectors in the reduced basis.
 
 \begin{center} 
 \begin{tabular}{@{} l *7c @{}}
 \toprule
  \multicolumn{1}{c}{$\delta$} & size of $N$ & size of $d$ & X & Y & m & t & time \\ 
 \midrule
- 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.3s\\ 
- 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.6s \\
- 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 7 & 3 & 11m \\
+ 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.8s\\ 
+ 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 1.9s \\
+ 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 6 & 3 & 3m 3s \\
+ 0.28 & 1024 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 6 & 3 & 3m 3s \\
 \bottomrule
 \end{tabular}
 \end{center} 
- 
+
+\section{Summary}
+
+
 \newpage
 \begin{thebibliography}{1}
 
