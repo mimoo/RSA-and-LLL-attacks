@@ -90,13 +90,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # check if determinant is correctly bounded
     if debug:
         det = BB.det()
-        bound = modulus^(mm*(nn-1))
-        bound = bound / (nn*(2^nn))^((nn-1)/2)
+        bound = modulus^(mm*nn)
         if det >= bound:
             print "We do not have det < bound. Solutions might not be found."
-            print "size(det) - size(bound) = ", int(log(abs(det) / abs(bound))/log(2))
+            diff = (log(det) - log(bound)) / log(2)
+            print "size det(L) - size e^(m*n) = ", floor(diff)
         else:
-            print "det < bound"
+            print "det(L) < e^(m*n)"
 
     # debug: display matrix
     if debug:
@@ -187,7 +187,7 @@ tho = (1 - 2 * delta) # optimization from Herrmann and May
 t = int(tho * m)
 
 # Tweak values here !
-m = 7 # x-shifts
+m = 10 # x-shifts
 t = 3 # y-shifts // we must have 1 <= t <= m
 #X = floor(X / 1000)
 
