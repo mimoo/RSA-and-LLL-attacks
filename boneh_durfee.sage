@@ -159,17 +159,17 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 # Test 
 ##########################################
 
-# RSA gen (optional)
-length = 512
-p = next_prime(2^int(round(length/2)));
-q = next_prime( round(pi.n()*p) );
-N = p*q;
-phi = (p-1)*(q-1)
+# RSA gen options (tweakable)
+length_N = 512
+length_d = 0.28
 
-# weak d
-length_d = 0.28 # works for 0.267
+# RSA gen (for the demo)
+p = next_prime(2^int(round(length_N/2)))
+q = next_prime(round(pi.n()*p))
+N = p*q
+phi = (p-1)*(q-1)
 d = int(N^length_d) 
-if d % 2 == 0: d += 1 # in case d even
+if d % 2 == 0: d += 1
 while gcd(d, phi) != 1:
     d += 2
 e = d.inverse_mod((p-1)*(q-1))
@@ -179,27 +179,28 @@ P.<x,y> = PolynomialRing(Zmod(e))
 A = int((N+1)/2)
 pol = 1 + x * (A + y)
 
-# and the solutions to be found (optional)
+# and the solutions to be found (for the demo)
 yy = (-p -q)/2
 xx = (e * d - 1) / (A + yy)
 
-# default values
-delta = (2 - sqrt(2)) / 2 # 0.292
-delta = 0.28
-# this might be way higher, you should be able to decrease it
-X = 2*floor(N^delta)
-# this bound should be correct if p and q are ~ the same size
-Y = floor(N^(1/2))
-m = 7
-tho = (1 - 2 * delta) # optimization from Herrmann and May
-t = int(tho * m)
+#
+# Default values
+# 
+delta = (2 - sqrt(2)) / 2 # 0.292 (Boneh & Durfee's bound)
+X = 2*floor(N^delta)      # this _might_ be too much
+Y = floor(N^(1/2))        # correct if p, q are ~ same size
+m = 3                     # bigger is better (but takes longer)
+t = int((1-2*delta) * m)  # optimization from Herrmann and May
 
-# Tweak values here !
-m = 13 # x-shifts
-t = 8 # y-shifts # we must have 1 <= t <= m
-#X = floor(X / 1000)
+#
+# Tweak values here
+# 
+delta = 0.28         # so that d < N^delta
+m = 13               # x-shifts
+t = 8                # y-shifts # we must have 1 <= t <= m
+#X = floor(X / 1000) # last recourse tweak
 
-# If we know the solutions we can check on our values
+# Checking bounds (for the demo)
 print "=== checking values ==="
 print "* |y| < Y:", abs(yy) < Y
 print "* |x| < X:", abs(xx) < X
@@ -211,8 +212,11 @@ print "=== running algorithm ==="
 start_time = time.time()
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
+# Checking solutions (for the demo)
 if xx == solx and yy == soly:
     print "\n=== we found the solutions ==="
 else:
     print "=== FAIL ==="
+
+# Stats
 print("=== %s seconds ===" % (time.time() - start_time))
