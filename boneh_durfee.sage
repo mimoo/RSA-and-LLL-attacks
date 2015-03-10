@@ -123,6 +123,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     for ii, pol in enumerate(pols):
         for jj in range(ii + 1, len(pols)):
             if gcd(pol, pols[jj]) == 1:
+                print "using vectors", ii, "and", jj
                 pol1 = pol
                 pol2 = pols[jj]
                 break
@@ -139,9 +140,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # solutions
     soly = rr.roots()[0][0]
+    print "found for y_0:", soly
 
     ss = pol1(x, soly)
     solx = ss.roots()[0][0]
+    print "found for x_0:", solx
 
     #
     return solx, soly
@@ -187,8 +190,8 @@ tho = (1 - 2 * delta) # optimization from Herrmann and May
 t = int(tho * m)
 
 # Tweak values here !
-m = 10 # x-shifts
-t = 3 # y-shifts // we must have 1 <= t <= m
+m = 13 # x-shifts
+t = 8 # y-shifts # we must have 1 <= t <= m
 #X = floor(X / 1000)
 
 # If we know the solutions we can check on our values

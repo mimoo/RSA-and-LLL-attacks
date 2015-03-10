@@ -795,22 +795,32 @@ Let's note that $s >> k$ and that reducing the size of our unknown $s$ is a good
  We can now reformulate our bounds and remove the negligible terms:
 
 \[ \begin{cases} |y| \approx N^{\frac{1}{2}}\\
-|k| < 2N^\delta
+|x| < 2N^\delta
 \end{cases}\]
 
 We do not need to bound them accurately as the LLL property on the shortest vector bound is a dramatic one.
 
-Remember earlier we said that we need to bound our determinant to obtain Howgrave-Graham's Theorem second point, and LLL's property gave us this bound:
+Now for our algorithm we need to fix a $m$ and a $t$ such that $dim(L) = n = m + t$. For Herrmann and May's selection of the y-shifts we need $m >= t$ so we will write $t = \tau m$ with $\tau < 1$.
 
-\[ det(L) < e^{mn} \mbox{ with } n = m + t\]
+Remember earlier we said that we need to bound our determinant to obtain \textbf{Howgrave-Graham's Theorem second point}, and \textbf{LLL's property} gave us this \textbf{bound}:
+
+\[ det(L) < e^{mn} \]
 
 $det(L)$ being a function of $e \approx N$, $\delta$, $m$ and $t$. The bound being a function of $e$, $m$ and $t$.
 
+from Herrmann and May's proof we end up with this formula as \textbf{determinant} (after removing negligible terms that were calculated for $m \rightarrow \infty$):
 
+\[ det(L) = X^{\frac{1}{6}m^3} Y^{\frac{\tau^2}{6}m^3} U^{(\frac{1}{6} + \frac{\tau}{3})m^3} e^{(\frac{1}{3} + \frac{\tau}{2})m^2} \]
+
+We then \textbf{replace the upper bounds} by their values: $X = N^\delta$, $Y = N^{\frac{1}{2}}$, $U = X*Y$ and we see for what $m$, $\tau$ and $\delta$ the algorithm still runs in polynomial time (the complexity is dominated by LLL's).
+
+We end up with an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Boneh-Durfee bound}:
+
+\[ \delta \leq \frac{1}{2} (2 - \sqrt{2}) \approx 0.292 \]
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
-My experiments were far from Boneh and Durfee's findings. I found out that I couldn't find any results for $d > N^0.267$. And that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was efficient. Also my implementation ran in a few seconds/minutes whereas Boneh and Durfee's took several hours. I used Sage in a Virtualbox with 512Mo of RAM, 1 core from an Intel i7 @ 2.30GHz
+My experiments were far from Boneh and Durfee's findings. I found out that in practice, I couldn't find any results for $d > N^0.27$. And that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also my implementation ran in a few seconds/minutes whereas Boneh and Durfee's took several hours. I used Sage 6.4 in a Virtualbox with 512Mo of RAM, 1 core from an Intel i7 @ 2.30GHz
 
 \begin{center} 
 \begin{tabular}{@{} l *7c @{}}
