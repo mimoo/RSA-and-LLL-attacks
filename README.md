@@ -6,7 +6,7 @@ First, we'll see how **Coppersmith** found out that you could use lattice reduct
 
 Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to factor the RSA modulus when the private key is too small (`d < N^0.929`). Followed by a simplification from **Herrman and May**.
 
-If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](boneh-durfee). If you want to dig deeper you can also read my survey [here](rapport.pdf) (**warning: work in progress**).
+If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](#boneh-durfee). If you want to dig deeper you can also read my survey [here](rapport.pdf) (**warning: work in progress**).
 
 # Coppersmith
 
