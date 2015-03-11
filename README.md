@@ -65,7 +65,7 @@ What is important here if you want to find a solution:
 *  we should have `q >= N^beta`
 * as usual `XX` is the upper bound of the root, so the difference should be: |diff| < X
 
-note: `diff = |q-q`|`
+note: `diff = |q-q'|`
 
 # Boneh Durfee
 
