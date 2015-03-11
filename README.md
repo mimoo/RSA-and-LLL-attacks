@@ -88,7 +88,15 @@ The attack works if the private exponent `d` is too small compared to the modulu
 To use it:
 
 * look at the tests in [bonehdurfee.sage](bonehdurfee.sage) and make your own with your own values for the public exponent `e` and the public modulus `N`.
+* guess how small the private exponent `d` is and modify `delta` so you have `d < N^delta`
+* tweak `m` and `t` until you find something. You can use Herrmann and May optimized `t = tau * m` with `tau = 1-2*delta`. Keep in mind that the bigger they are, the better it is, but the longer it will take. Also we must have `1 <= t <= m`.
+* you can also decrease `X` as it might be too high compared to the root of `x` you are trying to find. This is a last recourse tweak though.
 
-* guess how small your `x` and `y` should be. Boneh and Durfee tells us that if `d` is small enough and `|x| < X` and `|y| < Y` then it should find both `x` and `y` in polynomial time.
+Here is the tweakable part in the code:
 
-* tweak `m` and `t` until you find something. Keep in mind that we must have `1 <= t <= m`.
+```
+# Tweak values here !
+delta = 0.26 # so that d < N^delta
+m = 3        # x-shifts
+t = 1        # y-shifts # we must have 1 <= t <= m
+```
