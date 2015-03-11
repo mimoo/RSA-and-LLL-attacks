@@ -1,6 +1,6 @@
 import time
 
-debug = False
+debug = True
 helpful_only = True
 
 # display stats on helpful vectors
@@ -243,7 +243,7 @@ N = p*q;
 phi = (p-1)*(q-1)
 
 # weak d
-length_d = 0.27
+length_d = 0.272
 d = int(N^length_d) 
 if d % 2 == 0: d += 1 # in case d even
 while gcd(d, phi) != 1:
@@ -259,20 +259,12 @@ pol = 1 + x * (A + y)
 yy = (-p -q)/2
 xx = (e * d - 1) / (A + yy)
 
-# default values
-alpha = 1
-delta = (2 - sqrt(2)) / 2 # 0.292
-X = 2*floor(N^delta) # this might be way higher, you can decrease it
-Y = floor(e^(1/2)) # this bound should be correct if p and q are ~ the same size
-
-m = 7
-tho = (1 - 2 * delta)
-t = int(tho * m)
-
-# Tweak values here !
+# research values
+delta = 0.28
+X = floor(N^delta)
+Y = floor(e^(1/2))
 m = 7 # x-shifts
-t = 3 # y-shifts // we must have 1 <= t <= m
-X = floor(N^delta / 1000000) # You should be able to decrease this value to get a better difference between the determinant and the bound
+t = (1 - 2 * delta) * m
 
 # If we know the solutions we can check on our values
 print "=== checking values ==="

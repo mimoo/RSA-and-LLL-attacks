@@ -160,8 +160,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 ##########################################
 
 # RSA gen options (tweakable)
-length_N = 512
-length_d = 0.28
+length_N = 1024
+length_d = 0.26
 
 # RSA gen (for the demo)
 p = next_prime(2^int(round(length_N/2)))
@@ -184,21 +184,14 @@ yy = (-p -q)/2
 xx = (e * d - 1) / (A + yy)
 
 #
-# Default values
+# Default values 
+# you should tweak delta and m. X should be OK as well
 # 
-delta = (2 - sqrt(2)) / 2 # 0.292 (Boneh & Durfee's bound)
+delta = 0.26              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
 m = 3                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
-
-#
-# Tweak values here
-# 
-delta = 0.28         # so that d < N^delta
-m = 13               # x-shifts
-t = 8                # y-shifts # we must have 1 <= t <= m
-#X = floor(X / 1000) # last recourse tweak
 
 # Checking bounds (for the demo)
 print "=== checking values ==="
@@ -214,7 +207,7 @@ solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
 # Checking solutions (for the demo)
 if xx == solx and yy == soly:
-    print "\n=== we found the solutions ==="
+    print "\n=== the solutions are correct ==="
 else:
     print "=== FAIL ==="
 
