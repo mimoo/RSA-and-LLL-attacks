@@ -581,14 +581,30 @@ And here's the \textbf{determinant}:
 
 \subsection{Experiments}\label{coppersmith-experiments}
 
+I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz.
+
+Here are the experiments for the \textbf{Stereotyped Message Attack}:
+
 \begin{center} 
-\begin{tabular}{@{} l *7c @{}}
+\begin{tabular}{@{} *6c @{}}
 \toprule
- \multicolumn{1}{c}{$\delta$} & size of $N$ & size of $d$ & X & Y & m & t & time \\ 
+ size of $x_0$ & size of $N$ & $e$ & m & t & running time \\ 
 \midrule
- 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.3s\\ 
- 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.6s \\
- 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 7 & 3 & 11m \\
+ 100 & 512 & 3 & 3 & 0 & 0.02s\\ 
+ 200 & 1024 & 3 & 3 & 0 & 0.05s\\
+\bottomrule
+\end{tabular}
+\end{center} 
+
+Here are the experiments for the \textbf{Factoring with High Bits Known Attack}:
+
+\begin{center} 
+\begin{tabular}{@{}  *6c @{}}
+\toprule
+ size of $|p - \tilde{p}|$ & size of $N$ & $m$ & $t$ & running time \\ 
+\midrule
+ 110 & 512 & 4 & 4 & 0.01s\\ 
+ 200 & 1024 & 4 & 4 & 0.03s\\
 \bottomrule
 \end{tabular}
 \end{center} 
@@ -830,14 +846,14 @@ We end up with an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Bone
 My experiments were far from Boneh and Durfee's findings. When they took hours to solve for small $m$ and $t$, I took seconds. This is, I guess, the gap between 1999 and 2015: I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also, the LLL-reduced basis first two vectors were not always independent but I could often finds two independent vectors in the reduced basis.
 
 \begin{center} 
-\begin{tabular}{@{} l *7c @{}}
+\begin{tabular}{@{} *6c @{}}
 \toprule
- \multicolumn{1}{c}{$\delta$} & size of $N$ & size of $d$ & X & Y & m & t & time \\ 
+ $\delta$ & size of $N$ (bits) & size of $d$ (bits) & m & t & running time \\ 
 \midrule
- 0.26 & 1024 & 256 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 0.8s\\ 
- 0.26 & 2048 & 532 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 3 & 1 & 1.9s \\
- 0.27 & 2048 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 6 & 3 & 3m 3s \\
- 0.28 & 1024 & 553 & $\lfloor 2N^\delta \rfloor$ & $\lfloor N^{\frac{1}{2}} \rfloor$ & 6 & 3 & 3m 3s \\
+ 0.26 & 1024 & 256 & 3 & 1 & 0.8s\\ 
+ 0.26 & 2048 & 532 & 3 & 1 & 1.9s \\
+ 0.27 & 2048 & 553 & 6 & 3 & 3m 3s \\
+ 0.28 & 1024 & 553 & 6 & 3 & 3m 3s \\
 \bottomrule
 \end{tabular}
 \end{center} 

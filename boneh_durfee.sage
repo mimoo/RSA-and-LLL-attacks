@@ -25,7 +25,9 @@ def matrix_overview(BB, bound):
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     """
     Boneh and Durfee revisited by Herrmann and May
+    
     finds a solution if:
+    * d < N^delta
     * |x| < e^delta
     * |y| < e^0.5
     whenever delta < 1 - sqrt(2)/2 ~ 0.292
