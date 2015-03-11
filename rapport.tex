@@ -44,7 +44,7 @@
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalysts and Researchers have looked for ways to \textbf{attack RSA}.\\
-One branch of cryptanalysis on RSA is take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sort of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his constructive theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh} and \textbf{Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
+One branch of cryptanalysis on RSA is to take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sorts of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his constructive theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh} and \textbf{Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
 \\
 \textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.\\
 
@@ -338,11 +338,11 @@ with $\mu_{i,j} = \frac{b_i \cdot \tilde{b}_j}{\tilde{b}_j \cdot \tilde{b}_j}$ a
 \draw [thick,purple] [->] (18,5) -- (19, 6);
 \end{tikzpicture}\\
 
-We will not see dig into the interals of LLL here, see Chris Peikert's course\cite{chrispeikert} for a detailed view of the algorithm.
+We will not dig into the interals of LLL here, see Chris Peikert's course\cite{chrispeikert} for detailed explanations of the algorithm.
 
 \subsection{Wanted properties of LLL}
 
-LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is useful for us because if we consider the row vectors of a lattice's basis as \textbf{coefficient vectors of polynomials}. We can find a \textbf{linear combination} of those polynomials that has \textbf{``particularly small'' coefficients}. But let's not unveil too much too soon. Here are some relevant properties of a LLL reduced basis that we will need later:
+LLL yields an approximation of the \textbf{Shortest Vector Problem}. This is useful for us because if we consider the row vectors of a lattice's basis as \textbf{coefficient vectors of polynomials}. We can find a \textbf{linear combination} of those polynomials that has \textbf{``particularly small'' coefficients}. But let's not unveil too much too soon. Here is the relevant property of a LLL reduced basis that we will need later:
 
 \begin{property}
 Let $L$ be a lattice of dimension $n$. In polynomial time, the LLL algorithm outputs reduced basis vectors $v_i$, for $1 \leq i \leq n$, satisfying:
@@ -356,9 +356,22 @@ We can see that we can modify the bound on our vectors by modifying the dimensio
 
 Attacks on RSA falls into two categories: the attacks on the \textbf{implementation} or the \textbf{mathematical attacks}. Over the years the mathematical cryptanalysis on RSA have proven to be hard and thus the cryptosystem is still considered as secure nowadays (march 2015). But what a researcher could find interesting is to attack a \textbf{relaxed} model of the RSA problem. What if we knew ``a part'' of the message, or what if we knew ``an approximation'' of one of the prime, or what if the private exponent was ``too small''...\\
 
-Let's imagine for an instant that Alice used RSA to encrypt the same message to 3 different persons, all using the \textbf{same ``small'' public exponent} $e = 3$ as it's common to do. There is an attack, called \textbf{Håstad's Broadcast Attack}, that breaks this model.\\
+Let's imagine for an instant that Alice used RSA to encrypt the same message to 3 different people, all using the \textbf{same ``small'' public exponent} $e = 3$ as it's common to do. There is an attack, called \textbf{Håstad's Broadcast Attack}, that breaks this model.\\
 
-% diagram of three messages being encrypted
+\begin{center}
+\begin{tikzpicture}[scale=2]
+\tikzstyle{every node}=[draw, shape=circle, ultra thick];
+\node (D) at (2,2) {Alice};
+\node (A) at (0,0) {David};
+\node (B) at (2,0) {Bob};
+\node (C) at (4,0) {Charles};
+
+\tikzstyle{every node}=[draw,shape=rectangle,solid,fill=white];
+\draw [->,dashed] (D) -- (A) node [above right=10mm] {$m^3 \pmod{N_1}$};
+\draw [->,dashed] (D) -- (B) node [above=15mm] {$m^3 \pmod{N_2}$};
+\draw [->,dashed] (D) -- (C) node [above left=10mm] {$m^3 \pmod{N_3}$};
+\end{tikzpicture}
+\end{center}
 
 \begin{align*}
 	c_1 &= m^3 \pmod{N_1}\\
@@ -366,8 +379,7 @@ Let's imagine for an instant that Alice used RSA to encrypt the same message to 
 	c_3 &= m^3 \pmod{N_3}
 \end{align*}
 
-Here the trick is to use the \textbf{Chinese Remainder Theorem} to create an equation $\bmod{N_1 \cdot N_2 \cdot N_3}$:
-
+Here the trick is to use the \textbf{Chinese Remainder Theorem} to create an equation modulo $N_1 \times N_2 \times N_3$:
 \begin{align*}
 	m^3 = &c_1 \cdot N_2 N_3 \cdot [(N_2 N_3)^{-1} \pmod{N_1}] \\
 			 + &c_2 \cdot N_1 N_3 \cdot [(N_1 N_3)^{-1} \pmod{N_2}] \\
