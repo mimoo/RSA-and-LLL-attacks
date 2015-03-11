@@ -77,8 +77,8 @@ Here's why RSA works (where `e` is the public exponent, `phi` is euler's totient
    ed = 1 mod phi(N)
 => ed = k phi(N) + 1 over Z
 => k phi(N) + 1 = 0 mod e
-=> k (N - 1 - p - q) + 1 = 0 mod e
-=> 2k [(N - 1)/2 + (-p -q)/2] + 1 = 0 mod e
+=> k (N + 1 - p - q) + 1 = 0 mod e
+=> 2k [(N + 1)/2 + (-p -q)/2] + 1 = 0 mod e
 ```
 
 The last equation gives us a bivariate polynomial `f(x,y) = 1 + x * (A + y)`. Finding the roots of this polynomial will allow us to easily compute the private exponent `d`.

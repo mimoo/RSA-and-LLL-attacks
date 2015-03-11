@@ -823,7 +823,7 @@ Let's note that $s >> k$ and that reducing the size of our unknown $s$ is a good
 
 We do not need to bound them accurately as the LLL property on the shortest vector bound is a dramatic one.
 
-Now for our algorithm we need to fix a $m$ and a $t$ such that $dim(L) = n = m + t$. For Herrmann and May's selection of the y-shifts we need $m >= t$ so we will write $t = \tau m$ with $\tau < 1$.
+Now for our algorithm we need to fix a $m$ and a $t$ such that $dim(L) = n$. For Herrmann and May's selection of the y-shifts we need $m >= t$ so we will write $t = \tau m$ with $\tau < 1$.
 
 Remember earlier we said that we need to bound our determinant to obtain \textbf{Howgrave-Graham's Theorem second point}, and \textbf{LLL's property} gave us this \textbf{bound}:
 
@@ -834,6 +834,10 @@ $det(L)$ being a function of $e \approx N$, $\delta$, $m$ and $t$. The bound bei
 from Herrmann and May's proof we end up with this formula as \textbf{determinant} (after removing negligible terms that were calculated for $m \rightarrow \infty$):
 
 \[ det(L) = X^{\frac{1}{6}m^3} Y^{\frac{\tau^2}{6}m^3} U^{(\frac{1}{6} + \frac{\tau}{3})m^3} e^{(\frac{1}{3} + \frac{\tau}{2})m^2} \]
+
+with this dimension of the lattice:
+
+\[ dim(L) = n = \left(\frac{1}{2} + \frac{\tau}{2}\right)m^2 \]
 
 We then \textbf{replace the upper bounds} by their values: $X = N^\delta$, $Y = N^{\frac{1}{2}}$, $U = X*Y$ and we see for what $m$, $\tau$ and $\delta$ the algorithm still runs in polynomial time (the complexity is dominated by LLL's).
 
