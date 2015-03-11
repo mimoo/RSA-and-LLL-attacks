@@ -9,6 +9,11 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 
+% for right cases
+\newenvironment{rcases}
+  {\left.\begin{aligned}}
+  {\end{aligned}\right\rbrace}
+
 % diagrams
 \usepackage{tikz}
 \usetikzlibrary{matrix}
@@ -575,9 +580,57 @@ And now obtain a bound on the determinant:
 
 \subsection{How were the bounds calculated?}\label{bounds}
 
+Let's go back from the start. Here's our new \textbf{general equation} with this time an unknown modulus $b$:
+
+\[ f(x) = (m_0 + x)^e - c = 0 \pmod{b} \]
+
+we know $m_0$, $e$, $c$, $N$ and $\beta$. We don't know $b$, and $x$. Here are the relations we know:
+
+\[ \begin{cases} 
+	b \geq N^\beta \text{, } 0 < \beta \leq 1 \\
+	|x_0| < X
+	\end{cases} \]
+	
+What we want is to find the \textbf{biggest possible} $X$ for which it is possible to find the root $x_0$ of this polynomial $f$.
+So we have to find that upperbound $X$ such that there exists $m$ and $t$ to construct a lattice basis of dimensions $n = \delta m + t$ that will yield satisfactory results after a LLL reduction. This happens if we respect \textbf{Howgrave-Graham's  second point}, that we couple with our \textbf{LLL's property} to \textbf{bound the determinant}:
+
+\[
+	\begin{rcases}
+		\|g(xX)\| < \frac{b^m}{\sqrt{n}}\\
+		\|v_1\| \leq 2^{\frac{n-1}{4}}det(L)^{\frac{1}{n}}
+	\end{rcases}
+	\implies 2^{\frac{n-1}{4}}det(L)^{\frac{1}{n}} < \frac{b^m}{\sqrt{n}}
+\]
+
+Since we don't know $b$, as I explained earlier we use $N^\beta$ instead:
+
+\[ \implies 2^{\frac{n-1}{4}}det(L)^{\frac{1}{n}} < \frac{N^{\beta m}}{\sqrt{n}} \]
+
 And here's the \textbf{determinant}:
 
 \[ det(L) = N^{\frac{1}{2}\delta m (m+1)}X^{\frac{1}{2}n(n-1)} \]
+
+We can use both equations to bound $X$ as such:
+
+
+\setcounter{equation}{0}
+\begin{eqnarray}
+\implies X \leq \frac{1}{2} N^{\frac{2\beta m}{n-1} - \frac{\delta m ( m + 1)}{n(n-1)}}
+\end{eqnarray} 
+
+Earlier I said that we wanted the row vectors in our basis to be \textbf{helpful}. Meaning their highest monomial, the one appearing in the diagonal thus in the determinant, had to be less than $N^{\beta m}$. Bounding the last and highest monomial of the diagonal of the basis gives us:
+
+\begin{eqnarray}
+ X^{n-1} < N^{\beta m}
+\end{eqnarray}
+
+Coppersmith's \textbf{constructive proof} showed that using $X = \frac{1}{2} N^{\frac{\beta^2}{\delta}-\epsilon}$ we could satisfy these two previous inequalities for those values:
+
+\[ \begin{cases}
+	0 < \epsilon \leq \frac{1}{7} \beta\\
+	m = \left\lfloor \frac{\beta^2}{\delta \epsilon}\right\rfloor\\
+	t = \left\lfloor \delta m (\frac{1}{\beta}-1)\right\rfloor\\
+\end{cases} \]
 
 \subsection{Experiments}\label{coppersmith-experiments}
 
