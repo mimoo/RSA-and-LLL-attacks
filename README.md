@@ -69,7 +69,7 @@ note: `diff = |q-q'|`
 
 # Boneh Durfee
 
-The implementation of **Boneh and Durfee** attack (simplified by **Herrmann and May**) can be found in [bonehdurfee.sage](bonehdurfee.sage). 
+The implementation of **Boneh and Durfee** attack (simplified by **Herrmann and May**) can be found in [boneh_durfee.sage](boneh_durfee.sage). 
 
 The attack allows us to break RSA and the private exponent `d`.
 Here's why RSA works (where `e` is the public exponent, `phi` is euler's totient function, `N` is the public modulus): 
