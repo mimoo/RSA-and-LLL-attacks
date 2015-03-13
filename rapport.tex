@@ -917,7 +917,7 @@ And thus can be derived the \textbf{Boneh-Durfee bound}:
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
-My experiments were far from Boneh and Durfee's findings. When they took hours to solve for small $m$ and $t$, I took seconds. This is, I guess, the gap between 1999 and 2015: I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also, the LLL-reduced basis first two vectors were not always independent but I could often finds two independent vectors in the reduced basis.
+My experiments were far from Boneh and Durfee's. When they took hours to solve for small $m$ and $t$, I took seconds. This is mostly due by the gap of computation power and LLL's implementation between 1999 and now (2015): I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots.
 
 \begin{center} 
 \begin{tabular}{@{} *7c @{}}
@@ -932,6 +932,10 @@ My experiments were far from Boneh and Durfee's findings. When they took hours t
 \end{center} 
 
 \section{Summary}
+
+Boneh and Durfee were the last ones to improve the bound on the low private exponent problem. At the end of their paper they claimed that ``a bound of $d<N^{1-\frac{1}{\sqrt{2}}}$ cannot be the final answer. It is too unnatural'', emitting the idea of a more ``natural'' bound of $d < N^{\frac{1}{2}}$. It was more than 15 years ago.\\
+Coppersmith's ideas of attacking cryptosystems using the lattice reduction algorithm LLL (invented in 1982) seem to still have a lot of room for growing. But at the moment, they are all working in a relaxed version of the problems, which most of the time are far from the reality.\\
+Without even talking about Coppersmith, LLL seems to have a lot of applications in Cryptography and we should see it used more and more during the next years of research.
 
 
 \newpage
