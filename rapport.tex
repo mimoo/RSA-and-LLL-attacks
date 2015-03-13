@@ -424,11 +424,11 @@ This survey is no replacement for the original papers of Coppersmith\cite{copper
 That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there.\\
 Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
 
-Let's say we know $m_0$ of the message $m = m_0 + x$. And of course we don't know $x$. We have \textbf{our problem} translated to the following equation:
+Let's say we know $m_0$ of the message $m = m_0 + x_0$. And of course we don't know $x_0$. We have \textbf{our problem} translated to the following polynomial:
 
-\[ (m_0 + x)^e - c = 0 \pmod{N} \]
+\[ f(x) = (m_0 + x)^e - c \text{ with } f(x_0) = 0 \pmod{N} \]
 
-Well. \textbf{Coppersmith} says we can solve this in polynomial time if $x$ and $e$ are small enough:
+Well. \textbf{Coppersmith} says we can solve this in polynomial time if $x_0$ and $e$ are small enough:
 
 \begin{theorem}
 Let $N$ be an integer of unknown factorization, which has a divisor $b \geq N^{\beta}$, $0 < \beta \leq 1$. Let $f(x)$ be a univariate monic polynomial of degree $\delta$ and let $c \geq 1$.\\
@@ -693,7 +693,7 @@ Recall how RSA works:
 \implies& k \cdot (N + 1 - p - q) + 1 = 0 \pmod{e}
 \end{align*}
 Here the unknowns are $k$ and $(-p-q)$. We can write that problem as a polynomial with root $x_0$ and $y_0$:
-\[ f(x,y) = x \cdot (A + y) \pmod{e} \]
+\[ f(x,y) = x \cdot (A + y) \text{ such that } f(x_0,y_0) = 0 \pmod{e} \]
 
 with $A = N + 1$ and $y = -p -q$.\\
 
@@ -904,9 +904,14 @@ with this dimension of the lattice:
 
 \[ dim(L) = n = \left(\frac{1}{2} + \frac{\tau}{2}\right)m^2 \]
 
-We then \textbf{replace the upper bounds} by their values: $X = N^\delta$, $Y = N^{\frac{1}{2}}$, $U = X*Y$ and we see for what $m$, $\tau$ and $\delta$ the algorithm still runs in polynomial time (the complexity is dominated by LLL's).
+We can now develop the previous equation bounding the detemrinant, and we fix $t = \tau m$:
 
-We end up with an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Boneh-Durfee bound}:
+\[ X^{\frac{1+\tau}{3}m^3}Y^{(\frac{\tau^2 +1}{6}+ \frac{\tau}{3})m^3} e^{(\frac{1}{3} + \frac{\tau}{6})m^3} < e^{(\frac{1}{2} + \frac{\tau}{2})m^2} \text{ for } m \rightarrow \infty \]
+
+We then inject $X = N^\delta$ and $Y = N^{\frac{1}{2}}$ in the previous equation:
+\[(2N^\delta)^{\frac{1+\tau}{3}m^3}(N^{\frac{1}{2})^{(\tau+1)^2}{6}m^3}e^{(\frac{\tau+2}{6})m^3} < e^{\frac{1+\tau}{2}m^3} \]
+
+Boneh and Durfee derived an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Boneh-Durfee bound}:
 
 \[ \delta \leq \frac{1}{2} (2 - \sqrt{2}) \approx 0.292 \]
 
@@ -915,14 +920,13 @@ We end up with an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Bone
 My experiments were far from Boneh and Durfee's findings. When they took hours to solve for small $m$ and $t$, I took seconds. This is, I guess, the gap between 1999 and 2015: I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots. Also, the LLL-reduced basis first two vectors were not always independent but I could often finds two independent vectors in the reduced basis.
 
 \begin{center} 
-\begin{tabular}{@{} *6c @{}}
+\begin{tabular}{@{} *7c @{}}
 \toprule
- $\delta$ & size of $N$ (bits) & size of $d$ (bits) & m & t & running time \\ 
+ $\delta$ & size of $N$ (bits) & size of $d$ (bits) & m & t & dim(L) & running time \\ 
 \midrule
- 0.26 & 1024 & 256 & 3 & 1 & 0.8s\\ 
- 0.26 & 2048 & 532 & 3 & 1 & 1.9s \\
- 0.27 & 2048 & 553 & 6 & 3 & 3m 3s \\
- 0.28 & 1024 & 553 & 6 & 3 & 3m 3s \\
+ 0.25 & 2048 & 512 & 3 & 1 & 11 & 0.5s\\ 
+ 0.26 & 2048 & 532 & 3 & 1 & 11 &  1.9s \\
+ 0.27 & 2048 & 553 & 6 & 2 & 33 & 2m 27s \\
 \bottomrule
 \end{tabular}
 \end{center} 
