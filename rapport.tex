@@ -44,7 +44,7 @@
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 \textbf{RSA}, carrying the names of \textbf{Ron Rivest}, \textbf{Adi Shamir} and \textbf{Leonard Adleman}, is one of the first practicable \textbf{public-key} cryptosystem. The algorithm was publicly described for the first time in \textbf{1977} and has since been the most used cryptosystem when it comes to asymmetric problems. For now more than \textbf{30 years}, Cryptanalysts and Researchers have looked for ways to \textbf{attack RSA}.\\
-One branch of cryptanalysis on RSA is to take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sorts of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his constructive theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh} and \textbf{Durfee} recently followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
+One branch of cryptanalysis on RSA is to take an interest in a \textbf{relaxed model} of RSA. A model where we know part of the message, or we know an approximation of the primes, or the private exponent is too small... In these sorts of problems, \textbf{lattice reduction techniques} have proved to be very relevant. \textbf{Coppersmith} opened the way with his constructive theorem on how to find small roots of \textbf{univariate} polynomials using reductions of lattices. \textbf{Boneh} and \textbf{Durfee} followed with a method on how to find small roots of \textbf{bivariate} polynomials using Coppersmith's heuristics on multivariate polynomials. In this survey we will see how each algorithm work and how they were respectively made simpler by \textbf{Howgrave-Graham} and the duo \textbf{Herrmann} and \textbf{May}.\\
 \\
 \textbf{Keywords:} RSA, lattice, LLL, Coppersmith, Howgrave-Graham, Boneh-Durfee, Herrmann-May.\\
 
@@ -68,7 +68,7 @@ To use RSA for \textbf{encryption} we need a public key to encrypt and a private
 We generate \textbf{two primes} $p$ and $q$. For security issues they should be around the \textbf{same size}. Those primes are the \textbf{core elements} of RSA. Knowing one of those allows us to compute the private key, thus allowing us to break the system. They can also be used to speed up calculations using the Chinese Remainder Theorem.\\
 Knowing $p$ and $q$ we can then compute the \textbf{modulus} $N = p \times q$ which will be part of the public key as well as the private key. And you will see why.\\
 
-Now comes the interesting part, we need to find a \textbf{public exponent} which will be used for \textbf{encryption}. For computation purpose a \textbf{Fermat prime} ($2^{m} + 1$) is often used as public exponent (it makes things faster in \textbf{binary exponentiation}). In the case of a \textbf{signature scheme}, we would want the speed up to occur for the \textbf{private exponent} so we would use such a number as a private exponent and we would reverse the following steps.\\
+Now comes the interesting part, we need to find a \textbf{public exponent} which will be used for \textbf{encryption}. For computational optimization, a \textbf{Fermat prime} ($2^{m} + 1$) is often used as public exponent (it makes things faster in \textbf{binary exponentiation}). In the case of a \textbf{signature scheme}, we would want the speed up to occur for the \textbf{private exponent} so we would use such a number as a private exponent and we would reverse the following steps.\\
 Anyway, any kind of exponent can theoretically be chosen, as long as it is coprime with $\varphi(N)$ (The \textbf{Euler's Totient function}).
 
 \[e \leftarrow \mathbb{Z}_{\varphi(N)}^{\ast}\]
@@ -338,7 +338,7 @@ with $\mu_{i,j} = \frac{b_i \cdot \tilde{b}_j}{\tilde{b}_j \cdot \tilde{b}_j}$ a
 \draw [thick,purple] [->] (18,5) -- (19, 6);
 \end{tikzpicture}\\
 
-We will not dig into the interals of LLL here, see Chris Peikert's course\cite{chrispeikert} for detailed explanations of the algorithm.
+We will not dig into the internals of LLL here, see Chris Peikert's course\cite{chrispeikert} for detailed explanations of the algorithm.
 
 \subsection{Wanted properties of LLL}
 
@@ -393,9 +393,9 @@ Let's notice that since  $m < N_1, m < N_2, m < N_3$, we must have:
 
 \[ m \times m \times m = m^3 < N_1 \times N_2 \times N_3 \]
 
-So our $m^3 \pmod{N_1 N_2 N_3}$ is actually just $m^3$ over $\mathbb{Z}$. 
+So our $m^3$ modulo $N_1 N_2 N_3$ is actually just $m^3$ over $\mathbb{Z}$. 
 
-To recover the message we just have to calculate the cubic root of that big value we just calculated.\\
+To recover the message we just have to compute the cubic root of that big value we just calculated.\\
 
 Generalizing it is pretty easy and let's formulate \textbf{Håstad}'s findings:
 
@@ -417,7 +417,7 @@ This survey is no replacement for the original papers of Coppersmith\cite{copper
 \subsection{Known modulus}\label{knownmodulus}
 
 That being said, let's dig into Coppersmith's use of LLL to crack RSA. We'll first see one of the problem it solves and build it from there.\\
-Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that the Alice always sends her messages this way: ``the password is: cupcake''.
+Imagine that you know a part of the message: this is called the \textbf{Stereotyped Messages Attack}. For example you know that Alice always sends her messages this way: ``the password is: cupcake''.
 
 Let's say we know $m_0$ of the message $m = m_0 + x_0$. And of course we don't know $x_0$. We have \textbf{our problem} translated to the following polynomial:
 
@@ -432,7 +432,7 @@ Then we can find in time $\mathcal{O}(c\delta^5log^9(N))$ all solutions $x_0$ of
 \[ f(x) = 0 \pmod{b} \hspace{2mm} \text{ with } \hspace{2mm} |x_0| \leq c \cdot N^{\frac{\beta^2}{\delta}} \]
 \end{theorem}
 
-In our case that would mean that for $c=1$ and $beta=1$ we could find a solution of our previous equation if $|x_0| \leq N^{\frac{1}{e}}$. And here we find something very similar to Håstad's Broadcast Attack.
+In our case that would mean that for $c=1$ and $\beta=1$ we could find a solution of our previous equation if $|x_0| \leq N^{\frac{1}{e}}$. And here we find something very similar to Håstad's Broadcast Attack.
 
 To find the roots of a polynomial \textbf{over a ring of integers modulo} $N$ is a very \textbf{difficult} task, whereas we possess efficient tools to find roots of  polynomials \textbf{over the integers} (Berlekamp–Zassenhaus, van Hoeij, Hensel lifting...). Hence Coppersmith's intuition to look for such a polynomial:
 
@@ -558,7 +558,7 @@ It is from these equations that Coppersmith bounded the value of $x$ in his theo
 \subsection{Any modulus}\label{anymodulus}
 
 Coppersmith method is actually more general: it also works for unknown modulus.\\
-We will see how the \textbf{Factoring with High Bits Known} attack works to understand this part. Imagine the relaxed problem of RSA where we know an approximation $\tilde{p}$ of one of the prime $p$. The approximation is bounded as followed:
+We will see how the \textbf{Factoring with High Bits Known Attack} works to understand this part. Imagine the relaxed problem of RSA where we know an approximation $\tilde{p}$ of one of the prime $p$. The approximation is bounded as followed:
 
 \[ |\tilde{p} - p| < N^{\frac{1}{4}} \]
 
@@ -826,7 +826,7 @@ They are \textbf{selected} with the notion of ``\textbf{increasing pattern}'' in
   \bar{f}^2& & & & A^2X^2& 2AUX& U^2\cr
   y\bar{f}^2& & -A^2X& -2AU& & A^2UX& 2AU^2& U^2Y}$};
 
-\node [below =.3cm of matrix3] {The same matrix as above after unravelled linearization};
+\node [below =.3cm of matrix3] {The same matrix previously, after the unravelled linearization step};
 
 \end{tikzpicture}\\
 
@@ -860,7 +860,7 @@ Let's recap what we know:
 	\item{$d < N^\delta$\\}
 \end{itemize}
 
-The first two are what we usually use in RSA. Our last one is the bound we are trying to define. Of course we want a $\delta$ as small as possible. Now that we have defined all these, let's go back to our previous equation and let's bound our unknowns:
+The first two are what we usually use in RSA. Our last one is the bound we are trying to define. Of course we want a $\delta$ as big as possible. Now that we have defined all these, let's go back to our previous equation and let's bound our unknowns:
 
 \[ k \cdot ( \underbrace{N + 1}_A + \underbrace{-p-q}_s) \pmod{e}  \hspace{2mm} \mbox{ with } \begin{cases} |s| \approx 2N^{\frac{1}{2}} \\
  |k| < \frac{N^\delta - 1}{N - 1 + 2N^{\frac{1}{2}}}
@@ -883,7 +883,7 @@ Let's note that $s >> k$ and that reducing the size of our unknown $s$ is a good
 
 We do not need to bound them accurately as the LLL property on the shortest vector bound is a dramatic one.
 
-Now for our algorithm we need to fix a $m$ and a $t$ such that $dim(L) = n$. For Herrmann and May's selection of the y-shifts we need $m >= t$ so we will write $t = \tau m$ with $\tau < 1$.
+Now for our algorithm we need to fix a $m$ and a $t$ such that $dim(L) = n$. For Herrmann and May's selection of the y-shifts we need $m \geq t$ so we will write $t = \tau m$ with $\tau < 1$.
 
 Remember earlier we said that we need to bound our determinant to obtain \textbf{Howgrave-Graham's Theorem second point}, and \textbf{LLL's property} gave us this \textbf{bound}:
 
@@ -899,7 +899,7 @@ with this dimension of the lattice:
 
 \[ dim(L) = n = \left(\frac{1}{2} + \frac{\tau}{2}\right)m^2 \]
 
-We can now develop the previous bound the determinant, and we fix $t = \tau m$ since $t < m$:
+We can now develop the previous bound, and we inject our $t = \tau m$:
 \[ X^{\frac{1+\tau}{3}m^3}Y^{\frac{(\tau +1)^2}{6}m^3} e^{(\frac{1}{3} + \frac{\tau}{6})m^3} < e^{(\frac{1}{2} + \frac{\tau}{2})m^2} \text{ for } m \rightarrow \infty \]
 
 We then inject $X = e^\delta$ and $Y = e^{\frac{1}{2}}$ (since we said $e \approx N$) in our equation:
@@ -917,7 +917,8 @@ And thus can be derived the \textbf{Boneh-Durfee bound}:
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
-My experiments were far from Boneh and Durfee's. When they took hours to solve for small $m$ and $t$, I took seconds. This is mostly due by the gap of computation power and LLL's implementation between 1999 and now (2015): I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots.
+My experiments were far from Boneh and Durfee's. When they took hours to solve for small $m$ and $t$, I took seconds. This is mostly due to the gap of computation power and LLL's implementation between 1999 and now (2015): I used Sage 6.4 in a Virtualbox with 512Mo of RAM and 1 core from an Intel i7 @ 2.30GHz. I found out that in practice, the bound of $X$ was often way higher than the root $x_0$, decreasing $X$ until the algorithm worked was a good way to find the roots.\\
+I also found out that increasing $m$ (and $t$) would increase the running time of LLL way too much, thus our equation calculated for $m \rightarrow \infty$ didn't work for practical small values $m$ and $t$.
 
 \begin{center} 
 \begin{tabular}{@{} *7c @{}}
