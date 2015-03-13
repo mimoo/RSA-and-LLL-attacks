@@ -409,11 +409,6 @@ That's the introduction to our ``small root'' problem. Now what about if $|m| > 
 
 Can we efficiently recover x? That's the question Coppersmith is answering.
 
-% As an example let's see the simple Hadstad broadcast attack:
-
-% Hadstad Broadcast Attack
-
-% But what if m was not small, but we know m up to a small part
 
 \section{Coppersmith}\label{coppersmith}
 
@@ -858,8 +853,8 @@ Let's recap what we know:
 \begin{itemize}
 	\item{$p$ and $q$ should be half the size of $N$:\\
 	\begin{align*}
-		 &\frac{log(p)}{log(N)} \approx \frac{1}{2}\\
-		 \implies &p,q \approx N^{\frac{1}{2}}
+		 \frac{log(p)}{log(N)} \approx \frac{1}{2}\\
+		 \implies p,q \approx N^{\frac{1}{2}}
 	\end{align*}}
 	\item{$e \approx N$}
 	\item{$d < N^\delta$\\}
@@ -904,16 +899,21 @@ with this dimension of the lattice:
 
 \[ dim(L) = n = \left(\frac{1}{2} + \frac{\tau}{2}\right)m^2 \]
 
-We can now develop the previous equation bounding the detemrinant, and we fix $t = \tau m$:
+We can now develop the previous bound the determinant, and we fix $t = \tau m$ since $t < m$:
+\[ X^{\frac{1+\tau}{3}m^3}Y^{\frac{(\tau +1)^2}{6}m^3} e^{(\frac{1}{3} + \frac{\tau}{6})m^3} < e^{(\frac{1}{2} + \frac{\tau}{2})m^2} \text{ for } m \rightarrow \infty \]
 
-\[ X^{\frac{1+\tau}{3}m^3}Y^{(\frac{\tau^2 +1}{6}+ \frac{\tau}{3})m^3} e^{(\frac{1}{3} + \frac{\tau}{6})m^3} < e^{(\frac{1}{2} + \frac{\tau}{2})m^2} \text{ for } m \rightarrow \infty \]
+We then inject $X = e^\delta$ and $Y = e^{\frac{1}{2}}$ (since we said $e \approx N$) in our equation:
+\[ (e^\delta)^{\frac{1+\tau}{3}m^3} 
+ (e^{\frac{1}{2}})^{\frac{(\tau+1)^2}{6} m^3}
+  e^{(\frac{\tau+2}{6})m^3} < e^{\frac{1+\tau}{2}m^2} \]
 
-We then inject $X = N^\delta$ and $Y = N^{\frac{1}{2}}$ in the previous equation:
-\[(2N^\delta)^{\frac{1+\tau}{3}m^3}(N^{\frac{1}{2})^{(\tau+1)^2}{6}m^3}e^{(\frac{\tau+2}{6})m^3} < e^{\frac{1+\tau}{2}m^3} \]
+Boneh and Durfee derived an optimized value of $\tau = (1 - 2\delta)$ that simplifies the inequality to:
 
-Boneh and Durfee derived an optimized value of $\tau = (1 - 2\delta)$ and the \textbf{Boneh-Durfee bound}:
+\[ -\frac{1}{3}\delta^2 + \frac{2}{3} \delta -\frac{1}{6} < 0 \]
 
-\[ \delta \leq \frac{1}{2} (2 - \sqrt{2}) \approx 0.292 \]
+And thus can be derived the \textbf{Boneh-Durfee bound}:
+
+\[ \delta < \frac{1}{2} (2 - \sqrt{2}) \approx 0.292 \]
 
 \subsection{Experiments}\label{boneh-durfee-experiments}
 
