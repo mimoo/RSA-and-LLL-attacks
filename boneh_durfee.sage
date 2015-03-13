@@ -163,7 +163,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
 # RSA gen options (tweakable)
 length_N = 2048
-length_d = 0.273
+length_d = 0.27
 
 # RSA gen (for the demo)
 p = next_prime(2^int(round(length_N/2)))
@@ -189,7 +189,7 @@ xx = (e * d - 1) / (A + yy)
 # Default values 
 # you should tweak delta and m. X should be OK as well
 # 
-delta = 0.273              # < 0.292 (Boneh & Durfee's bound)
+delta = 0.27              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
 m = 7                     # bigger is better (but takes longer)
