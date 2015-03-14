@@ -358,10 +358,226 @@ A bit like a \textbf{vector space}.\vspace{1cm}
 \end{center}
 \end{frame}
 
-% VECTOR SPACE
+% STEREOTYPED ATTACK
 \fontsize{16pt}{15.2}\selectfont
 \usebackgroundtemplate{}
+\begin{frame}
+\[c = m^e \pmod{N} \]
+\pause
+\[m = m_0 + x_0\]\\ \vspace{.5cm}
+\pause
+``le mot de pass du jour est : cupcake''\\
+\pause
+\[c = (m_0 + x)^e \pmod{N} \]\\
+\pause
+\[ f(x) = c - (m_0 + x)^e \pmod{N} \]
+\end{frame}
 
+% f modulo N -> g over Z
+\begin{frame}
+\begin{tikzpicture}
+\node (A) at (0,2) {$f(x) = 0 \pmod{N}$ with $|x| < X$};
+\node (B) at (0,0) {$g(x) = 0$ over $\mathbb{Z}$};
+\draw [->,purple] (A) -- (B);
+\end{tikzpicture}
+\end{frame}
+
+% HOWGRAVE-GRAHAM
+\fontsize{14pt}{15.2}\selectfont
+\begin{frame}
+\textbf{Howgrave-Graham}: \\
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that\pause 
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{N} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X
+\end{align}
+
+\end{frame}
+
+
+\begin{frame}
+\textbf{Howgrave-Graham}: \\
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{N} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{N}}{^{\sqrt{n}}}
+\end{align}
+\pause
+Then $g(x_0)=0$ holds over the integers.
+\end{frame}
+
+
+\begin{frame}
+\textbf{Howgrave-Graham}: \\
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{N^m} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{N^m}}{^{\sqrt{n}}}
+\end{align}
+
+Then $g(x_0)=0$ holds over the integers.
+\end{frame}
+
+% 2nd Diagram using HG
+\fontsize{16pt}{15.2}\selectfont
+\begin{frame}
+\begin{tikzpicture}[scale=1.2]
+\node [above] at (2,4) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+\draw [<-] (0,0) -- (0,4);
+\node [below] at (0.6,0) {$g(x_0) = 0$ over $\mathbb{Z}$};
+\draw [purple,<-] (0,1) -- (1,1);
+\node [right] at (1.2,1.35) {$g(x_0) = 0 \pmod{N^m}$};
+\node [right] at (1.2,.65) {$\|g(xX)\| < \frac{N^m}{\sqrt{n}}$};
+\draw [purple,<-] (3,2) -- (3,4);
+\end{tikzpicture}
+\end{frame}
+
+%
+\fontsize{14pt}{15.2}\selectfont
+\begin{frame}
+
+\textbf{LLL reduction}:
+\begin{itemize}
+	\item{It only does \textbf{integer linear operations} on the basis vectors}
+	\item{The \textbf{shortest vector of the output basis is bound} (as seen in \textbf{Property 1})}\\
+\end{itemize}
+\end{frame}
+
+% Reminder on LLL property
+\begin{frame}
+\begin{center}
+\begin{tikzpicture}
+\node at (0,0) {$B = \begin{pmatrix}
+\vec{b_1}\\
+\vdots\\
+\vec{b_n}
+\end{pmatrix}$};
+
+\draw [->] (1.5,0) -- (3,0) node [above] {\textbf{LLL}} -- (4.5,0);
+
+\node at (6,0) {$B' = \begin{pmatrix}
+\vec{b_1'}\\
+\vdots\\
+\vec{b_n'}
+\end{pmatrix}$};
+
+\end{tikzpicture}
+\end{center}
+
+
+\[ \|b_1'\| \leq \|b_2'\| \leq \hdots \leq \|b_i'\| \leq 2^{\frac{n(n-1)}{4(n+1-i)}} \cdot det(L)^{\frac{1}{n+1-i}} \]
+
+\pause
+
+\[ \|b_1'\| \leq 2^{\frac{n(n-1)}{4(n)}} \cdot det(L)^{\frac{1}{n}} \]
+
+\end{frame}
+
+% polynomials f_i
+\fontsize{16pt}{0}\selectfont
+\begin{frame}
+
+\begin{align*}
+	g_{i,j}(x) &= x^j \cdot N^i \cdot f^{m-i}(x)\\
+	& \text{ for } i = 0,\hdots,m-1,\hspace{2mm} j=0,\hdots,\delta-1\\
+	h_i(x) &= x^i \cdot f^m(x)\\
+	& \text{ for } i = 0,\hdots,t-1
+\end{align*}
+\pause
+
+Those polynomials achieve two things:
+\begin{itemize}
+	\item{they have the \textbf{same root} $x_0$ but modulo $N^m$}
+	\pause
+	\item{each iteration introduce a new polynomial}\\
+\end{itemize}
+\end{frame}
+
+% Reminder
+\begin{frame}
+\begin{tikzpicture}[scale=1.2]
+\node [above] at (2,4) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+\draw [<-] (0,0) -- (0,4);
+\node [below] at (0.6,0) {$g(x_0) = 0$ over $\mathbb{Z}$};
+\draw [purple,<-] (0,1) -- (1,1);
+\node [right] at (1.2,1.35) {$g(x_0) = 0 \pmod{N^m}$};
+\node [right] at (1.2,.65) {$\|g(xX)\| < \frac{N^m}{\sqrt{n}}$};
+\draw [purple,<-] (3,2) -- (3,4);
+\end{tikzpicture}
+\end{frame}
+
+% 3rd diagram with LLL
+\fontsize{12pt}{0}\selectfont
+\begin{frame}
+\begin{tikzpicture}
+\node (A) at (0,0) {$f(x_0) = 0 \pmod{N}$ with $|x_0| < X$};
+
+\node (B) [below=1cm of A, right] {generate $f_i$ s.t. $f_i(x_0) = 0 \pmod{N^m}$};
+
+\node (C) [below=0.5cm of B] {$B = \begin{pmatrix}
+  f_i(xX) \\
+  \vdots  \\
+  f_n(xX)
+ \end{pmatrix}$};
+
+\node (D) [below=0.5cm of C] {$B' = \begin{pmatrix}
+  b_1 = g(xX) \\
+  b_2\\
+  \vdots  \\
+  b_n
+ \end{pmatrix}$};
+ 
+\node (E) [below=.5cm of D] {$g(x_0) = 0 \pmod{N^m} \text{ and } \|g(xX)\| < \frac{N^m}{\sqrt{n}}$};
+
+\node (F) [left=of E] {$g(x_0) = 0$ over $\mathbb{Z}$};
+
+%
+\draw [->] (A) -- (F);
+\draw [->] (A) -- (B);
+\draw [->] (B) -- (C);
+\draw [->] (C) -- (D);
+\draw [->] (D) -- (E);
+\draw [->] (E) -- (F);
+
+%
+\node [above=0.3cm of D,right] {LLL};
+\end{tikzpicture}
+\end{frame}
+
+% unknown modulus
+\begin{frame}
+
+Let $g(x)$ be an univariate polynomial with $n$ monomials. Further, let $m$ be a positive integer. Suppose that
+\setcounter{equation}{0}
+\begin{align}
+&g(x_0) = 0 \pmod{b^m} \hspace{2mm} \text{ where } \hspace{2mm} |x_0| \leq X\\
+&\|g(xX)\| < \frac{_{b^m}}{^{\sqrt{n}}}
+\end{align}
+
+Then $g(x_0)=0$ holds over the integers.
+\end{frame}
+
+% Factoring with high bits known
+\begin{frame}
+
+
+\[ |\tilde{p} - p| < N^{\frac{1}{4}} \]
+
+Now we have an equation with one unknown, modulo another unknown:
+
+\[ \tilde{p} = x_0 \pmod{p} \]
+\end{frame}
+
+% bounds, theorem
+\begin{frame}
+\textbf{Coppersmith Theorem} \\
+Let $N$ be an integer of unknown factorization, which has a divisor $b \geq N^{\beta}$, $0 < \beta \leq 1$. Let $f(x)$ be a univariate monic polynomial of degree $\delta$ and let $c \geq 1$.\\
+Then we can find in time $\mathcal{O}(c\delta^5log^9(N))$ all solutions $x_0$ of the equation
+
+\[ f(x) = 0 \pmod{b} \hspace{2mm} \text{ with } \hspace{2mm} |x_0| \leq c \cdot N^{\frac{\beta^2}{\delta}} \]
+\end{frame}
 
 % BONEH-DURFEE
 \fontsize{90pt}{15.2}\selectfont
@@ -373,7 +589,7 @@ A bit like a \textbf{vector space}.\vspace{1cm}
 \end{center}
 \end{frame}
 
-% VECTOR SPACE
+% problem
 \fontsize{16pt}{15.2}\selectfont
 \usebackgroundtemplate{}
 %

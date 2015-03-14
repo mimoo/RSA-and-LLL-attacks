@@ -17,7 +17,8 @@ def matrix_overview(BB, bound):
         a = ('%02d ' % ii)
         for jj in range(BB.dimensions()[1]):
             a += '0' if BB[ii,jj] == 0 else 'X'
-            a += ' '
+            if BB.dimensions()[0] < 60:
+                a += ' '
         if BB[ii, ii] >= bound:
             a += '~'
         print a
@@ -115,6 +116,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         pols.append(0)
         for jj in range(nn):
             pols[-1] += monomials[jj](x*y+1,x,y) * BB[ii, jj] / monomials[jj](UU,XX,YY)
+        # only take vectors that have the roots over Z
         if pols[-1](xx,yy) != 0:
             pols.pop()
             break
@@ -134,11 +136,6 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
                 # break from that double loop
                 found = True
                 break
-
-    # failure
-    if pol1 == pol2 == 0:
-        print "failure"
-        return 0, 0
 
     # resultant
     PR.<x> = PolynomialRing(ZZ)
@@ -162,8 +159,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 ##########################################
 
 # RSA gen options (tweakable)
-length_N = 2048
-length_d = 0.27
+length_N = 256
+length_d = 0.28
 
 # RSA gen (for the demo)
 p = next_prime(2^int(round(length_N/2)))
@@ -189,10 +186,10 @@ xx = (e * d - 1) / (A + yy)
 # Default values 
 # you should tweak delta and m. X should be OK as well
 # 
-delta = 0.27              # < 0.292 (Boneh & Durfee's bound)
+delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 7                     # bigger is better (but takes longer)
+m = 14                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
 # Checking bounds (for the demo)
 print "=== checking values ==="
