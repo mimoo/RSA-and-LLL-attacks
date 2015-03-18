@@ -18,7 +18,8 @@ def matrix_overview(BB, bound):
         a = ('%02d ' % ii)
         for jj in range(BB.dimensions()[1]):
             a += '0' if BB[ii,jj] == 0 else 'X'
-            a += ' '
+            if BB.dimensions()[0] < 60:
+                a += ' '
         if BB[ii, ii] >= bound:
             a += '~'
         print a
@@ -173,13 +174,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # check if determinant is correctly bounded
     if debug:
         det = BB.det()
-        bound = modulus^(mm*(nn-1))
-        bound = bound / (nn*(2^nn))^((nn-1)/2)
+        bound = modulus^(mm*nn)
         if det >= bound:
             print "We do not have det < bound. Solutions might not be found."
-            print "size(det) - size(bound) = ", int(log(abs(det) / abs(bound))/log(2))
+            diff = (log(det) - log(bound)) / log(2)
+            print "size det(L) - size e^(m*n) = ", floor(diff)
         else:
-            print "det < bound"
+            print "det(L) < e^(m*n)"
 
     # debug: display matrix
     if debug:
@@ -235,17 +236,17 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 # Test 
 ##########################################
 
-# RSA gen (optional)
-length = 1024
-p = next_prime(2^int(round(length/2)))
-q = next_prime(round(pi.n()*p))
-N = p*q;
-phi = (p-1)*(q-1)
+# RSA gen options (tweakable)
+length_N = 1024
+length_d = 0.28
 
-# weak d
-length_d = 0.272
+# RSA gen (for the demo)
+p = next_prime(2^int(round(length_N/2)))
+q = next_prime(round(pi.n()*p))
+N = p*q
+phi = (p-1)*(q-1)
 d = int(N^length_d) 
-if d % 2 == 0: d += 1 # in case d even
+if d % 2 == 0: d += 1
 while gcd(d, phi) != 1:
     d += 2
 e = d.inverse_mod((p-1)*(q-1))
@@ -255,30 +256,38 @@ P.<x,y> = PolynomialRing(Zmod(e))
 A = int((N+1)/2)
 pol = 1 + x * (A + y)
 
-# and the solutions to be found (optional)
+# and the solutions to be found (for the demo)
 yy = (-p -q)/2
 xx = (e * d - 1) / (A + yy)
 
-# research values
-delta = 0.28
-X = floor(N^delta)
-Y = floor(e^(1/2))
-m = 7 # x-shifts
-t = (1 - 2 * delta) * m
-
-# If we know the solutions we can check on our values
+#
+# Default values 
+# you should tweak delta and m. X should be OK as well
+# 
+delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
+X = 2*floor(N^delta)      # this _might_ be too much
+Y = floor(N^(1/2))        # correct if p, q are ~ same size
+m = 3                     # bigger is better (but takes longer)
+t = int((1-2*delta) * m)  # optimization from Herrmann and May
+# Checking bounds (for the demo)
 print "=== checking values ==="
 print "* |y| < Y:", abs(yy) < Y
 print "* |x| < X:", abs(xx) < X
 print "* d < N^0.292", d < N^(0.292)
+print "* size of d:", int(log(d)/log(2))
+print "* size of N:", int(log(N)/log(2))
+print "* delta:", delta
 
 # boneh_durfee
 print "=== running algorithm ==="
 start_time = time.time()
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
+# Checking solutions (for the demo)
 if xx == solx and yy == soly:
-    print "\n=== we found the solutions ==="
+    print "\n=== the solutions are correct ==="
 else:
-    print "FAIL"
+    print "=== FAIL ==="
+
+# Stats
 print("=== %s seconds ===" % (time.time() - start_time))
