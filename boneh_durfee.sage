@@ -120,7 +120,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     PR.<q> = PolynomialRing(ZZ)
     rr = pol1.resultant(pol2)
 
-    if rr == 1:
+    if rr.is_zero() or rr.monomials() == [1]:
         print "failure"
         return pol1, pol2
     
@@ -173,7 +173,7 @@ xx = (e * d - 1) / (A + yy)
 delta = 0.25              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 2                     # bigger is better (but takes longer)
+m = 3                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
 # Checking bounds (for the demo)
 print "=== checking values ==="
