@@ -108,45 +108,29 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # LLL
     BB = BB.LLL()
 
-    # vectors -> polynomials
-    PR.<x,y> = PolynomialRing(ZZ)
+    # vector 1 & 2 -> polynomials 1 & 2
+    PR.<w,z> = PolynomialRing(ZZ)
 
-    pols = []
-    for ii in range(nn):
-        pols.append(0)
-        for jj in range(nn):
-            pols[-1] += monomials[jj](x*y+1,x,y) * BB[ii, jj] / monomials[jj](UU,XX,YY)
-        # only take vectors that have the roots over Z
-        if pols[-1](xx,yy) != 0:
-            pols.pop()
-            break
-
-    # find two vectors we can work with
     pol1 = pol2 = 0
-    found = False
-
-    for ii, pol in enumerate(pols):
-        if found:
-            break
-        for jj in range(ii + 1, len(pols)):
-            if gcd(pol, pols[jj]) == 1:
-                print "using vectors", ii, "and", jj
-                pol1 = pol
-                pol2 = pols[jj]
-                # break from that double loop
-                found = True
-                break
+    for jj in range(nn):
+        pol1 += monomials[jj](w*z+1,w,z) * BB[0, jj] / monomials[jj](UU,XX,YY)
+        pol2 += monomials[jj](w*z+1,w,z) * BB[1, jj] / monomials[jj](UU,XX,YY)
 
     # resultant
-    PR.<x> = PolynomialRing(ZZ)
+    PR.<q> = PolynomialRing(ZZ)
     rr = pol1.resultant(pol2)
-    rr = rr(x, x)
+
+    if rr == 1:
+        print "failure"
+        return pol1, pol2
+    
+    rr = rr(q, q)
 
     # solutions
     soly = rr.roots()[0][0]
     print "found for y_0:", soly
 
-    ss = pol1(x, soly)
+    ss = pol1(q, soly)
     solx = ss.roots()[0][0]
     print "found for x_0:", solx
 
@@ -159,8 +143,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 ##########################################
 
 # RSA gen options (tweakable)
-length_N = 256
-length_d = 0.28
+length_N = 1024
+length_d = 0.25
 
 # RSA gen (for the demo)
 p = next_prime(2^int(round(length_N/2)))
@@ -186,10 +170,10 @@ xx = (e * d - 1) / (A + yy)
 # Default values 
 # you should tweak delta and m. X should be OK as well
 # 
-delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
+delta = 0.25              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 14                     # bigger is better (but takes longer)
+m = 2                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
 # Checking bounds (for the demo)
 print "=== checking values ==="
