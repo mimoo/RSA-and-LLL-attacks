@@ -8,6 +8,8 @@ Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to fact
 
 If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](#boneh-durfee). If you want to dig deeper you can also read my survey [here](rapport.pdf) (**warning: work in progress**).
 
+I've also done some personal researches on the Boneh-Durfee algorithm and I do get better results. Check `research.sage`.
+
 # Coppersmith
 
 I've implemented the work of **Coppersmith** (to be correct the reformulation of his attack by **Howgrave-Graham**) in [coppersmith.sage](coppersmith.sage).
@@ -87,16 +89,47 @@ The attack works if the private exponent `d` is too small compared to the modulu
 
 To use it:
 
-* look at the tests in [boneh_durfee.sage](boneh_durfee.sage) and make your own with your own values for the public exponent `e` and the public modulus `N`.
-* guess how small the private exponent `d` is and modify `delta` so you have `d < N^delta`
-* tweak `m` and `t` until you find something. You can use Herrmann and May optimized `t = tau * m` with `tau = 1-2*delta`. Keep in mind that the bigger they are, the better it is, but the longer it will take. Also we must have `1 <= t <= m`.
-* you can also decrease `X` as it might be too high compared to the root of `x` you are trying to find. This is a last recourse tweak though.
+1. look at the tests in [boneh_durfee.sage](boneh_durfee.sage) and make your own with your own values for the public exponent `e` and the public modulus `N`.
+2. guess how small the private exponent `d` is and modify `delta` so you have `d < N^delta`
+3. increase `m` (the bigger, the longer the program will need to run) until you get the bound on the determinant (a message will tell you if you don't. For reference: 
 
-Here is the tweakable part in the code:
+* for `delta = 0.26` you will need `m = 3`
+
+* for `delta = 0.27` you will need `m = 6`
+
+* for `delta = 0.275` you will need `m = 8`
+
+* for `delta = 0.28` you will need `m = 12`
+
+4. If you don't want to use values of `m` that high, you can also try to decrease `X` as it might be too high compared to the root of `x` you are trying to find. This is a last recourse tweak though.
+
+5. If you have a private exponent `d` that might be even higher, do the tests for `delta = 0.28` for example. If it doesn't find anything, do an exhaustive search on higher values of `d`.
+
+6. Once you have `x` and `y` you can easily insert them into the equation:
 
 ```
-# Tweak values here !
-delta = 0.26 # so that d < N^delta
-m = 3        # x-shifts
-t = 1        # y-shifts # we must have 1 <= t <= m
+x [(N + 1)/2 + y] + 1 = e d
 ```
+
+Here's an example on how you could use the function if you suspect your private exponent to be lower than `N^0.275`:
+
+```
+# problem with N and e known
+P.<x,y> = PolynomialRing(Zmod(e))
+A = int((N+1)/2)
+pol = 1 + x * (A + y)
+
+# tweak those values
+delta = 0.275
+m = 8
+t = int((1-2*delta) * m)   
+
+# last resort tweaks
+X = 2*floor(N^delta)
+Y = floor(N^(1/2))  
+
+# find the solutions
+solx, soly = boneh_durfee(pol, e, m, t, X, Y)
+```
+
+**PS**: You can also try to use `research.sage`. It might help you to use a lower `m` than necessary. 

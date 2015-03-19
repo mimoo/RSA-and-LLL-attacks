@@ -144,7 +144,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
 # RSA gen options (tweakable)
 length_N = 1024
-length_d = 0.25
+length_d = 0.28
 
 # RSA gen (for the demo)
 p = next_prime(2^int(round(length_N/2)))
@@ -170,10 +170,10 @@ xx = (e * d - 1) / (A + yy)
 # Default values 
 # you should tweak delta and m. X should be OK as well
 # 
-delta = 0.25              # < 0.292 (Boneh & Durfee's bound)
+delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 3                     # bigger is better (but takes longer)
+m = 5                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
 # Checking bounds (for the demo)
 print "=== checking values ==="
@@ -181,6 +181,8 @@ print "* |y| < Y:", abs(yy) < Y
 print "* |x| < X:", abs(xx) < X
 print "* d < N^0.292", d < N^(0.292)
 print "* size of d:", int(log(d)/log(2))
+print "* size of N:", int(log(N)/log(2))
+print "* delta:", delta
 
 # boneh_durfee
 print "=== running algorithm ==="
