@@ -179,6 +179,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             print "We do not have det < bound. Solutions might not be found."
             diff = (log(det) - log(bound)) / log(2)
             print "size det(L) - size e^(m*n) = ", floor(diff)
+            return 0,0
         else:
             print "det(L) < e^(m*n)"
 
@@ -190,43 +191,31 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # LLL
     BB = BB.LLL()
 
-    # vectors -> polynomials
-    PR.<x,y> = PolynomialRing(ZZ)
+    # vector 1 & 2 -> polynomials 1 & 2
+    PR.<w,z> = PolynomialRing(ZZ)
 
-    pols = []
-    for ii in range(nn):
-        pols.append(0)
-        for jj in range(nn):
-            pols[-1] += monomials[jj](x*y+1,x,y) * BB[ii, jj] / monomials[jj](UU,XX,YY)
-        if pols[-1](xx,yy) != 0:
-            pols.pop()
-            break
-
-    # find two vectors we can work with
     pol1 = pol2 = 0
-
-    for ii, pol in enumerate(pols):
-        for jj in range(ii + 1, len(pols)):
-            if gcd(pol, pols[jj]) == 1:
-                pol1 = pol
-                pol2 = pols[jj]
-                break
-
-    # failure
-    if pol1 == pol2 == 0:
-        print "failure"
-        return 0, 0
+    for jj in range(nn):
+        pol1 += monomials[jj](w*z+1,w,z) * BB[0, jj] / monomials[jj](UU,XX,YY)
+        pol2 += monomials[jj](w*z+1,w,z) * BB[1, jj] / monomials[jj](UU,XX,YY)
 
     # resultant
-    PR.<x> = PolynomialRing(ZZ)
+    PR.<q> = PolynomialRing(ZZ)
     rr = pol1.resultant(pol2)
-    rr = rr(x, x)
+
+    if rr.is_zero() or rr.monomials() == [1]:
+        print "failure"
+        return pol1, pol2
+    
+    rr = rr(q, q)
 
     # solutions
     soly = rr.roots()[0][0]
+    print "found for y_0:", soly
 
-    ss = pol1(x, soly)
+    ss = pol1(q, soly)
     solx = ss.roots()[0][0]
+    print "found for x_0:", solx
 
     #
     return solx, soly
@@ -267,7 +256,7 @@ xx = (e * d - 1) / (A + yy)
 delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
 X = 2*floor(N^delta)      # this _might_ be too much
 Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 3                     # bigger is better (but takes longer)
+m = 12                     # bigger is better (but takes longer)
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
 # Checking bounds (for the demo)
 print "=== checking values ==="
