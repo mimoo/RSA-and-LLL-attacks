@@ -96,6 +96,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         bound = modulus^(mm*nn)
         if det >= bound:
             print "We do not have det < bound. Solutions might not be found."
+            print "Try with highers m and t."
             diff = (log(det) - log(bound)) / log(2)
             print "size det(L) - size e^(m*n) = ", floor(diff)
         else:
@@ -127,7 +128,13 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     rr = rr(q, q)
 
     # solutions
-    soly = rr.roots()[0][0]
+    soly = rr.roots()
+
+    if len(soly) == 0:
+        print "your prediction (delta) is too small"
+        return 0, 0
+
+    soly = soly[0][0]
     print "found for y_0:", soly
 
     ss = pol1(q, soly)
