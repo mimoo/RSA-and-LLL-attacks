@@ -89,49 +89,20 @@ The attack works if the private exponent `d` is too small compared to the modulu
 
 To use it:
 
-1. look at the tests in [boneh_durfee.sage](boneh_durfee.sage) and make your own with your own values for the public exponent `e` and the public modulus `N`.
-2. guess how small the private exponent `d` is and modify `delta` so you have `d < N^delta`
-3. increase `m` (the bigger, the longer the program will need to run) until you get the bound on the determinant (a message will tell you if you don't. For reference: 
+1. look at the **how to use** section at the end of the file in [boneh_durfee.sage](boneh_durfee.sage) and replace the values according to your problem: the variable `delta` is your hypothesis on the private exponent `d`. If you don't have `d < N^delta` you will not find solutions. Start small (delta = 0.26) and increase slowly (maximum is `0.292`)
 
-* for `delta = 0.26` you will need `m = 3`
+2. Run the program. If you get an error: "Try with highers m and t" you should increase `m`. The more you increase it, the longer the program will need to run. Increase it until you get rid of the error.
 
-* for `delta = 0.27` you will need `m = 6`
+3. If you do not want to increase `m` (because it takes too long for example) you can try to decrease `X` because it happens that it is too high compared to the root of the `x` you are trying to find. This is a last recourse tweak though.
 
-* for `delta = 0.275` you will need `m = 8`
+4. If you still don't find anything for high values of `delta`, `m` and `t` then you can try to do an exhaustive search on `d > N^0.292`. Good luck!
 
-* for `delta = 0.28` you will need `m = 12`
-
-4. If you don't want to use values of `m` that high, you can also try to decrease `X` as it might be too high compared to the root of `x` you are trying to find. This is a last recourse tweak though.
-
-5. If you have a private exponent `d` that might be even higher, do the tests for `delta = 0.28` for example. If it doesn't find anything, do an exhaustive search on higher values of `d`.
-
-6. Once you have `x` and `y` you can easily insert them into the equation:
+5. Once you found solutions for `x` and `y`, you can easily insert them into the equation:
 
 ```
-x [(N + 1)/2 + y] + 1 = e d
+e d = x [(N + 1)/2 + y] + 1
 ```
 
-Here's an example on how you could use the function if you suspect your private exponent to be lower than `N^0.275`:
+The example in the code should be clear enough, there is also [a write-up of a CTF challenge using this code](https://www.cryptologie.net/article/265/small-rsa-private-key-problem/).
 
-```
-# problem with N and e known
-P.<x,y> = PolynomialRing(Zmod(e))
-A = int((N+1)/2)
-pol = 1 + x * (A + y)
-
-# tweak those values
-delta = 0.275
-m = 8
-t = int((1-2*delta) * m)   
-
-# last resort tweaks
-X = 2*floor(N^delta)
-Y = floor(N^(1/2))  
-
-# find the solutions
-solx, soly = boneh_durfee(pol, e, m, t, X, Y)
-```
-
-[Here's a write-up of a CTF challenge using this code](https://www.cryptologie.net/article/265/small-rsa-private-key-problem/)
-
-**PS**: You can also try to use `research.sage`. It might help you to use a lower `m` than necessary. 
+**PS**: You can also try to use `research.sage`. It tries to remove *unhelpful vectors* when it doesn't break the triangular form of the lattice's basis. It might help you to use a lower `m` than necessary!
