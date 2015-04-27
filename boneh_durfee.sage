@@ -144,7 +144,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     if rr.is_zero() or rr.monomials() == [1]:
         print "the two first vectors are not independant"
-        return pol1, pol2
+        return 0, 0
     
     rr = rr(q, q)
 
