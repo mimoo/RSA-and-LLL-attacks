@@ -132,4 +132,6 @@ Y = floor(N^(1/2))
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 ```
 
+[Here's a write-up of a CTF challenge using this code](https://www.cryptologie.net/article/265/small-rsa-private-key-problem/)
+
 **PS**: You can also try to use `research.sage`. It might help you to use a lower `m` than necessary. 
