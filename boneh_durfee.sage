@@ -1,6 +1,27 @@
 import time
 
+############################################
+# Config
+##########################################
+
+"""
+Setting debug to true will display more informations
+about the lattice, the bounds, the vectors...
+"""
 debug = True
+
+"""
+Setting strict to true will stop the algorithm (and
+return -1, -1) whenever we don't have a correct 
+upperbound on the determinant. Note that this 
+doesn't necesseraly mean that no solutions 
+will be found since the bound is not optimistic
+"""
+scrict = False
+
+############################################
+# Functions
+##########################################
 
 # display stats on helpful vectors
 def helpful_vectors(BB, modulus):
@@ -23,6 +44,13 @@ def matrix_overview(BB, bound):
             a += '~'
         print a
 
+
+""" 
+Returns:
+* 0,0   if it fails
+* -1,-1 if `strict=true`, and determinant doesn't bound
+* x0,y0 the solutions of `pol`
+"""
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     """
     Boneh and Durfee revisited by Herrmann and May
@@ -36,29 +64,25 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # substitution (Herrman and May)
     PR.<u, x, y> = PolynomialRing(ZZ)
-    Q = PR.quotient(x*y + 1 - u) # u = x*y + 1
+    Q = PR.quotient(x*y + 1 - u) # u = xy + 1
     polZ = Q(pol).lift()
 
     UU = XX*YY + 1
 
     # x-shifts
     gg = []
-
     for kk in range(mm + 1):
         for ii in range(mm - kk + 1):
             xshift = x^ii * modulus^(mm - kk) * polZ(u, x, y)^kk
             gg.append(xshift)
-
     gg.sort()
 
-    # x-shifts monomials
+    # x-shifts list of monomials
     monomials = []
-
     for polynomial in gg:
         for monomial in polynomial.monomials():
             if monomial not in monomials:
                 monomials.append(monomial)
-
     monomials.sort()
     
     # y-shifts (selected by Herrman and May)
@@ -68,20 +92,16 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
             yshift = Q(yshift).lift()
             gg.append(yshift) # substitution
     
-    # y-shifts monomials
+    # y-shifts list of monomials
     for jj in range(1, tt + 1):
         for kk in range(floor(mm/tt) * jj, mm + 1):
             monomials.append(u^kk * y^jj)
 
     # construct lattice B
     nn = len(monomials)
-
     BB = Matrix(ZZ, nn)
-
     for ii in range(nn):
-
         BB[ii, 0] = gg[ii](0, 0, 0)
-
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
@@ -91,27 +111,28 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         helpful_vectors(BB, modulus^mm)
     
     # check if determinant is correctly bounded
-    if debug:
-        det = BB.det()
-        bound = modulus^(mm*nn)
-        if det >= bound:
-            print "We do not have det < bound. Solutions might not be found."
-            print "Try with highers m and t."
+    det = BB.det()
+    bound = modulus^(mm*nn)
+    if det >= bound:
+        print "We do not have det < bound. Solutions might not be found."
+        print "Try with highers m and t."
+        if debug:
             diff = (log(det) - log(bound)) / log(2)
             print "size det(L) - size e^(m*n) = ", floor(diff)
-        else:
-            print "det(L) < e^(m*n)"
+        if strict:
+            return -1, -1
+    else:
+        print "det(L) < e^(m*n) (good! If a solution exists < N^delta, it will be found)"
 
-    # debug: display matrix
+    # display the lattice basis
     if debug:
         matrix_overview(BB, modulus^mm)
 
     # LLL
     BB = BB.LLL()
 
-    # vector 1 & 2 -> polynomials 1 & 2
+    # transform vector 1 & 2 -> polynomials 1 & 2
     PR.<w,z> = PolynomialRing(ZZ)
-
     pol1 = pol2 = 0
     for jj in range(nn):
         pol1 += monomials[jj](w*z+1,w,z) * BB[0, jj] / monomials[jj](UU,XX,YY)
@@ -122,7 +143,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     rr = pol1.resultant(pol2)
 
     if rr.is_zero() or rr.monomials() == [1]:
-        print "failure"
+        print "the two first vectors are not independant"
         return pol1, pol2
     
     rr = rr(q, q)
@@ -131,76 +152,81 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     soly = rr.roots()
 
     if len(soly) == 0:
-        print "your prediction (delta) is too small"
+        print "Your prediction (delta) is too small"
         return 0, 0
 
     soly = soly[0][0]
-    print "found for y_0:", soly
-
     ss = pol1(q, soly)
     solx = ss.roots()[0][0]
-    print "found for x_0:", solx
 
     #
     return solx, soly
 
 
 ############################################
-# Test 
+# How To Use 
 ##########################################
 
-# RSA gen options (tweakable)
-length_N = 1024
-length_d = 0.28
+#
+# Problem (change those values)
+#
 
-# RSA gen (for the demo)
-p = next_prime(2^int(round(length_N/2)))
-q = next_prime(round(pi.n()*p))
-N = p*q
-phi = (p-1)*(q-1)
-d = int(N^length_d) 
-if d % 2 == 0: d += 1
-while gcd(d, phi) != 1:
-    d += 2
-e = d.inverse_mod((p-1)*(q-1))
+# the modulus
+N = 0xc2fd2913bae61f845ac94e4ee1bb10d8531dda830d31bb221dac5f179a8f883f15046d7aa179aff848db2734b8f88cc73d09f35c445c74ee35b01a96eb7b0a6ad9cb9ccd6c02c3f8c55ecabb55501bb2c318a38cac2db69d510e152756054aaed064ac2a454e46d9b3b755b67b46906fbff8dd9aeca6755909333f5f81bf74db
 
-# Problem put in equation (default)
-P.<x,y> = PolynomialRing(Zmod(e))
+# the public exponent
+e = 0x19441f679c9609f2484eb9b2658d7138252b847b2ed8ad182be7976ed57a3e441af14897ce041f3e07916445b88181c22f510150584eee4b0f776a5a487a4472a99f2ddc95efdd2b380ab4480533808b8c92e63ace57fb42bac8315fa487d03bec86d854314bc2ec4f99b192bb98710be151599d60f224114f6b33f47e357517
+
+# the hypothesis on the private exponent (max 0.292)
+delta = 0.26 # d < N^delta
+
+#
+# Lattice (tweak those values)
+#
+
+# you should tweak this (after a first run)
+m = 5 # size of the lattice (bigger the better/slower)
+
+# might not be a good idea to tweak these
+t = int((1-2*delta) * m)  # optimization from Herrmann and May
+X = 2*floor(N^delta)  # this _might_ be too much
+Y = floor(N^(1/2))    # correct if p, q are ~ same size
+
+#
+# Don't touch
+#
+
+# Problem put in equation
+P.<x,y> = PolynomialRing(ZZ)
 A = int((N+1)/2)
 pol = 1 + x * (A + y)
 
-# and the solutions to be found (for the demo)
-yy = (-p -q)/2
-xx = (e * d - 1) / (A + yy)
-
 #
-# Default values 
-# you should tweak delta and m. X should be OK as well
-# 
-delta = 0.28              # < 0.292 (Boneh & Durfee's bound)
-X = 2*floor(N^delta)      # this _might_ be too much
-Y = floor(N^(1/2))        # correct if p, q are ~ same size
-m = 5                     # bigger is better (but takes longer)
-t = int((1-2*delta) * m)  # optimization from Herrmann and May
-# Checking bounds (for the demo)
-print "=== checking values ==="
-print "* |y| < Y:", abs(yy) < Y
-print "* |x| < X:", abs(xx) < X
-print "* d < N^0.292", d < N^(0.292)
-print "* size of d:", int(log(d)/log(2))
-print "* size of N:", int(log(N)/log(2))
-print "* delta:", delta
+# Find the solutions!
+#
+
+# Checking bounds
+if debug:
+    print "=== checking values ==="
+    print "* delta:", delta
+    print "* delta < 0.292", delta < 0.292
+    print "* size of e:", int(log(e)/log(2))
+    print "* size of N:", int(log(N)/log(2))
 
 # boneh_durfee
-print "=== running algorithm ==="
-start_time = time.time()
+if debug:
+    print "=== running algorithm ==="
+    start_time = time.time()
+
 solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
-# Checking solutions (for the demo)
-if xx == solx and yy == soly:
-    print "\n=== the solutions are correct ==="
-else:
-    print "=== FAIL ==="
+if solx > 0:
+    print "=== solutions found ==="
+    print "x:", solx
+    print "y:", soly
 
-# Stats
-print("=== %s seconds ===" % (time.time() - start_time))
+    d = int(pol(solx, soly) / e)
+    print "d:", d
+
+if debug:
+    print("=== %s seconds ===" % (time.time() - start_time))
