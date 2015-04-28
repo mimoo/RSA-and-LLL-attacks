@@ -1,3 +1,14 @@
+"""
+This code tries reducing the lattice before feeding it to LLL
+It is experimental and not documented
+
+It automatically decides if vectors should be remove with the function
+`remove_unhelpful`. You can also automatically remove vectors 
+(although not recommanded) with the function `manually_remove`
+
+Most of this work has been merged to `boneh_durfee.sage`
+"""
+
 import time
 
 debug = True
