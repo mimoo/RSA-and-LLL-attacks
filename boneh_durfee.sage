@@ -19,6 +19,15 @@ will be found since the bound is not optimistic
 """
 strict = False
 
+"""
+This is experimental, but has provided remarkable results
+so far. It tries to reduce the lattice as much as it can
+while keeping its efficiency. I see no reason not to use
+this option, but if things don't work, you should try
+disabling it
+"""
+helpful_only = True
+
 ############################################
 # Functions
 ##########################################
@@ -44,6 +53,61 @@ def matrix_overview(BB, bound):
             a += '~'
         print a
 
+# tries to remove unhelpful vectors
+# we start at current = n-1 (last vector)
+def remove_unhelpful(BB, monomials, bound, current):
+    # end of our recursive function
+    if current == -1:
+        return BB
+
+    # we start by checking from the end
+    for ii in range(current, -1, -1):
+        # if it is unhelpful:
+        if BB[ii, ii] >= bound:
+            affected_vectors = 0
+            affected_vector_index = 0
+            # let's check if it affects other vectors
+            for jj in range(ii + 1, BB.dimensions()[0]):
+                # if another vector is affected:
+                # we increase the count
+                if BB[jj, ii] != 0:
+                    affected_vectors += 1
+                    affected_vector_index = jj
+
+            # level:0
+            # if no other vectors end up affected
+            # we remove it
+            if affected_vectors == 0:
+                print "* removing unhelpful vector", ii
+                BB = BB.delete_columns([ii])
+                BB = BB.delete_rows([ii])
+                monomials.pop(ii)
+                BB = remove_unhelpful(BB, monomials, bound, ii-1)
+                return BB
+
+            # level:1
+            # if just one was affected we check
+            # if it is affecting someone else
+            elif affected_vectors == 1:
+                affected_deeper = True
+                for kk in range(affected_vector_index + 1, BB.dimensions()[0]):
+                    # if it is affecting even one vector
+                    # we give up on this one
+                    if BB[kk, affected_vector_index] != 0:
+                        affected_deeper = False
+                # remove both it if no other vector was affected and
+                # this helpful vector is not helpful enough
+                # compared to our unhelpful one
+                if affected_deeper and abs(bound - BB[affected_vector_index, affected_vector_index]) < abs(bound - BB[ii, ii]):
+                    print "* removing unhelpful vectors", ii, "and", affected_vector_index
+                    BB = BB.delete_columns([affected_vector_index, ii])
+                    BB = BB.delete_rows([affected_vector_index, ii])
+                    monomials.pop(affected_vector_index)
+                    monomials.pop(ii)
+                    BB = remove_unhelpful(BB, monomials, bound, ii-1)
+                    return BB
+    # nothing happened
+    return BB
 
 """ 
 Returns:
@@ -105,6 +169,16 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
                 BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
+
+    # Prototype to reduce the lattice
+    if helpful_only:
+        # automatically remove
+        BB = remove_unhelpful(BB, monomials, modulus^mm, nn-1)
+        # reset dimension
+        nn = BB.dimensions()[0]
+        if nn == 0:
+            print "failure"
+            return 0,0
 
     # check if vectors are helpful
     if debug:
@@ -185,7 +259,7 @@ delta = float(0.26) # d < N^delta
 #
 
 # you should tweak this (after a first run)
-m = 5 # size of the lattice (bigger the better/slower)
+m = 4 # size of the lattice (bigger the better/slower)
 
 # might not be a good idea to tweak these
 t = int((1-2*delta) * m)  # optimization from Herrmann and May
