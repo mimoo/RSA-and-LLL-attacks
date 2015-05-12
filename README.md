@@ -8,7 +8,7 @@ Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to fact
 
 If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](#boneh-durfee). If you want to dig deeper you can also read [my survey](rapport.pdf) or watch [my video](https://www.youtube.com/watch?v=3cicTG3zeVQ).
 
-I've also done some personal researches on the Boneh-Durfee algorithm and I do get better results. Check `research.sage`.
+I've also done some personal researches on the Boneh-Durfee algorithm and I do get better results. Check `research.sage` (note: most was merged in `boneh_durfee.sage`, just use `helpful_only = True` to make use of it)
 
 # Coppersmith
 
