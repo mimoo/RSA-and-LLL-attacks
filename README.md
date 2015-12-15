@@ -4,7 +4,7 @@ This repo will host implementations and explanations of different RSA attacks us
 
 First, we'll see how **Coppersmith** found out that you could use lattice reduction techniques to attack a relaxed model of RSA (we know parts of the message, or we know parts of one of the prime, ...). And how **Howgrave-Graham** reformulated his attack.
 
-Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to factor the RSA modulus when the private key is too small (`d < N^0.929`). Followed by a simplification from **Herrman and May**.
+Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to factor the RSA modulus when the private key is too small (`d < N^0.292`). Followed by a simplification from **Herrman and May**.
 
 If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](#boneh-durfee). If you want to dig deeper you can also read [my survey](survey_final.pdf) or watch [my video](https://www.youtube.com/watch?v=3cicTG3zeVQ).
 
