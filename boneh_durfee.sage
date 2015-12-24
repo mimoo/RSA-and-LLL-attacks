@@ -27,6 +27,7 @@ this option, but if things don't work, you should try
 disabling it
 """
 helpful_only = True
+dimension_min = 7 # stop removing if lattice reaches that dimension
 
 ############################################
 # Functions
@@ -57,7 +58,7 @@ def matrix_overview(BB, bound):
 # we start at current = n-1 (last vector)
 def remove_unhelpful(BB, monomials, bound, current):
     # end of our recursive function
-    if current == -1:
+    if current == -1 or BB.dimensions()[0] <= dimension_min:
         return BB
 
     # we start by checking from the end
