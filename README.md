@@ -1,6 +1,6 @@
 # Lattice based attacks on RSA
 
-This repo will host implementations and explanations of different RSA attacks using **lattice reduction** techniques (in particular **LLL**).
+This repo host implementations and explanations of different RSA attacks using **lattice reduction** techniques (in particular **LLL**).
 
 First, we'll see how **Coppersmith** found out that you could use lattice reduction techniques to attack a relaxed model of RSA (we know parts of the message, or we know parts of one of the prime, ...). And how **Howgrave-Graham** reformulated his attack.
 
@@ -8,7 +8,11 @@ Second we'll see how **Boneh and Durfee** used a coppersmith-like attack to fact
 
 If you want to use the implementations, see below for explanations on [Coppersmith](#coppersmith) and [Boneh-Durfee](#boneh-durfee). If you want to dig deeper you can also read [my survey](survey_final.pdf) or watch [my video](https://www.youtube.com/watch?v=3cicTG3zeVQ).
 
-I've also done some personal researches on the Boneh-Durfee algorithm and I do get better results. Check `research.sage` (note: most was merged in `boneh_durfee.sage`, just use `helpful_only = True` to make use of it)
+I've also done some personal researches on the Boneh-Durfee algorithm and they are being used in `boneh_durfee.sage` by default, just use `helpful_only = False` to disable the improvements. [I talk quantitatively about the improvements here](https://cryptologie.net/article/266/some-research-on-recovering-small-rsa-private-keys/).
+
+The latest research on the subject is:
+
+* [4 apr 2016 - General Bounds for Small Inverse Problems and Its Applications to Multi-Prime RSA (Atsushi Takayasu and Noboru Kunihiro)](http://eprint.iacr.org/2016/353)
 
 # Coppersmith
 
