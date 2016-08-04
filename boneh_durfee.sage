@@ -12,10 +12,12 @@ debug = True
 
 """
 Setting strict to true will stop the algorithm (and
-return -1, -1) whenever we don't have a correct 
+return (-1, -1)) if we don't have a correct 
 upperbound on the determinant. Note that this 
 doesn't necesseraly mean that no solutions 
-will be found since the bound is not optimistic
+will be found since the theoretical upperbound is
+usualy far away from actual results. That is why
+you should probably use `strict = False`
 """
 strict = False
 
@@ -237,73 +239,76 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     #
     return solx, soly
 
+def main():
+    ############################################
+    # How To Use 
+    ##########################################
 
-############################################
-# How To Use 
-##########################################
+    #
+    # Problem (change those values)
+    #
 
-#
-# Problem (change those values)
-#
+    # the modulus
+    N = 0xc2fd2913bae61f845ac94e4ee1bb10d8531dda830d31bb221dac5f179a8f883f15046d7aa179aff848db2734b8f88cc73d09f35c445c74ee35b01a96eb7b0a6ad9cb9ccd6c02c3f8c55ecabb55501bb2c318a38cac2db69d510e152756054aaed064ac2a454e46d9b3b755b67b46906fbff8dd9aeca6755909333f5f81bf74db
 
-# the modulus
-N = 0xc2fd2913bae61f845ac94e4ee1bb10d8531dda830d31bb221dac5f179a8f883f15046d7aa179aff848db2734b8f88cc73d09f35c445c74ee35b01a96eb7b0a6ad9cb9ccd6c02c3f8c55ecabb55501bb2c318a38cac2db69d510e152756054aaed064ac2a454e46d9b3b755b67b46906fbff8dd9aeca6755909333f5f81bf74db
+    # the public exponent
+    e = 0x19441f679c9609f2484eb9b2658d7138252b847b2ed8ad182be7976ed57a3e441af14897ce041f3e07916445b88181c22f510150584eee4b0f776a5a487a4472a99f2ddc95efdd2b380ab4480533808b8c92e63ace57fb42bac8315fa487d03bec86d854314bc2ec4f99b192bb98710be151599d60f224114f6b33f47e357517
 
-# the public exponent
-e = 0x19441f679c9609f2484eb9b2658d7138252b847b2ed8ad182be7976ed57a3e441af14897ce041f3e07916445b88181c22f510150584eee4b0f776a5a487a4472a99f2ddc95efdd2b380ab4480533808b8c92e63ace57fb42bac8315fa487d03bec86d854314bc2ec4f99b192bb98710be151599d60f224114f6b33f47e357517
+    # the hypothesis on the private exponent (max 0.292)
+    delta = float(0.26) # d < N^delta
 
-# the hypothesis on the private exponent (max 0.292)
-delta = float(0.26) # d < N^delta
+    #
+    # Lattice (tweak those values)
+    #
 
-#
-# Lattice (tweak those values)
-#
+    # you should tweak this (after a first run)
+    m = 4 # size of the lattice (bigger the better/slower)
 
-# you should tweak this (after a first run)
-m = 4 # size of the lattice (bigger the better/slower)
+    # might not be a good idea to tweak these
+    t = int((1-2*delta) * m)  # optimization from Herrmann and May
+    X = 2*floor(N^delta)  # this _might_ be too much
+    Y = floor(N^(1/2))    # correct if p, q are ~ same size
 
-# might not be a good idea to tweak these
-t = int((1-2*delta) * m)  # optimization from Herrmann and May
-X = 2*floor(N^delta)  # this _might_ be too much
-Y = floor(N^(1/2))    # correct if p, q are ~ same size
+    #
+    # Don't touch anything below
+    #
 
-#
-# Don't touch
-#
+    # Problem put in equation
+    P.<x,y> = PolynomialRing(ZZ)
+    A = int((N+1)/2)
+    pol = 1 + x * (A + y)
 
-# Problem put in equation
-P.<x,y> = PolynomialRing(ZZ)
-A = int((N+1)/2)
-pol = 1 + x * (A + y)
+    #
+    # Find the solutions!
+    #
 
-#
-# Find the solutions!
-#
-
-# Checking bounds
-if debug:
-    print "=== checking values ==="
-    print "* delta:", delta
-    print "* delta < 0.292", delta < 0.292
-    print "* size of e:", int(log(e)/log(2))
-    print "* size of N:", int(log(N)/log(2))
-    print "* m:", m, ", t:", t
-
-# boneh_durfee
-if debug:
-    print "=== running algorithm ==="
-    start_time = time.time()
-
-solx, soly = boneh_durfee(pol, e, m, t, X, Y)
-
-if solx > 0:
-    print "=== solutions found ==="
+    # Checking bounds
     if debug:
-        print "x:", solx
-        print "y:", soly
+        print "=== checking values ==="
+        print "* delta:", delta
+        print "* delta < 0.292", delta < 0.292
+        print "* size of e:", int(log(e)/log(2))
+        print "* size of N:", int(log(N)/log(2))
+        print "* m:", m, ", t:", t
 
-    d = int(pol(solx, soly) / e)
-    print "d:", d
+    # boneh_durfee
+    if debug:
+        print "=== running algorithm ==="
+        start_time = time.time()
 
-if debug:
-    print("=== %s seconds ===" % (time.time() - start_time))
+    solx, soly = boneh_durfee(pol, e, m, t, X, Y)
+
+    if solx > 0:
+        print "=== solutions found ==="
+        if debug:
+            print "x:", solx
+            print "y:", soly
+
+        d = int(pol(solx, soly) / e)
+        print "d:", d
+
+    if debug:
+        print("=== %s seconds ===" % (time.time() - start_time))
+
+if __name__ == "__main__":
+    main()
