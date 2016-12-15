@@ -255,7 +255,7 @@ def main():
     e = 0x19441f679c9609f2484eb9b2658d7138252b847b2ed8ad182be7976ed57a3e441af14897ce041f3e07916445b88181c22f510150584eee4b0f776a5a487a4472a99f2ddc95efdd2b380ab4480533808b8c92e63ace57fb42bac8315fa487d03bec86d854314bc2ec4f99b192bb98710be151599d60f224114f6b33f47e357517
 
     # the hypothesis on the private exponent (max 0.292)
-    delta = float(0.26) # d < N^delta
+    delta = .26 # d < N^delta
 
     #
     # Lattice (tweak those values)
