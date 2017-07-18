@@ -206,21 +206,44 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         matrix_overview(BB, modulus^mm)
 
     # LLL
+    if debug:
+        print "optimizing basis of the lattice via LLL, this can take a long time"
+
     BB = BB.LLL()
 
-    # transform vector 1 & 2 -> polynomials 1 & 2
-    PR.<w,z> = PolynomialRing(ZZ)
-    pol1 = pol2 = 0
-    for jj in range(nn):
-        pol1 += monomials[jj](w*z+1,w,z) * BB[0, jj] / monomials[jj](UU,XX,YY)
-        pol2 += monomials[jj](w*z+1,w,z) * BB[1, jj] / monomials[jj](UU,XX,YY)
+    if debug:
+        print "LLL is done!"
 
-    # resultant
-    PR.<q> = PolynomialRing(ZZ)
-    rr = pol1.resultant(pol2)
+    # transform vector i & j -> polynomials 1 & 2
+    if debug:
+        print "looking for independent vectors in the lattice"
+    found_polynomials = False
+    
+    for pol1_idx in range(nn - 1):
+        for pol2_idx in range(pol1_idx + 1, nn):
+            # for i and j, create the two polynomials
+            PR.<w,z> = PolynomialRing(ZZ)
+            pol1 = pol2 = 0
+            for jj in range(nn):
+                pol1 += monomials[jj](w*z+1,w,z) * BB[pol1_idx, jj] / monomials[jj](UU,XX,YY)
+                pol2 += monomials[jj](w*z+1,w,z) * BB[pol2_idx, jj] / monomials[jj](UU,XX,YY)
 
-    if rr.is_zero() or rr.monomials() == [1]:
-        print "the two first vectors are not independant"
+            # resultant
+            PR.<q> = PolynomialRing(ZZ)
+            rr = pol1.resultant(pol2)
+
+            # are these good polynomials?
+            if rr.is_zero() or rr.monomials() == [1]:
+                continue
+            else:
+                print "found them, using vectors", pol1_idx, "and", pol2_idx
+                found_polynomials = True
+                break
+        if found_polynomials:
+            break
+
+    if not found_polynomials:
+        print "no independant vectors could be found. This should very rarely happen..."
         return 0, 0
     
     rr = rr(q, q)
@@ -239,32 +262,31 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     #
     return solx, soly
 
-def main():
+def example():
     ############################################
-    # How To Use 
+    # How To Use This Script
     ##########################################
 
     #
-    # Problem (change those values)
+    # The problem to solve (edit the following values)
     #
 
     # the modulus
     N = 0xc2fd2913bae61f845ac94e4ee1bb10d8531dda830d31bb221dac5f179a8f883f15046d7aa179aff848db2734b8f88cc73d09f35c445c74ee35b01a96eb7b0a6ad9cb9ccd6c02c3f8c55ecabb55501bb2c318a38cac2db69d510e152756054aaed064ac2a454e46d9b3b755b67b46906fbff8dd9aeca6755909333f5f81bf74db
-
     # the public exponent
     e = 0x19441f679c9609f2484eb9b2658d7138252b847b2ed8ad182be7976ed57a3e441af14897ce041f3e07916445b88181c22f510150584eee4b0f776a5a487a4472a99f2ddc95efdd2b380ab4480533808b8c92e63ace57fb42bac8315fa487d03bec86d854314bc2ec4f99b192bb98710be151599d60f224114f6b33f47e357517
 
-    # the hypothesis on the private exponent (max 0.292)
-    delta = .26 # d < N^delta
+    # the hypothesis on the private exponent (the theoretical maximum is 0.292)
+    delta = .18 # this means that d < N^delta
 
     #
     # Lattice (tweak those values)
     #
 
-    # you should tweak this (after a first run)
+    # you should tweak this (after a first run), (e.g. increment it until a solution is found)
     m = 4 # size of the lattice (bigger the better/slower)
 
-    # might not be a good idea to tweak these
+    # you need to be a lattice master to tweak these
     t = int((1-2*delta) * m)  # optimization from Herrmann and May
     X = 2*floor(N^delta)  # this _might_ be too much
     Y = floor(N^(1/2))    # correct if p, q are ~ same size
@@ -298,17 +320,20 @@ def main():
 
     solx, soly = boneh_durfee(pol, e, m, t, X, Y)
 
+    # found a solution?
     if solx > 0:
-        print "=== solutions found ==="
-        if debug:
+        print "=== solution found ==="
+        if False:
             print "x:", solx
             print "y:", soly
 
         d = int(pol(solx, soly) / e)
-        print "d:", d
+        print "private key found:", d
+    else:
+        print "=== no solution was found ==="
 
     if debug:
         print("=== %s seconds ===" % (time.time() - start_time))
 
 if __name__ == "__main__":
-    main()
+    example()
