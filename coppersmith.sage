@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 
 debug = True
@@ -11,7 +12,7 @@ def matrix_overview(BB, bound):
             a += ' '
         if BB[ii, ii] >= bound:
             a += '~'
-        print a
+        print(a)
 
 def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     """
@@ -55,34 +56,34 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     """
     if debug:
         # t optimized?
-        print "\n# Optimized t?\n"
-        print "we want X^(n-1) < N^(beta*m) so that each vector is helpful"
+        print("\n# Optimized t?\n")
+        print("we want X^(n-1) < N^(beta*m) so that each vector is helpful")
         cond1 = RR(XX^(nn-1))
-        print "* X^(n-1) = ", cond1
+        print("* X^(n-1) = ", cond1)
         cond2 = pow(modulus, beta*mm)
-        print "* N^(beta*m) = ", cond2
-        print "* X^(n-1) < N^(beta*m) \n-> GOOD" if cond1 < cond2 else "* X^(n-1) >= N^(beta*m) \n-> NOT GOOD"
+        print("* N^(beta*m) = ", cond2)
+        print("* X^(n-1) < N^(beta*m) \n-> GOOD" if cond1 < cond2 else "* X^(n-1) >= N^(beta*m) \n-> NOT GOOD")
         
         # bound for X
-        print "\n# X bound respected?\n"
-        print "we want X <= N^(((2*beta*m)/(n-1)) - ((delta*m*(m+1))/(n*(n-1)))) / 2 = M"
-        print "* X =", XX
+        print("\n# X bound respected?\n")
+        print("we want X <= N^(((2*beta*m)/(n-1)) - ((delta*m*(m+1))/(n*(n-1)))) / 2 = M")
+        print("* X =", XX)
         cond2 = RR(modulus^(((2*beta*mm)/(nn-1)) - ((dd*mm*(mm+1))/(nn*(nn-1)))) / 2)
-        print "* M =", cond2
-        print "* X <= M \n-> GOOD" if XX <= cond2 else "* X > M \n-> NOT GOOD"
+        print("* M =", cond2)
+        print("* X <= M \n-> GOOD" if XX <= cond2 else "* X > M \n-> NOT GOOD")
 
         # solution possible?
-        print "\n# Solutions possible?\n"
+        print("\n# Solutions possible?\n")
         detL = RR(modulus^(dd * mm * (mm + 1) / 2) * XX^(nn * (nn - 1) / 2))
-        print "we can find a solution if 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n)"
+        print("we can find a solution if 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n)")
         cond1 = RR(2^((nn - 1)/4) * detL^(1/nn))
-        print "* 2^((n - 1)/4) * det(L)^(1/n) = ", cond1
+        print("* 2^((n - 1)/4) * det(L)^(1/n) = ", cond1)
         cond2 = RR(modulus^(beta*mm) / sqrt(nn))
-        print "* N^(beta*m) / sqrt(n) = ", cond2
-        print "* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) \n-> SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) \n-> NO SOLUTIONS MIGHT BE FOUND (but we never know)"
+        print("* N^(beta*m) / sqrt(n) = ", cond2)
+        print("* 2^((n - 1)/4) * det(L)^(1/n) < N^(beta*m) / sqrt(n) \n-> SOLUTION WILL BE FOUND" if cond1 < cond2 else "* 2^((n - 1)/4) * det(L)^(1/n) >= N^(beta*m) / sqroot(n) \n-> NO SOLUTIONS MIGHT BE FOUND (but we never know)")
 
         # warning about X
-        print "\n# Note that no solutions will be found _for sure_ if you don't respect:\n* |root| < X \n* b >= modulus^beta\n"
+        print("\n# Note that no solutions will be found _for sure_ if you don't respect:\n* |root| < X \n* b >= modulus^beta\n")
     
     #
     # Coppersmith revisited algo for univariate
@@ -121,7 +122,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
 
     # factor polynomial
     potential_roots = new_pol.roots()
-    print "potential roots:", potential_roots
+    print("potential roots:", potential_roots)
 
     # test roots
     roots = []
@@ -138,9 +139,9 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
 # Test on Stereotyped Messages
 ##########################################    
 
-print "//////////////////////////////////"
-print "// TEST 1"
-print "////////////////////////////////"
+print("//////////////////////////////////")
+print("// TEST 1")
+print("////////////////////////////////")
 
 # RSA gen options (for the demo)
 length_N = 1024  # size of the modulus
@@ -179,18 +180,18 @@ start_time = time.time()
 roots = coppersmith_howgrave_univariate(pol, N, beta, mm, tt, XX)
 
 # output
-print "\n# Solutions"
-print "we want to find:",str(K)
-print "we found:", str(roots)
-print("in: %s seconds " % (time.time() - start_time))
-print "\n"
+print("\n# Solutions")
+print("we want to find:",str(K))
+print("we found:", str(roots))
+print(("in: %s seconds " % (time.time() - start_time)))
+print("\n")
 
 ############################################
 # Test on Factoring with High Bits Known
 ##########################################
-print "//////////////////////////////////"
-print "// TEST 2"
-print "////////////////////////////////"
+print("//////////////////////////////////")
+print("// TEST 2")
+print("////////////////////////////////")
 
 # RSA gen
 length_N = 1024;
@@ -219,7 +220,7 @@ start_time = time.time()
 roots = coppersmith_howgrave_univariate(pol, N, beta, mm, tt, XX)
 
 # output
-print "\n# Solutions"
-print "we want to find:", qbar - q
-print "we found:", roots
-print("in: %s seconds " % (time.time() - start_time))
+print("\n# Solutions")
+print("we want to find:", qbar - q)
+print("we found:", roots)
+print(("in: %s seconds " % (time.time() - start_time)))
